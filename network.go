@@ -38,3 +38,22 @@ func (c *Client) GetTip(ctx context.Context) (*TipResponse, error) {
 
 	return res, nil
 }
+
+// Get the Genesis parameters used to start specific era on chain.
+func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
+	rsp, err := c.GET(ctx, "/genesis")
+	if err != nil {
+		return nil, err
+	}
+	res := &GenesisResponse{}
+	res.setStatus(rsp)
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(body, &res.Genesis); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

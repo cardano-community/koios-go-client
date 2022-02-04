@@ -39,6 +39,11 @@ func addNetworkCommands(app *cli.App, api *koios.Client) {
 			Name:     "genesis",
 			Category: "NETWORK",
 			Usage:    "Get the Genesis parameters used to start specific era on chain.",
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetGenesis(context.Background())
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "totals",

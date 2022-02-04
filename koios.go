@@ -70,7 +70,7 @@ type (
 	}
 	Option func(*Client) error
 
-	// Response wraps API responses
+	// Response wraps API responses.
 	Response struct {
 		StatusCode int    `json:"status_code"`
 		Status     string `json:"status"`
