@@ -18,6 +18,7 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"net/url"
 )
 
 // GetTip returns the tip info about the latest block seen by chain.
@@ -39,7 +40,7 @@ func (c *Client) GetTip(ctx context.Context) (*TipResponse, error) {
 	return res, nil
 }
 
-// Get the Genesis parameters used to start specific era on chain.
+// GetGenesis returns the Genesis parameters used to start specific era on chain.
 func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
 	rsp, err := c.GET(ctx, "/genesis")
 	if err != nil {
@@ -52,6 +53,31 @@ func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
 		return nil, err
 	}
 	if err := json.Unmarshal(body, &res.Genesis); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// GetTotals returns the circulating utxo, treasury, rewards, supply and reserves in
+// lovelace for specified epoch, all epochs if empty.
+func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (*TotalsResponse, error) {
+	params := url.Values{}
+	if epochNo != nil {
+		params.Set("_epoch_no", string(*epochNo))
+	}
+
+	rsp, err := c.GET(ctx, "/totals", params)
+	if err != nil {
+		return nil, err
+	}
+	res := &TotalsResponse{}
+	res.setStatus(rsp)
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(body, &res.Totals); err != nil {
 		return nil, err
 	}
 

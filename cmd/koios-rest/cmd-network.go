@@ -49,6 +49,23 @@ func addNetworkCommands(app *cli.App, api *koios.Client) {
 			Name:     "totals",
 			Category: "NETWORK",
 			Usage:    "Get the circulating utxo, treasury, rewards, supply and reserves in lovelace for specified epoch, all epochs if empty.",
+			Flags: []cli.Flag{
+				&cli.UintFlag{
+					Name:  "epoch-no",
+					Usage: "Epoch Number to fetch details for",
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				var epochNo *koios.EpochNo
+				if ctx.Uint("epoch-no") > 0 {
+					v := koios.EpochNo(ctx.String("epoch-no"))
+					epochNo = &v
+				}
+
+				res, err := api.GetTotals(context.Background(), epochNo)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 	}...)
 }

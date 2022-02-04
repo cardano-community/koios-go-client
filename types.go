@@ -16,6 +16,41 @@
 package koios
 
 type (
+	// Address defines model for _address.
+	Address string
+
+	// AnyAddress defines model for _any_address.
+	AnyAddress string
+
+	// AssetName defines model for _asset_name.
+	AssetName string
+
+	// AssetPolicy defines model for _asset_policy.
+	AssetPolicy string
+
+	// BlockHash defines model for _block_hash.
+	BlockHash string
+
+	// EarnedEpochNo defines model for _earned_epoch_no.
+	EarnedEpochNo string
+
+	// EpochNo defines model for _epoch_no.
+	EpochNo string
+
+	// PoolBech32 defines model for _pool_bech32.
+	PoolBech32 string
+
+	// PoolBech32Optional defines model for _pool_bech32_optional.
+	PoolBech32Optional string
+
+	// ScriptHash defines model for _script_hash.
+	ScriptHash string
+
+	// StakeAddress defines model for _stake_address.
+	StakeAddress string
+)
+
+type (
 	// Tip defines model for tip.
 	Tip []struct {
 		// Absolute Slot number (slots not divided into epochs)
@@ -98,5 +133,36 @@ type (
 	GenesisResponse struct {
 		Response
 		Genesis Genesis `json:"response"`
+	}
+)
+
+type (
+	// Totals defines model for totals.
+	Totals []struct {
+
+		// Circulating UTxOs for given epoch (in lovelaces).
+		Circulation *string `json:"circulation,omitempty"`
+
+		// Epoch number.
+		EpochNo *int `json:"epoch_no,omitempty"`
+
+		// Total Reserves yet to be unlocked on chain.
+		Reserves *string `json:"reserves,omitempty"`
+
+		// Rewards accumulated as of given epoch (in lovelaces).
+		Reward *string `json:"reward,omitempty"`
+
+		// Total Active Supply (sum of treasury funds, rewards,
+		// UTxOs, deposits and fees) for given epoch (in lovelaces).
+		Supply *string `json:"supply,omitempty"`
+
+		// Funds in treasury for given epoch (in lovelaces).
+		Treasury *string `json:"treasury,omitempty"`
+	}
+
+	// GenesisResponse response of /genesis.
+	TotalsResponse struct {
+		Response
+		Totals Totals `json:"response"`
 	}
 )
