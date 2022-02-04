@@ -20,9 +20,11 @@ package koios
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -48,6 +50,7 @@ var (
 	ErrHTTPClientChange         = errors.New("http.Client can only be set as option to koios.New")
 	ErrOriginSet                = errors.New("origin can only be set as option to koios.New")
 	ErrRateLimitRange           = errors.New("rate limit must be between 1-255 requests per sec")
+	ErrResponseIsNotJSON        = errors.New("go non json response")
 )
 
 type (
@@ -67,8 +70,10 @@ type (
 	}
 	Option func(*Client) error
 
+	// Response wraps API responses
 	Response struct {
-		Error error
+		StatusCode int    `json:"status_code"`
+		Status     string `json:"status"`
 	}
 )
 
@@ -236,4 +241,21 @@ func Origin(origin string) Option {
 		c.origin = u.String()
 		return nil
 	}
+}
+
+func readResponseBody(rsp *http.Response) ([]byte, error) {
+	body, err := ioutil.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+	if !strings.Contains(rsp.Header.Get("Content-Type"), "json") {
+		return nil, fmt.Errorf("%w: %s", ErrResponseIsNotJSON, string(body))
+	}
+	return body, nil
+}
+
+func (r *Response) setStatus(rsp *http.Response) {
+	r.StatusCode = rsp.StatusCode
+	r.Status = rsp.Status
 }

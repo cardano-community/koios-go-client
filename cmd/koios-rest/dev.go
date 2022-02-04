@@ -17,33 +17,20 @@
 package main
 
 import (
-	"context"
-
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
 )
 
-func addNetworkCommands(app *cli.App, api *koios.Client) {
+func addDevCommands(app *cli.App, api *koios.Client) {
+
 	app.Commands = append(app.Commands, []*cli.Command{
 		{
-			Name:     "tip",
-			Category: "NETWORK",
-			Usage:    "Get the tip info about the latest block seen by chain.",
+			Name:     "dev",
+			Usage:    "koios-rest-go-client development commands.",
+			Category: "DEVELOPMENT COMMANDS",
 			Action: func(ctx *cli.Context) error {
-				res, err := api.GetTip(context.Background())
-				output(ctx, res, err)
 				return nil
 			},
-		},
-		{
-			Name:     "genesis",
-			Category: "NETWORK",
-			Usage:    "Get the Genesis parameters used to start specific era on chain.",
-		},
-		{
-			Name:     "totals",
-			Category: "NETWORK",
-			Usage:    "Get the circulating utxo, treasury, rewards, supply and reserves in lovelace for specified epoch, all epochs if empty.",
 		},
 	}...)
 }

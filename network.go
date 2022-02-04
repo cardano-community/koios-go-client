@@ -13,36 +13,28 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-package main
+package koios
 
 import (
 	"context"
-	"errors"
-	"io/ioutil"
-
-	"github.com/howijd/koios-rest-go-client"
-	"github.com/urfave/cli/v2"
+	"encoding/json"
 )
 
-func addGeneralCommands(app *cli.App, api *koios.Client) {
-	app.Commands = append(app.Commands, []*cli.Command{
-		{
-			Name:   "get",
-			Usage:  "Send get request to API endpoint",
-			Hidden: true,
-			Action: func(ctx *cli.Context) error {
-				endpoint := ctx.Args().Get(0)
-				if len(endpoint) == 0 {
-					return errors.New("provide endpoint as argument e.g. /tip")
-				}
-				res, err := api.GET(context.Background(), endpoint)
-				handleErr(err)
-				defer res.Body.Close()
-				body, err := ioutil.ReadAll(res.Body)
-				printResponseBody(ctx, body)
-				return nil
-			},
-		},
-	}...)
+// GetTip returns the tip info about the latest block seen by chain.
+func (c *Client) GetTip(ctx context.Context) (*TipResponse, error) {
+	rsp, err := c.GET(ctx, "/tip")
+	if err != nil {
+		return nil, err
+	}
+	res := &TipResponse{}
+	res.setStatus(rsp)
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(body, &res.Tip); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

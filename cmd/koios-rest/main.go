@@ -17,6 +17,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -63,6 +64,7 @@ func main() {
 	addAssetCommands(app, api)
 	addPoolCommands(app, api)
 	addScriptCommands(app, api)
+	addDevCommands(app, api)
 
 	handleErr(app.Run(os.Args))
 }
@@ -79,13 +81,22 @@ func handleErr(err error) {
 	log.Fatal(err)
 }
 
-func printResponseBody(body []byte, ctx *cli.Context) {
+func printResponseBody(ctx *cli.Context, body []byte) {
 	if ctx.Bool("ugly") {
 		fmt.Println(string(body))
 		return
 	}
-
 	fmt.Println(string(pretty.Pretty(body)))
+}
+
+type printable interface {
+	JSON() []byte
+}
+
+func output(ctx *cli.Context, data interface{}, err error) {
+	out, err := json.Marshal(data)
+	handleErr(err)
+	printResponseBody(ctx, out)
 }
 
 func globalFlags() []cli.Flag {
