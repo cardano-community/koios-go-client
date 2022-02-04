@@ -1,10 +1,18 @@
 # Koios API Client
 
-> WORK IN PROGRESS
-
 - Go Client library for [Koios API](https://api.koios.rest/).
 - Go CLI Application to consume [Koios API](https://api.koios.rest/) from Command-line.
 
+> WORK IN PROGRESS
+
+- [x] NETWORK
+- [ ] EPOCH
+- [ ] BLOCK
+- [ ] TRANSACTIONS
+- [ ] ADDRESS
+- [ ] ACCOUNT
+- [ ] POOL
+- [ ] SCRIPT
 
 Using this package requires a working Go environment. [See the install instructions for Go](http://golang.org/doc/install.html).
 
