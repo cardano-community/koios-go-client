@@ -80,14 +80,14 @@ func (c *Client) request(
 	return c.client.Do(req)
 }
 
-// Get currently used base url e.g. https://api.koios.rest/api/v0
+// BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0
 func (c *Client) BaseURL() string {
 	c.mux.RLock()
 	defer c.mux.RUnlock()
 	return c.url.String()
 }
 
-// Get number of total requests made by this API client.
+// TotalRequests retruns number of total requests made by API client.
 func (c *Client) TotalRequests() uint {
 	c.mux.RLock()
 	defer c.mux.RUnlock()

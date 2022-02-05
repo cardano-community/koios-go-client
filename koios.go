@@ -39,6 +39,15 @@ import (
 )
 
 const (
+	// MainnetHost       : is primay and default api host.
+	// GuildHost         : is Guild network host.
+	// TestnetHost       : is api host for testnet.
+	// DefaultAPIVersion : is openapi spec version e.g. /v0.
+	// DefaultPort       : default port used by api client.
+	// DefaultSchema     : default schema used by api client.
+	// LibraryVersion    : koios go library version.
+	// DefaultRateLimit  : is default rate limit used by api client.
+	// DefaultOrigin     : is default origin header used by api client.
 	MainnetHost              = "api.koios.rest"
 	GuildHost                = "guild.koios.rest"
 	TestnetHost              = "testnet.koios.rest"
@@ -60,6 +69,7 @@ var (
 )
 
 type (
+	// Client is api client instance
 	Client struct {
 		mux           sync.RWMutex
 		host          string
@@ -74,6 +84,9 @@ type (
 		lastRequest   time.Time
 		totalReq      uint
 	}
+
+	// Option is callback function which can be implemented
+	// to change configurations options of API Client.
 	Option func(*Client) error
 
 	// Response wraps API responses.

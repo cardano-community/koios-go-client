@@ -128,7 +128,7 @@ type (
 		Treasury *string `json:"treasury,omitempty"`
 	}
 
-	// GenesisResponse represents response from `/genesis` enpoint.
+	// TotalsResponse represents response from `/totals` enpoint.
 	TotalsResponse struct {
 		Response
 		Totals Totals `json:"response"`
