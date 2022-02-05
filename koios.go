@@ -38,16 +38,16 @@ import (
 	"golang.org/x/text/language"
 )
 
+// MainnetHost       : is primay and default api host.
+// GuildHost         : is Guild network host.
+// TestnetHost       : is api host for testnet.
+// DefaultAPIVersion : is openapi spec version e.g. /v0.
+// DefaultPort       : default port used by api client.
+// DefaultSchema     : default schema used by api client.
+// LibraryVersion    : koios go library version.
+// DefaultRateLimit  : is default rate limit used by api client.
+// DefaultOrigin     : is default origin header used by api client.
 const (
-	// MainnetHost       : is primay and default api host.
-	// GuildHost         : is Guild network host.
-	// TestnetHost       : is api host for testnet.
-	// DefaultAPIVersion : is openapi spec version e.g. /v0.
-	// DefaultPort       : default port used by api client.
-	// DefaultSchema     : default schema used by api client.
-	// LibraryVersion    : koios go library version.
-	// DefaultRateLimit  : is default rate limit used by api client.
-	// DefaultOrigin     : is default origin header used by api client.
 	MainnetHost              = "api.koios.rest"
 	GuildHost                = "guild.koios.rest"
 	TestnetHost              = "testnet.koios.rest"
@@ -59,6 +59,7 @@ const (
 	DefaultOrigin            = "https://github.com/howijd/koios-rest-go-client"
 )
 
+// Predefined errors used by library.
 var (
 	ErrURLValuesLenght          = errors.New("if presenent then only single url.Values should be provided")
 	ErrHTTPClientTimeoutSetting = errors.New("http.Client.Timeout should never be 0 in production")
