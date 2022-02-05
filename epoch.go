@@ -166,7 +166,7 @@ type (
 	}
 )
 
-// Get the epoch information, all epochs if no epoch specified.
+// GetEpochInfo returns the epoch information, all epochs if no epoch specified.
 func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (*EpochInfoResponse, error) {
 	params := url.Values{}
 	if epochNo != nil {
@@ -193,8 +193,8 @@ func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (*EpochInfo
 	return res, nil
 }
 
-// Get the protocol parameters for specific epoch, returns information
-// about all epochs if no epoch specified.
+// GetEpochParams returns the protocol parameters for specific epoch,
+// and information about all epochs if no epoch specified.
 func (c *Client) GetEpochParams(ctx context.Context, epochNo *EpochNo) (*EpochParamsResponse, error) {
 	params := url.Values{}
 	if epochNo != nil {

@@ -3,8 +3,8 @@ module github.com/howijd/koios-rest-go-client/cmd/koios-rest
 go 1.18
 
 replace (
-	github.com/howijd/koios-rest-go-client => ../../
-	github.com/shopspring/decimal => github.com/howijd/decimal v1.3.1
+	github.com/howijd/koios-rest-go-client v0.0.0 => ../..
+	github.com/shopspring/decimal v1.3.1 => github.com/howijd/decimal v1.3.1
 )
 
 require (

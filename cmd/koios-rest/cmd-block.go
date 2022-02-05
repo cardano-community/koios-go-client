@@ -17,6 +17,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
 )
@@ -27,6 +29,11 @@ func addBlockCommands(app *cli.App, api *koios.Client) {
 			Name:     "blocks",
 			Category: "BLOCK",
 			Usage:    "Get summarised details about all blocks (paginated - latest first).",
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetBlocks(context.Background())
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "block-info",

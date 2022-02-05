@@ -167,12 +167,13 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | --- | --- | --- | --- | --- |
 | NETWORK | | | | |
 | `/tip` | `*.GetTip(...) *TipResponse` | `tip` | [![](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTip) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tip) |
-| `/genesis` | `*.GetGenesis(...) *GenesisResponse` | `genesis` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetGenesis) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/genesis)
-| `/totals` | `*.GetTotals(...) *TotalsResponse` | `totals` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTotals) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/totals)
+| `/genesis` | `*.GetGenesis(...) *GenesisResponse` | `genesis` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetGenesis) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/genesis) |
+| `/totals` | `*.GetTotals(...) *TotalsResponse` | `totals` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTotals) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/totals) |
 | EPOCH | | | | |
-| `/epoch_info` | `*.GetEpochInfo(...) *EpochInfoResponse` | `epoch-info` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetEpochInfo) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_info)
-| `/epoch_params` | `*.GetEpochParams(...) *EpochParamsResponse` | `epoch-params` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetEpochParams) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_params)
+| `/epoch_info` | `*.GetEpochInfo(...) *EpochInfoResponse` | `epoch-info` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetEpochInfo) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_info) |
+| `/epoch_params` | `*.GetEpochParams(...) *EpochParamsResponse` | `epoch-params` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetEpochParams) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_params) |
 | BLOCK | | | | |
+| `/blocks` | `*.GetBlocks(...) *BlocksResponse` | `blocks` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlocks) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/blocks) |
 | TRANSACTIONS | | | | |
 | ADDRESS | | | | |
 | ACCOUNT | | | | |
