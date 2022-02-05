@@ -25,7 +25,6 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
-          skip-go-installation: true
       - name: Run tests
         run: |
           go test -v -race -covermode atomic -coverprofile=covprofile ./...
