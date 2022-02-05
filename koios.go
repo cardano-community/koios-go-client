@@ -24,6 +24,7 @@
 package koios
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -92,8 +93,10 @@ type (
 
 	// Response wraps API responses.
 	Response struct {
-		StatusCode int    `json:"status_code"`
-		Status     string `json:"status"`
+		RequestURL string         `json:"request_url"`
+		StatusCode int            `json:"status_code"`
+		Status     string         `json:"status"`
+		Error      *ResponseError `json:"error,omitempty"`
 	}
 )
 
@@ -278,4 +281,20 @@ func readResponseBody(rsp *http.Response) ([]byte, error) {
 func (r *Response) setStatus(rsp *http.Response) {
 	r.StatusCode = rsp.StatusCode
 	r.Status = rsp.Status
+	r.RequestURL = rsp.Request.URL.String()
+}
+
+func (r *Response) applyError(body []byte, err error) {
+	r.Error = &ResponseError{}
+	_ = json.Unmarshal(body, r.Error)
+	if err != nil && len(r.Error.Message) == 0 {
+		r.Error.Message = err.Error()
+	}
+}
+
+type ResponseError struct {
+	Hint    string `json:"hint,omitempty"`
+	Details string `json:"details,omitempty"`
+	Code    string `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
 }

@@ -19,6 +19,7 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/url"
 )
 
@@ -32,10 +33,10 @@ type (
 		BlkCount int `json:"blk_count"`
 
 		// Epoch number
-		EpochNo int `json:"epoch_no"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// Total fees incurred by transactions in epoch
-		Fees string `json:"fees"`
+		Fees Lovelace `json:"fees"`
 
 		// Timestamp for first block created in epoch
 		FirstBlockTime string `json:"first_block_time"`
@@ -44,7 +45,7 @@ type (
 		LastBlockTime string `json:"last_block_time"`
 
 		// Total output value across all transactions in epoch
-		OutSum string `json:"out_sum"`
+		OutSum Lovelace `json:"out_sum"`
 
 		// Number of transactions submitted in epoch
 		TxCount int `json:"tx_count"`
@@ -61,7 +62,7 @@ type (
 func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (*EpochInfoResponse, error) {
 	params := url.Values{}
 	if epochNo != nil {
-		params.Set("_epoch_no", string(*epochNo))
+		params.Set("_epoch_no", fmt.Sprint(*epochNo))
 	}
 
 	rsp, err := c.GET(ctx, "/epoch_info", params)
@@ -69,13 +70,16 @@ func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (*EpochInfo
 		return nil, err
 	}
 	res := &EpochInfoResponse{}
+
 	res.setStatus(rsp)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		return nil, err
 	}
+
 	if err := json.Unmarshal(body, &res.EpochInfo); err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return res, nil
 	}
 
 	return res, nil

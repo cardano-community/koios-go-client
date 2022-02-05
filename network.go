@@ -149,7 +149,8 @@ func (c *Client) GetTip(ctx context.Context) (*TipResponse, error) {
 		return nil, err
 	}
 	if err := json.Unmarshal(body, &res.Tip); err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return res, nil
 	}
 
 	return res, nil
@@ -168,7 +169,8 @@ func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
 		return nil, err
 	}
 	if err := json.Unmarshal(body, &res.Genesis); err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return res, nil
 	}
 
 	return res, nil
@@ -189,12 +191,12 @@ func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (*TotalsRespon
 	res := &TotalsResponse{}
 	res.setStatus(rsp)
 	body, err := readResponseBody(rsp)
-	fmt.Println(string(body))
 	if err != nil {
 		return nil, err
 	}
 	if err := json.Unmarshal(body, &res.Totals); err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return res, nil
 	}
 
 	return res, nil

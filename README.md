@@ -170,6 +170,7 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | `/genesis` | `*.GetGenesis(...) *GenesisResponse` | `genesis` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetGenesis) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/genesis)
 | `/totals` | `*.GetTotals(...) *TotalsResponse` | `totals` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTotals) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/totals)
 | EPOCH | | | | |
+| `/epoch_info` | `*.GetEpochInfo(...) *EpochInfoResponse` | `epoch-info` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetEpochInfo) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_info)
 | BLOCK | | | | |
 | TRANSACTIONS | | | | |
 | ADDRESS | | | | |
