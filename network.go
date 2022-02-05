@@ -21,8 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-
-	"github.com/shopspring/decimal"
 )
 
 type (
@@ -112,23 +110,23 @@ type (
 	Totals []struct {
 
 		// Circulating UTxOs for given epoch (in lovelaces).
-		Circulation decimal.Decimal `json:"circulation"`
+		Circulation Lovelace `json:"circulation"`
 
 		// Epoch number.
 		EpochNo EpochNo `json:"epoch_no"`
 
 		// Total Reserves yet to be unlocked on chain.
-		Reserves decimal.Decimal `json:"reserves"`
+		Reserves Lovelace `json:"reserves"`
 
 		// Rewards accumulated as of given epoch (in lovelaces).
-		Reward decimal.Decimal `json:"reward"`
+		Reward Lovelace `json:"reward"`
 
 		// Total Active Supply (sum of treasury funds, rewards,
 		// UTxOs, deposits and fees) for given epoch (in lovelaces).
-		Supply decimal.Decimal `json:"supply"`
+		Supply Lovelace `json:"supply"`
 
 		// Funds in treasury for given epoch (in lovelaces).
-		Treasury decimal.Decimal `json:"treasury"`
+		Treasury Lovelace `json:"treasury"`
 	}
 
 	// TotalsResponse represents response from `/totals` enpoint.

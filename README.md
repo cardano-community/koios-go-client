@@ -40,6 +40,7 @@ go install github.com/howijd/koios-rest-go-client/cmd/koios-rest@latest
 - [Usage](#usage)
   - [Basic usage](#basic-usage)
   - [Concurrency using goroutines](#concurrency-using-goroutines)
+- [Lovelace and math on assets and tokens.](#lovelace-and-math-on-assets-and-tokens)
 - [Implemented Endpoints](#implemented-endpoints)
 
 
@@ -142,6 +143,22 @@ func main() {
 }
 ```
 
+## Lovelace and math on assets and tokens.
+
+Liprary uses for most cases to represent lovelace using [`Lovelace`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Lovelace) data type.
+
+This library uses forked snapshot of [github.com/shopspring/decimal] package to provide  
+JSON and XML serialization/deserialization and make it ease to work with calculations  
+and deciimal precisions of ADA lovelace and native assets.
+
+
+**For decimal package API see**
+
+[![](https://pkg.go.dev/badge/github.com/shopspring/decimal)](https://pkg.go.dev/github.com/shopspring/decimal) 
+
+FORK: https://github.com/howijd/decimal  
+issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
+
 ## Implemented Endpoints
 
 > WORK IN PROGRESS
@@ -165,3 +182,4 @@ func main() {
 -->
 <!-- LINKS -->
 [Koios API]: https://koios.rest "Koios API"
+[github.com/shopspring/decimal]: https://github.com/shopspring/decimal

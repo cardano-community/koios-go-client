@@ -56,8 +56,14 @@ type (
 	// of github.com/shopspring/decimal package to provide. JSON and XML
 	// serialization/deserialization and make it ease to work with calculations
 	// and deciimal precisions of ADA lovelace and native assets.
+	//
+	// For API of decimal package see
+	// https://pkg.go.dev/github.com/shopspring/decimal
+	//
 	// SEE: https://github.com/howijd/decimal
 	// issues and bug reports are welcome to:
 	// https://github.com/howijd/decimal/issues.
-	Lovelace decimal.Decimal
+	Lovelace struct {
+		decimal.Decimal
+	}
 )
