@@ -15,3 +15,68 @@
 // limitations under the License.
 
 package koios
+
+import (
+	"context"
+	"encoding/json"
+	"net/url"
+)
+
+type (
+	// EpochInfo defines model for epoch_info.
+	EpochInfo []struct {
+		// Rewards accumulated as of given epoch (in lovelaces)
+		ActiveStake string `json:"active_stake"`
+
+		// Number of blocks created in epoch
+		BlkCount int `json:"blk_count"`
+
+		// Epoch number
+		EpochNo int `json:"epoch_no"`
+
+		// Total fees incurred by transactions in epoch
+		Fees string `json:"fees"`
+
+		// Timestamp for first block created in epoch
+		FirstBlockTime string `json:"first_block_time"`
+
+		// Timestamp for last block created in epoch
+		LastBlockTime string `json:"last_block_time"`
+
+		// Total output value across all transactions in epoch
+		OutSum string `json:"out_sum"`
+
+		// Number of transactions submitted in epoch
+		TxCount int `json:"tx_count"`
+	}
+
+	// EpochInfoResponse response of /epoch_info.
+	EpochInfoResponse struct {
+		Response
+		EpochInfo EpochInfo `json:"response"`
+	}
+)
+
+// Get the epoch information, all epochs if no epoch specified.
+func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (*EpochInfoResponse, error) {
+	params := url.Values{}
+	if epochNo != nil {
+		params.Set("_epoch_no", string(*epochNo))
+	}
+
+	rsp, err := c.GET(ctx, "/epoch_info", params)
+	if err != nil {
+		return nil, err
+	}
+	res := &EpochInfoResponse{}
+	res.setStatus(rsp)
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(body, &res.EpochInfo); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

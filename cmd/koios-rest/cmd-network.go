@@ -58,7 +58,7 @@ func addNetworkCommands(app *cli.App, api *koios.Client) {
 			Action: func(ctx *cli.Context) error {
 				var epochNo *koios.EpochNo
 				if ctx.Uint("epoch-no") > 0 {
-					v := koios.EpochNo(ctx.String("epoch-no"))
+					v := koios.EpochNo(ctx.Uint("epoch-no"))
 					epochNo = &v
 				}
 

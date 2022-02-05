@@ -1,2 +1,4 @@
+github.com/howijd/decimal v1.3.1 h1:dqyz7hwVQLgddRSlHlsiTI+k8hFe5BR+kyrf25NSFzI=
+github.com/howijd/decimal v1.3.1/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 golang.org/x/text v0.3.7 h1:olpwvP2KacW1ZWvsR7uQhoyTYvKAupfQrRGBFM352Gk=
 golang.org/x/text v0.3.7/go.mod h1:u+2+/6zg+i71rQMx5EYifcz6MCKuco9NR6JIITiCfzQ=

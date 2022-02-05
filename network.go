@@ -19,7 +19,10 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/url"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -109,23 +112,23 @@ type (
 	Totals []struct {
 
 		// Circulating UTxOs for given epoch (in lovelaces).
-		Circulation *string `json:"circulation,omitempty"`
+		Circulation decimal.Decimal `json:"circulation"`
 
 		// Epoch number.
-		EpochNo *int `json:"epoch_no,omitempty"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// Total Reserves yet to be unlocked on chain.
-		Reserves *string `json:"reserves,omitempty"`
+		Reserves decimal.Decimal `json:"reserves"`
 
 		// Rewards accumulated as of given epoch (in lovelaces).
-		Reward *string `json:"reward,omitempty"`
+		Reward decimal.Decimal `json:"reward"`
 
 		// Total Active Supply (sum of treasury funds, rewards,
 		// UTxOs, deposits and fees) for given epoch (in lovelaces).
-		Supply *string `json:"supply,omitempty"`
+		Supply decimal.Decimal `json:"supply"`
 
 		// Funds in treasury for given epoch (in lovelaces).
-		Treasury *string `json:"treasury,omitempty"`
+		Treasury decimal.Decimal `json:"treasury"`
 	}
 
 	// TotalsResponse represents response from `/totals` enpoint.
@@ -178,7 +181,7 @@ func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
 func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (*TotalsResponse, error) {
 	params := url.Values{}
 	if epochNo != nil {
-		params.Set("_epoch_no", string(*epochNo))
+		params.Set("_epoch_no", fmt.Sprint(*epochNo))
 	}
 
 	rsp, err := c.GET(ctx, "/totals", params)
@@ -188,6 +191,7 @@ func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (*TotalsRespon
 	res := &TotalsResponse{}
 	res.setStatus(rsp)
 	body, err := readResponseBody(rsp)
+	fmt.Println(string(body))
 	if err != nil {
 		return nil, err
 	}
