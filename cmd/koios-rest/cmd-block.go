@@ -47,12 +47,10 @@ func addBlockCommands(app *cli.App, api *koios.Client) {
 				},
 			},
 			Action: func(ctx *cli.Context) error {
-				var hash koios.BlockHash
-				if len(ctx.String("block-hash")) > 0 {
-					hash = koios.BlockHash(ctx.String("block-hash"))
-				}
-
-				res, err := api.GetBlockInfo(context.Background(), hash)
+				res, err := api.GetBlockInfo(
+					context.Background(),
+					koios.BlockHash(ctx.String("block-hash")),
+				)
 				output(ctx, res, err)
 				return nil
 			},
@@ -61,6 +59,21 @@ func addBlockCommands(app *cli.App, api *koios.Client) {
 			Name:     "block-txs",
 			Category: "BLOCK",
 			Usage:    "Get a list of all transactions included in a provided block.",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:     "block-hash",
+					Usage:    "Block Hash in hex format to fetch details for",
+					Required: true,
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetBlockTxs(
+					context.Background(),
+					koios.BlockHash(ctx.String("block-hash")),
+				)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 	}...)
 }

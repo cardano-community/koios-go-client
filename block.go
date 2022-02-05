@@ -79,6 +79,11 @@ type (
 		Response
 		Block *Block `json:"response,omitempty"`
 	}
+	// BlockTxsResponse represents response from `/block_txs` endpoint.
+	BlockTxsResponse struct {
+		Response
+		Txs []TxHash `json:"response,omitempty"`
+	}
 )
 
 // GetBlocks returns summarised details about all blocks (paginated - latest first).
@@ -101,7 +106,7 @@ func (c *Client) GetBlocks(ctx context.Context) (*BlocksResponse, error) {
 	return res, nil
 }
 
-// GetBlockInfo returns detailed information about a specific block
+// GetBlockInfo returns detailed information about a specific block.
 func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (*BlockInfoResponse, error) {
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
@@ -131,6 +136,44 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (*BlockInfoRe
 	}
 	if len(blockpl) == 1 {
 		res.Block = &blockpl[0]
+	}
+	return res, nil
+}
+
+// GetBlockTxs returns a list of all transactions included in a provided block.
+func (c *Client) GetBlockTxs(ctx context.Context, hash BlockHash) (*BlockTxsResponse, error) {
+	params := url.Values{}
+	params.Set("_block_hash", string(hash))
+
+	rsp, err := c.GET(ctx, "/block_txs", params)
+	if err != nil {
+		return nil, err
+	}
+	res := &BlockTxsResponse{}
+
+	res.setStatus(rsp)
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	blockTxs := []struct {
+		Hash TxHash `json:"tx_hash"`
+	}{}
+
+	if err := json.Unmarshal(body, &blockTxs); err != nil {
+		res.applyError(body, err)
+		return res, nil
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return res, nil
+	}
+	if len(blockTxs) > 0 {
+		for _, tx := range blockTxs {
+			res.Txs = append(res.Txs, tx.Hash)
+		}
 	}
 	return res, nil
 }

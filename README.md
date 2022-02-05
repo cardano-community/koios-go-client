@@ -112,7 +112,8 @@ This library is thread-safe so you can freerly use same api client instance pass
 ```go
 func main() {
   api, _ := koios.New(
-    // limit client request 1 per second
+    // limit client request 1 per second even though 
+    // this example will send requests in goroutines.
     koios.RateLimit(1),
   )
   ctx := context.Background()
@@ -124,12 +125,13 @@ func main() {
     "testnet.koios.rest",
   }
 
+  // Thanks to rate limit option requests will be made
+  // once in a second.
   for _, host := range servers {
     wg.Add(1)
     go func(ctx context.Context, host string) {
       defer wg.Done()
-      // switching host. all options changes are safe to call 
-      // from goroutines.
+      // switching host. all options changes are safe to call from goroutines.
       koios.Host(host)(api)
       res, _ := api.GET(ctx, "/tip")
       defer res.Body.Close()
@@ -175,6 +177,7 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | BLOCK | | | | |
 | `/blocks` | `*.GetBlocks(...) *BlocksResponse` | `blocks` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlocks) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/blocks) |
 | `/block_info` | `*.GetBlockInfo(...) *BlockInfoResponse` | `block-info` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlockInfo) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_info) |
+| `/block_txs` | `*.GetBlockTxs(...) *BlockTxsResponse` | `block-txs` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlockTxs) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_txs) |
 | TRANSACTIONS | | | | |
 | ADDRESS | | | | |
 | ACCOUNT | | | | |

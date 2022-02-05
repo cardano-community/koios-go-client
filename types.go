@@ -34,6 +34,9 @@ type (
 	// BlockHash defines type for _block_hash.
 	BlockHash string
 
+	// TxHash defines type for tx_hash.
+	TxHash string
+
 	// EarnedEpochNo defines type for _earned_epoch_no.
 	EarnedEpochNo string
 
