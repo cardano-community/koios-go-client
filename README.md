@@ -94,12 +94,12 @@ func main() {
   fmt.Println("status: ", res.Status)
   fmt.Println("statu_code: ", res.StatusCode)
 
-  fmt.Println("abs_slot: ", res.Tip[0].AbsSlot)
-  fmt.Println("block_no: ", res.Tip[0].BlockNo)
-  fmt.Println("block_time: ", res.Tip[0].BlockTime)
-  fmt.Println("epoch: ", res.Tip[0].Epoch)
-  fmt.Println("epoch_slot: ", res.Tip[0].EpochSlot)
-  fmt.Println("hash: ", res.Tip[0].Hash)
+  fmt.Println("abs_slot: ", res.Tip.AbsSlot)
+  fmt.Println("block_no: ", res.Tip.BlockNo)
+  fmt.Println("block_time: ", res.Tip.BlockTime)
+  fmt.Println("epoch: ", res.Tip.Epoch)
+  fmt.Println("epoch_slot: ", res.Tip.EpochSlot)
+  fmt.Println("hash: ", res.Tip.Hash)
 }
 ```
 
@@ -174,6 +174,7 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | `/epoch_params` | `*.GetEpochParams(...) *EpochParamsResponse` | `epoch-params` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetEpochParams) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_params) |
 | BLOCK | | | | |
 | `/blocks` | `*.GetBlocks(...) *BlocksResponse` | `blocks` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlocks) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/blocks) |
+| `/block_info` | `*.GetBlockInfo(...) *BlockInfoResponse` | `block-info` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlockInfo) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_info) |
 | TRANSACTIONS | | | | |
 | ADDRESS | | | | |
 | ACCOUNT | | | | |

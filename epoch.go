@@ -25,7 +25,7 @@ import (
 
 type (
 	// EpochInfo defines model for epoch_info.
-	EpochInfo []struct {
+	EpochInfo struct {
 		// Rewards accumulated as of given epoch (in lovelaces)
 		ActiveStake string `json:"active_stake"`
 
@@ -54,11 +54,11 @@ type (
 	// EpochInfoResponse response of /epoch_info.
 	EpochInfoResponse struct {
 		Response
-		EpochInfo EpochInfo `json:"response"`
+		EpochInfo []EpochInfo `json:"response,omitempty"`
 	}
 
 	// EpochParams defines model for epoch_params.
-	EpochParams []struct {
+	EpochParams struct {
 		// The hash of the first block where these parameters are valid
 		BlockHash string `json:"block_hash"`
 
@@ -162,7 +162,7 @@ type (
 	// EpochParamsResponse response of /epoch_params.
 	EpochParamsResponse struct {
 		Response
-		EpochParams EpochParams `json:"response"`
+		EpochParams []EpochParams `json:"response,omitempty"`
 	}
 )
 
@@ -217,6 +217,5 @@ func (c *Client) GetEpochParams(ctx context.Context, epochNo *EpochNo) (*EpochPa
 		res.applyError(body, err)
 		return res, nil
 	}
-
 	return res, nil
 }

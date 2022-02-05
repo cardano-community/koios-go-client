@@ -39,6 +39,23 @@ func addBlockCommands(app *cli.App, api *koios.Client) {
 			Name:     "block-info",
 			Category: "BLOCK",
 			Usage:    "Get detailed information about a specific block.",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:     "block-hash",
+					Usage:    "Block Hash in hex format to fetch details for",
+					Required: true,
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				var hash koios.BlockHash
+				if len(ctx.String("block-hash")) > 0 {
+					hash = koios.BlockHash(ctx.String("block-hash"))
+				}
+
+				res, err := api.GetBlockInfo(context.Background(), hash)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "block-txs",

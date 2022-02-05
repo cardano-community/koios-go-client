@@ -25,7 +25,7 @@ import (
 
 type (
 	// Tip defines model for tip.
-	Tip []struct {
+	Tip struct {
 		// Absolute Slot number (slots not divided into epochs)
 		AbsSlot int `json:"abs_slot"`
 
@@ -48,11 +48,11 @@ type (
 	// TipResponse response of /tip.
 	TipResponse struct {
 		Response
-		Tip Tip `json:"response"`
+		Tip *Tip `json:"response,omitempty"`
 	}
 
 	// Genesis defines model for genesis.
-	Genesis []struct {
+	Genesis struct {
 		// Active Slot Co-Efficient (f) - determines the _probability_ of number of
 		// slots in epoch that are expected to have blocks
 		// (so mainnet, this would be: 432000 * 0.05 = 21600 estimated blocks).
@@ -103,11 +103,11 @@ type (
 	// GenesisResponse response of /genesis.
 	GenesisResponse struct {
 		Response
-		Genesis Genesis `json:"response"`
+		Genesis *Genesis `json:"response,omitempty"`
 	}
 
 	// Totals defines model for totals.
-	Totals []struct {
+	Totals struct {
 
 		// Circulating UTxOs for given epoch (in lovelaces).
 		Circulation Lovelace `json:"circulation"`
@@ -129,10 +129,10 @@ type (
 		Treasury Lovelace `json:"treasury"`
 	}
 
-	// TotalsResponse represents response from `/totals` enpoint.
+	// TotalsResponse represents response from `/totals` endpoint.
 	TotalsResponse struct {
 		Response
-		Totals Totals `json:"response"`
+		Totals []Totals `json:"response,omitempty"`
 	}
 )
 
@@ -148,11 +148,15 @@ func (c *Client) GetTip(ctx context.Context) (*TipResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal(body, &res.Tip); err != nil {
+
+	tips := []Tip{}
+	if err := json.Unmarshal(body, &tips); err != nil {
 		res.applyError(body, err)
 		return res, nil
 	}
-
+	if len(tips) == 1 {
+		res.Tip = &tips[0]
+	}
 	return res, nil
 }
 
@@ -168,11 +172,17 @@ func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal(body, &res.Genesis); err != nil {
+
+	genesisres := []Genesis{}
+
+	if err := json.Unmarshal(body, &genesisres); err != nil {
 		res.applyError(body, err)
 		return res, nil
 	}
 
+	if len(genesisres) == 1 {
+		res.Genesis = &genesisres[0]
+	}
 	return res, nil
 }
 
@@ -194,10 +204,14 @@ func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (*TotalsRespon
 	if err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal(body, &res.Totals); err != nil {
+
+	totals := []Totals{}
+	if err := json.Unmarshal(body, &totals); err != nil {
 		res.applyError(body, err)
 		return res, nil
 	}
-
+	if len(totals) > 0 {
+		res.Totals = totals
+	}
 	return res, nil
 }

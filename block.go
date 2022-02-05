@@ -19,13 +19,15 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"net/url"
 )
 
 type (
 	// Totals defines model for block.
 	Block struct {
-		// BlockHash in hex format.
-		BlockHash `json:"hash"`
+		// Hash block hash
+		Hash BlockHash `json:"hash"`
 
 		// Epoch number.
 		Epoch EpochNo `json:"epoch"`
@@ -42,8 +44,8 @@ type (
 		// Size of block.
 		Size int `json:"size"`
 
-		// BlockTime time of the block.
-		BlockTime string `json:"block_time"`
+		// Time time of the block.
+		Time string `json:"block_time"`
 
 		// TxCount transactions count in block.
 		TxCount int `json:"tx_count"`
@@ -51,17 +53,31 @@ type (
 		// VrfKey is pool VRF key.
 		VrfKey string `json:"vrf_key"`
 
+		// OpCert latest ool operational certificate hash
+		OpCert string `json:"op_cert,omitempty"`
+
 		// Pool ID.
 		Pool string `json:"pool"`
 
 		// OpCertCounter is pool latest operational certificate counter value.
 		OpCertCounter int `json:"op_cert_counter"`
+
+		// ParentHash parent block hash
+		ParentHash BlockHash `json:"parent_hash,omitempty"`
+
+		// ChildHash child block hash
+		ChildHash BlockHash `json:"child_hash,omitempty"`
 	}
 
-	// BlocksResponse represents response from `/blocks` enpoint.
+	// BlocksResponse represents response from `/blocks` endpoint.
 	BlocksResponse struct {
 		Response
-		Blocks []Block `json:"response"`
+		Blocks []Block `json:"response,omitempty"`
+	}
+	// BlockInfoResponse represents response from `/block_info` endpoint.
+	BlockInfoResponse struct {
+		Response
+		Block *Block `json:"response,omitempty"`
 	}
 )
 
@@ -82,5 +98,39 @@ func (c *Client) GetBlocks(ctx context.Context) (*BlocksResponse, error) {
 		return res, nil
 	}
 
+	return res, nil
+}
+
+// GetBlockInfo returns detailed information about a specific block
+func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (*BlockInfoResponse, error) {
+	params := url.Values{}
+	params.Set("_block_hash", string(hash))
+
+	rsp, err := c.GET(ctx, "/block_info", params)
+	if err != nil {
+		return nil, err
+	}
+	res := &BlockInfoResponse{}
+
+	res.setStatus(rsp)
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	blockpl := []Block{}
+
+	if err := json.Unmarshal(body, &blockpl); err != nil {
+		res.applyError(body, err)
+		return res, nil
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return res, nil
+	}
+	if len(blockpl) == 1 {
+		res.Block = &blockpl[0]
+	}
 	return res, nil
 }
