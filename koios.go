@@ -69,7 +69,7 @@ var (
 )
 
 type (
-	// Client is api client instance
+	// Client is api client instance.
 	Client struct {
 		mux           sync.RWMutex
 		host          string
