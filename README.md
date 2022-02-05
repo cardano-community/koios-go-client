@@ -1,29 +1,12 @@
-# Koios API Client
+<h1>Koios API Client Library for Go</h1>
 
-- Go Client library for [Koios API](https://api.koios.rest/).
-- Go CLI Application to consume [Koios API](https://api.koios.rest/) from Command-line.
+**Repository contains**
 
-> WORK IN PROGRESS
-
-- [x] NETWORK
-- [ ] EPOCH
-- [ ] BLOCK
-- [ ] TRANSACTIONS
-- [ ] ADDRESS
-- [ ] ACCOUNT
-- [ ] POOL
-- [ ] SCRIPT
-
-Using this package requires a working Go environment. [See the install instructions for Go](http://golang.org/doc/install.html).
-
-## Usage
-
-### Library
+1. **[Koios API] Client Library for Go**
 
 ```
 go get github.com/howijd/koios-rest-go-client
 ```
-
 ```go
 ...
 import (
@@ -32,7 +15,46 @@ import (
 ...
 ```
 
-**Example library usage.**
+2. **CLI Application to interact with [Koios API] from Command-line see [./cmd/koios-rest](./cmd/koios-rest)**
+
+```sh
+# provides command `koios-rest` installed into ~/go/bin/koios-rest
+go install github.com/howijd/koios-rest-go-client/cmd/koios-rest@latest
+```
+
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
+![license](https://img.shields.io/github/license/howijd/koios-rest-go-client)
+
+![tests](https://github.com/howijd/koios-rest-go-client/workflows/tests/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/howijd/koios-rest-go-client/badge.svg?branch=main)](https://coveralls.io/github/howijd/koios-rest-go-client?branch=main)
+[![Go Report Card](https://goreportcard.com/badge/github.com/howijd/koios-rest-go-client)](https://goreportcard.com/report/github.com/howijd/koios-rest-go-client)
+![GitHub last commit](https://img.shields.io/github/last-commit/howijd/koios-rest-go-client)
+
+--- 
+
+- [Install](#install)
+- [Usage](#usage)
+  - [Basic usage](#basic-usage)
+  - [Concurrency using goroutines](#concurrency-using-goroutines)
+- [Implemented Endpoints](#implemented-endpoints)
+
+
+---
+
+## Install
+
+Using this package requires a working Go environment. [See the install instructions for Go](http://golang.org/doc/install.html).
+
+```
+go get -u github.com/howijd/koios-rest-go-client
+```
+
+## Usage
+
+Godoc includes many examples how to use the library see: [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
+Additionally you can find all usecases by looking source of `koio-rest` Command-line application [source](./cmd/koios-rest) which utilizes entire API of this library.
+
+### Basic usage
 
 ```go
 package main
@@ -46,110 +68,96 @@ import (
 )
 
 func main() {
-	api, err := koios.New()
-	if err != nil {
-		log.Fatal(err)
-	}
+  // Call to koios.New without options is same as calling it with default opts.
+  // See godoc for available configuration options.
+  // api, err := koios.New(
+  // 	koios.Host(koios.MainnetHost),
+  // 	koios.APIVersion(koios.DefaultAPIVersion),
+  // 	koios.Port(koios.DefaultPort),
+  // 	koios.Schema(koios.DefaultSchema),
+  // 	koios.HttpClient(koios.DefaultHttpClient),
+  // ).
+  api, err := koios.New()
+  if err != nil {
+    log.Fatal(err)
+  }
 
-	res, err := api.GetTip(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("status: ", res.Status)
-	fmt.Println("statu_code: ", res.StatusCode)
+  res, err := api.GetTip(context.Background())
+  if err != nil {
+	  log.Fatal(err)
+  }
+  fmt.Println("status: ", res.Status)
+  fmt.Println("statu_code: ", res.StatusCode)
 
-	fmt.Println("abs_slot: ", res.Tip[0].AbsSlot)
-	fmt.Println("block_no: ", res.Tip[0].BlockNo)
-	fmt.Println("block_time: ", res.Tip[0].BlockTime)
-	fmt.Println("epoch: ", res.Tip[0].Epoch)
-	fmt.Println("epoch_slot: ", res.Tip[0].EpochSlot)
-	fmt.Println("hash: ", res.Tip[0].Hash)
+  fmt.Println("abs_slot: ", res.Tip[0].AbsSlot)
+  fmt.Println("block_no: ", res.Tip[0].BlockNo)
+  fmt.Println("block_time: ", res.Tip[0].BlockTime)
+  fmt.Println("epoch: ", res.Tip[0].Epoch)
+  fmt.Println("epoch_slot: ", res.Tip[0].EpochSlot)
+  fmt.Println("hash: ", res.Tip[0].Hash)
 }
 ```
 
-### CLI Application
+### Concurrency using goroutines
 
+This library is thread-safe so you can freerly use same api client instance passing it to your goroutines.
+
+**Following example uses goroutines to query chain tip from different endpoints.**
+
+```go
+func main() {
+  api, _ := koios.New(
+    // limit client request 1 per second
+    koios.RateLimit(1),
+  )
+  ctx := context.Background()
+  defer cancel()
+  var wg sync.WaitGroup
+  servers := []string{
+    "api.koios.rest",
+    "guild.koios.rest",
+    "testnet.koios.rest",
+  }
+
+  for _, host := range servers {
+    wg.Add(1)
+    go func(ctx context.Context, host string) {
+      defer wg.Done()
+      // switching host. all options changes are safe to call 
+      // from goroutines.
+      koios.Host(host)(api)
+      res, _ := api.GET(ctx, "/tip")
+      defer res.Body.Close()
+      body, _ := ioutil.ReadAll(res.Body)
+      fmt.Println(string(body))
+    }(ctx, host)
+  }
+  
+  wg.Wait()
+  fmt.Println("requests done: ", api.TotalRequests())
+}
 ```
-go install github.com/howijd/koios-rest-go-client/cmd/koios-rest@latest
-```
 
-**see cmd help for available commands and flags**
+## Implemented Endpoints
 
-```
-koios-rest -h
-```
+> WORK IN PROGRESS
 
-```
-NAME:
-   koios-rest - CLI Client to consume Koios API https://api.koios.rest
+| **endpoint** | Method | koios-rest Cmd | Godoc | API Doc |
+| --- | --- | --- | --- | --- |
+| NETWORK | | | | |
+| `/tip` | `*.GetTip(...) *TipResponse` | `tip` | [![](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTip) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tip) |
+| `/genesis` | `*.GetGenesis(...) *GenesisResponse` | `genesis` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetGenesis) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/genesis)
+| `/totals` | `*.GetTotals(...) *TotalsResponse` | `totals` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTotals) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/totals)
+| EPOCH | | | | |
+| BLOCK | | | | |
+| TRANSACTIONS | | | | |
+| ADDRESS | | | | |
+| ACCOUNT | | | | |
+| POOL | | | | |
+| SCRIPT | | | | |
 
-USAGE:
-   koios-rest [global options] command [command options] [arguments...]
-
-VERSION:
-   0.1.0
-
-AUTHOR:
-   The Howijd.Network Authors
-COMMANDS:
-   help, h  Shows a list of commands or help for one command
-   ACCOUNT:
-     account-list       Get a list of all accounts.
-     account-info       Get the account info of any (payment or staking) address.
-     account-rewards    Get the full rewards history (including MIR) for a stake address, or certain epoch if specified.
-     account-updates    Get the account updates (registration, deregistration, delegation and withdrawals).
-     account-addresses  Get all addresses associated with an account.
-     account-assets     Get the native asset balance of an account.
-     account-history    Get the staking history of an account.
-   ADDRESS:
-     address-info    Get address info - balance, associated stake address (if any) and UTxO set.
-     address-txs     Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive).
-     address-assets  Get the list of all the assets (policy, name and quantity) for a given address.
-     credential-txs  Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive)
-   BLOCK:
-     blocks      Get summarised details about all blocks (paginated - latest first).
-     block-info  Get detailed information about a specific block.
-     block-txs   Get a list of all transactions included in a provided block.
-   DEVELOPMENT COMMANDS:
-     dev  koios-rest-go-client development commands.
-   EPOCH:
-     epoch-info    Get the epoch information, all epochs if no epoch specified.
-     epoch-params  Get the protocol parameters for specific epoch, returns information about all epochs if no epoch specified.
-   NETWORK:
-     tip      Get the tip info about the latest block seen by chain.
-     genesis  Get the Genesis parameters used to start specific era on chain.
-     totals   Get the circulating utxo, treasury, rewards, supply and reserves in lovelace for specified epoch, all epochs if empty.
-   POOL:
-     pool-list        A list of all currently registered/retiring (not retired) pools.
-     pool-info        Current pool statuses and details for a specified list of pool ids.
-     pool-delegators  Return information about delegators by a given pool and optional epoch (current if omitted).
-     pool-blocks      Return information about blocks minted by a given pool in current epoch (or _epoch_no if provided).
-     pool-updates     Return all pool updates for all pools or only updates for specific pool if specified.
-     pool-relays      A list of registered relays for all currently registered/retiring (not retired) pools.
-     pool-metadata    Metadata(on & off-chain) for all currently registered/retiring (not retired) pools.
-   SCRIPT:
-     script-list       List of all existing script hashes along with their creation transaction hashes.
-     script-redeemers  List of all redeemers for a given script hash.
-   TRANSACTIONS:
-     tx-info        Get detailed information about transaction(s).
-     tx-utxos       Get UTxO set (inputs/outputs) of transactions.
-     tx-metadata    Get metadata information (if any) for given transaction(s)..
-     tx-metalabels  Get a list of all transaction metalabels.
-     submittx       Submit an already serialized transaction to the network.
-     tx-status      Get the number of block confirmations for a given transaction hash list
-
-GLOBAL OPTIONS:
-   --port value, -p value  Set port (default: 443)
-   --host value            Set host (default: "api.koios.rest")
-   --api-version value     Set API version (default: "v0")
-   --schema value          Set URL schema (default: "https")
-   --origin value          Set Origin header for requests. (default: "https://github.com/howijd/koios-rest-go-client")
-   --rate-limit value      Set API Client rate limit for outgoing requests (default: 5)
-   --ugly                  Ugly prints response json strings directly without calling json pretty. (default: false)
-   --help, -h              show help (default: false)
-   --version, -v           print the version (default: false)
-
-COPYRIGHT:
-   (c) 2022
-
-```
+<!-- 
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)]() | [![](https://img.shields.io/badge/API-doc-%2349cc90)]()
+-->
+<!-- LINKS -->
+[Koios API]: https://koios.rest "Koios API"

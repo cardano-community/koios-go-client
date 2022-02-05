@@ -14,7 +14,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package koios provides api client library to consume koios.rest API
+// Package koios provides api client library to interact with Koios API
+// endpoints and Cardano Blockchain. Sub package ./cmd/koios-rest
+// provides cli application.
+//
+// Koios is best described as a Decentralized and Elastic RESTful query layer
+// for exploring data on Cardano blockchain to consume within
+// applications/wallets/explorers/etc.
 package koios
 
 import (

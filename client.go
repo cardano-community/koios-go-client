@@ -13,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package koios
 
 import (
@@ -26,7 +27,7 @@ import (
 )
 
 // GET sends api http get request to provided relative path with query params
-// and returns an HTTP response. When using these methods you are wxpected
+// and returns an HTTP response. When using GET method you are expected
 // to handle the response according to net/http.Do documentation.
 // e.g. Caller should close resp.Body when done reading from it.
 func (c *Client) GET(ctx context.Context, path string, query ...url.Values) (*http.Response, error) {
