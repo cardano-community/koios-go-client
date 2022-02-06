@@ -23,6 +23,17 @@ import (
 )
 
 type (
+	// UTxO model holds inputs and outputs for given UTxO.
+	UTxO struct {
+		/// TxHash is hash of transaction.
+		TxHash TxHash `json:"tx_hash"`
+
+		// Inputs An array with details about inputs used in a transaction.
+		Inputs []TxInput `json:"inputs"`
+		// Outputs An array with details about outputs from the transaction.
+		Outputs []TxOutput `json:"outputs"`
+	}
+
 	TxInput struct {
 		// An array of assets contained on input UTxO.
 		AssetList []Asset `json:"asset_list,omitempty"`
@@ -157,6 +168,12 @@ type (
 		Response
 		TX TxInfo `json:"response,omitempty"`
 	}
+
+	// TxUTxOsResponse represents response from `/tx_utxos` endpoint.
+	TxUTxOsResponse struct {
+		Response
+		UTxOs []UTxO `json:"response,omitempty"`
+	}
 )
 
 // GetTxInfo returns detailed information about transaction.
@@ -178,17 +195,8 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosRe
 		res.applyError(nil, err)
 		return
 	}
-	var payload = struct {
-		TxHashes []TxHash `json:"_tx_hashes"`
-	}{txs}
 
-	rpipe, w := io.Pipe()
-	go func() {
-		err = json.NewEncoder(w).Encode(payload)
-		w.Close()
-	}()
-
-	rsp, err := c.request(ctx, &res.Response, "POST", rpipe, "/tx_info")
+	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_info")
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -205,4 +213,44 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosRe
 	}
 	res.ready()
 	return res, nil
+}
+
+// GetTxsUTxOs returns UTxO set (inputs/outputs) of transactions.
+func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (res *TxUTxOsResponse, err error) {
+	res = &TxUTxOsResponse{}
+	if len(txs) == 0 {
+		err = ErrNoTxHash
+		res.applyError(nil, err)
+		return
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_utxos")
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+	if err = json.Unmarshal(body, &res.UTxOs); err != nil {
+		res.applyError(body, err)
+		return
+	}
+	res.ready()
+	return res, nil
+}
+
+func txHashesPL(txs []TxHash) io.Reader {
+	var payload = struct {
+		TxHashes []TxHash `json:"_tx_hashes"`
+	}{txs}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		w.Close()
+	}()
+	return rpipe
 }

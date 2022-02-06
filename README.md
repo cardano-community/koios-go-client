@@ -181,6 +181,7 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | TRANSACTIONS | | | | |
 | `/tx_info` | `*.GetTxsInfos(...) *TxsInfoResponse` | `tx-infos` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsInfos) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_info) |
 | | `*.GetTxInfo(...) *TxInfoResponse` | `tx-info` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxInfo) | |
+| `/tx_utxos` | `*.GetTxsUTxOs(...) *TxsInfoResponse` | `tx-utxos` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsUTxOs) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_utxos) |
 | ADDRESS | | | | |
 | ACCOUNT | | | | |
 | POOL | | | | |
