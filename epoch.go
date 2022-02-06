@@ -174,7 +174,7 @@ func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (res *Epoch
 		params.Set("_epoch_no", fmt.Sprint(*epochNo))
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/epoch_info", params)
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/epoch_info", params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -203,7 +203,7 @@ func (c *Client) GetEpochParams(ctx context.Context, epochNo *EpochNo) (res *Epo
 		params.Set("_epoch_no", fmt.Sprint(*epochNo))
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/epoch_params", params)
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/epoch_params", params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return

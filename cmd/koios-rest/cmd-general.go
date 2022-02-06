@@ -36,7 +36,7 @@ func addGeneralCommands(app *cli.App, api *koios.Client) {
 				if len(endpoint) == 0 {
 					return errors.New("provide endpoint as argument e.g. /tip")
 				}
-				res, err := api.GET(callctx, endpoint)
+				res, err := api.GET(callctx, endpoint, nil, nil)
 				handleErr(err)
 				defer res.Body.Close()
 				body, err := ioutil.ReadAll(res.Body)
@@ -53,7 +53,7 @@ func addGeneralCommands(app *cli.App, api *koios.Client) {
 				if ctx.NArg() == 0 || len(endpoint) == 0 {
 					return errors.New("provide endpoint as argument e.g. /tip")
 				}
-				res, err := api.HEAD(callctx, endpoint)
+				res, err := api.HEAD(callctx, endpoint, nil, nil)
 				handleErr(err)
 				if res.Body != nil {
 					res.Body.Close()

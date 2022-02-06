@@ -89,7 +89,7 @@ type (
 // GetBlocks returns summarised details about all blocks (paginated - latest first).
 func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error) {
 	res = &BlocksResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/blocks")
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/blocks", nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -114,7 +114,7 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/block_info", params)
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/block_info", params, nil)
 	if err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/block_txs", params)
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/block_txs", params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return nil, err

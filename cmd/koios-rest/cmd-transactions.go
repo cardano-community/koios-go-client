@@ -17,7 +17,9 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
+	"io/ioutil"
 
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
@@ -109,14 +111,57 @@ func addTransactionsCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "submittx",
+			Name:     "tx-submit",
 			Category: "TRANSACTIONS",
-			Usage:    "Submit an already serialized transaction to the network.",
+			Usage:    "Submit signed transaction to the network.",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("submittx requires single arg (path to file tx.signed)")
+				}
+
+				stx := koios.TxBodyJSON{}
+
+				txfile, err := ioutil.ReadFile(ctx.Args().Get(0))
+				if err != nil {
+					return err
+				}
+
+				if err = json.Unmarshal(txfile, &stx); err != nil {
+					return err
+				}
+				res, err := api.SubmitSignedTx(callctx, stx)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
-			Name:     "tx-status",
-			Category: "TRANSACTIONS",
-			Usage:    "Get the number of block confirmations for a given transaction hash list",
+			Name:      "txs-statuses",
+			Category:  "TRANSACTIONS",
+			Usage:     "Get the number of block confirmations for a given transaction hash list",
+			ArgsUsage: "[tx-hashes...]",
+			Action: func(ctx *cli.Context) error {
+				var txs []koios.TxHash
+				for _, a := range ctx.Args().Slice() {
+					txs = append(txs, koios.TxHash(a))
+				}
+				res, err := api.GetTxsStatuses(callctx, txs)
+				output(ctx, res, err)
+				return nil
+			},
+		},
+		{
+			Name:      "tx-status",
+			Category:  "TRANSACTIONS",
+			Usage:     "Get the number of block confirmations for a given transaction hash",
+			ArgsUsage: "[tx-hash]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("tx-status requires single transaction hash")
+				}
+				res, err := api.GetTxStatus(callctx, koios.TxHash(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 	}...)
 }

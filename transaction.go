@@ -17,9 +17,13 @@
 package koios
 
 import (
+	"bytes"
 	"context"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
+	"net/http"
 )
 
 type (
@@ -34,6 +38,13 @@ type (
 		Outputs []TxOutput `json:"outputs"`
 	}
 
+	// TxMetalabels defines model for tx_metalabels.
+	TxMetalabel struct {
+		// A distinct known metalabel
+		Metalabel uint64 `json:"metalabel"`
+	}
+
+	// TxInput an transaxtion input.
 	TxInput struct {
 		// An array of assets contained on input UTxO.
 		AssetList []Asset `json:"asset_list,omitempty"`
@@ -54,6 +65,7 @@ type (
 		Value Lovelace `json:"value"`
 	}
 
+	// TxOutput an transaxtion output.
 	TxOutput struct {
 		// An array of assets to be included in output UTxO.
 		AssetList []Asset `json:"asset_list,omitempty"`
@@ -74,6 +86,7 @@ type (
 		Value Lovelace `json:"value"`
 	}
 
+	// TxInfoMetadata metadata in transaction info.
 	TxInfoMetadata struct {
 		// JSON containing details about metadata within transaction.
 		JSON map[string]interface{} `json:"json"`
@@ -82,6 +95,7 @@ type (
 		Key int `json:"key"`
 	}
 
+	// TxsWithdrawal withdrawal record in transaction.
 	TxsWithdrawal struct {
 		// Amount is withdrawal amount in lovelaces.
 		Amount Lovelace `json:"amount,omitempty"`
@@ -89,6 +103,7 @@ type (
 		StakeAddress StakeAddress `json:"stake_addr,omitempty"`
 	}
 
+	// TxInfo transaction info.
 	TxInfo struct {
 		// TxHash is hash of transaction.
 		TxHash TxHash `json:"tx_hash"`
@@ -183,6 +198,18 @@ type (
 		Metadata map[string]interface{} `json:"metadata"`
 	}
 
+	// SubmitSignedTxResponse represents response from `/submittx` endpoint.
+	SubmitSignedTxResponse struct {
+		Response
+		Data TxHash `json:"data"`
+	}
+
+	// TxBodyJSON used to Unmarshal built transactions.
+	TxBodyJSON struct {
+		Type        string `json:"type"`
+		Description string `json:"description"`
+		CborHex     string `json:"cborHex"`
+	}
 	// TxMetadataResponse represents response from `/tx_metadata` endpoint.
 	TxMetadataResponse struct {
 		Response
@@ -201,10 +228,22 @@ type (
 		Data []TxMetalabel `json:"data"`
 	}
 
-	// TxMetalabels defines model for tx_metalabels.
-	TxMetalabel struct {
-		// A distinct known metalabel
-		Metalabel uint64 `json:"metalabel"`
+	// TxStatus is tx_status enpoint response.
+	TxStatus struct {
+		TxHash           TxHash `json:"tx_hash"`
+		NumConfirmations uint64 `json:"num_confirmations"`
+	}
+
+	// TxsStatusesResponse represents response from `/tx_status` endpoint.
+	TxsStatusesResponse struct {
+		Response
+		Data []TxStatus `json:"response"`
+	}
+
+	// TxStatusResponse represents response from `/tx_status` endpoint.
+	TxStatusResponse struct {
+		Response
+		Data *TxStatus `json:"response"`
 	}
 )
 
@@ -228,7 +267,7 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosRe
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_info")
+	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_info", nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -256,7 +295,7 @@ func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (res *TxUTxOsRes
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_utxos")
+	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_utxos", nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -295,7 +334,7 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_metadata")
+	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_metadata", nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -317,7 +356,81 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 // GetTxMetadataLabels retruns a list of all transaction metalabels.
 func (c *Client) GetTxMetaLabels(ctx context.Context) (res *TxMetaLabelsResponse, err error) {
 	res = &TxMetaLabelsResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/tx_metalabels")
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/tx_metalabels", nil, nil)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+	res.ready()
+	return res, nil
+}
+
+// SubmitSignedTx Submit an transaction to the network.
+func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (res *SubmitSignedTxResponse, err error) {
+	var cborb []byte
+	res = &SubmitSignedTxResponse{}
+
+	cborb, err = hex.DecodeString(stx.CborHex)
+	if err != nil {
+		return
+	}
+
+	h := http.Header{}
+	h.Set("Content-Type", "application/cbor")
+	h.Set("Content-Length", fmt.Sprint(len(cborb)))
+	rsp, err := c.request(ctx, &res.Response, "POST", bytes.NewBuffer(cborb), "/submittx", nil, h)
+
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+	body, err := readResponseBody(rsp)
+
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	res.ready()
+	return res, nil
+}
+
+// GetTxInfo returns detailed information about transaction.
+func (c *Client) GetTxStatus(ctx context.Context, tx TxHash) (res *TxStatusResponse, err error) {
+	res = &TxStatusResponse{}
+	rsp, err := c.GetTxsStatuses(ctx, []TxHash{tx})
+	res.Response = rsp.Response
+	if len(rsp.Data) == 1 {
+		res.Data = &rsp.Data[0]
+	}
+	return
+}
+
+// GetTxsInfos returns detailed information about transaction(s).
+func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (res *TxsStatusesResponse, err error) {
+	res = &TxsStatusesResponse{}
+	if len(txs) == 0 {
+		err = ErrNoTxHash
+		res.applyError(nil, err)
+		return
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_status", nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -343,7 +456,7 @@ func txHashesPL(txs []TxHash) io.Reader {
 	rpipe, w := io.Pipe()
 	go func() {
 		_ = json.NewEncoder(w).Encode(payload)
-		w.Close()
+		defer w.Close()
 	}()
 	return rpipe
 }

@@ -30,24 +30,40 @@ import (
 
 // HEAD sends api http HEAD request to provided relative path with query params
 // and returns an HTTP response.
-func (c *Client) HEAD(ctx context.Context, path string, query ...url.Values) (*http.Response, error) {
-	return c.request(ctx, nil, "HEAD", nil, path, query...)
+func (c *Client) HEAD(
+	ctx context.Context,
+	path string,
+	query url.Values,
+	headers http.Header,
+) (*http.Response, error) {
+	return c.request(ctx, nil, "HEAD", nil, path, query, headers)
 }
 
 // POST sends api http POST request to provided relative path with query params
 // and returns an HTTP response. When using POST method you are expected
 // to handle the response according to net/http.Do documentation.
 // e.g. Caller should close resp.Body when done reading from it.
-func (c *Client) POST(ctx context.Context, body io.Reader, path string, query ...url.Values) (*http.Response, error) {
-	return c.request(ctx, nil, "POST", body, path, query...)
+func (c *Client) POST(
+	ctx context.Context,
+	body io.Reader,
+	path string,
+	query url.Values,
+	headers http.Header,
+) (*http.Response, error) {
+	return c.request(ctx, nil, "POST", body, path, query, headers)
 }
 
 // GET sends api http GET request to provided relative path with query params
 // and returns an HTTP response. When using GET method you are expected
 // to handle the response according to net/http.Do documentation.
 // e.g. Caller should close resp.Body when done reading from it.
-func (c *Client) GET(ctx context.Context, path string, query ...url.Values) (*http.Response, error) {
-	return c.request(ctx, nil, "GET", nil, path, query...)
+func (c *Client) GET(
+	ctx context.Context,
+	path string,
+	query url.Values,
+	headers http.Header,
+) (*http.Response, error) {
+	return c.request(ctx, nil, "GET", nil, path, query, headers)
 }
 
 func (c *Client) request(
@@ -56,25 +72,18 @@ func (c *Client) request(
 	m string,
 	body io.Reader,
 	p string,
-	query ...url.Values) (*http.Response, error) {
+	query url.Values,
+	headers http.Header) (*http.Response, error) {
 	var (
 		requrl string
 	)
 
 	p = strings.TrimLeft(p, "/")
 	c.mux.RLock()
-	switch len(query) {
-	case 0:
+	if query == nil {
 		requrl = c.url.ResolveReference(&url.URL{Path: p}).String()
-	case 1:
-		requrl = c.url.ResolveReference(&url.URL{Path: p, RawQuery: query[0].Encode()}).String()
-	default:
-		c.mux.RUnlock()
-		err := fmt.Errorf("%w: got %d", ErrURLValuesLenght, len(query))
-		if res != nil {
-			res.applyError(nil, err)
-		}
-		return nil, err
+	} else {
+		requrl = c.url.ResolveReference(&url.URL{Path: p, RawQuery: query.Encode()}).String()
 	}
 	if res != nil {
 		res.RequestURL = requrl
@@ -104,7 +113,7 @@ func (c *Client) request(
 		}
 		return nil, err
 	}
-	c.applyReqHeaders(req)
+	c.applyReqHeaders(req, headers)
 
 	if res != nil && c.reqStatsEnabled {
 		return c.requestWithStats(req, res)
@@ -124,14 +133,22 @@ func (c *Client) request(
 	return rsp, nil
 }
 
-func (c *Client) applyReqHeaders(req *http.Request) {
-	req.Header = c.commonHeaders
-
+func (c *Client) applyReqHeaders(req *http.Request, headers http.Header) {
+	req.Header = c.commonHeaders.Clone()
+	if headers != nil {
+		for name, values := range headers {
+			for _, value := range values {
+				req.Header.Add(name, value)
+			}
+		}
+		return
+	}
+	// only apply if originally there were no headers defined.
 	switch req.Method {
 	case "POST":
 	case "PATCH":
 	case "PUT":
-		req.Header.Set("content-type", "application/json")
+		req.Header.Set("Content-Type", "application/json")
 	}
 }
 
