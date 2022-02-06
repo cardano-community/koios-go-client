@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/howijd/koios-rest-go-client"
@@ -28,9 +29,9 @@ import (
 func addGeneralCommands(app *cli.App, api *koios.Client) {
 	app.Commands = append(app.Commands, []*cli.Command{
 		{
-			Name:   "get",
-			Usage:  "Send get request to API endpoint",
-			Hidden: true,
+			Name:     "get",
+			Usage:    "get issues a GET request to the specified API endpoint",
+			Category: "UTILS",
 			Action: func(ctx *cli.Context) error {
 				endpoint := ctx.Args().Get(0)
 				if len(endpoint) == 0 {
@@ -41,6 +42,25 @@ func addGeneralCommands(app *cli.App, api *koios.Client) {
 				defer res.Body.Close()
 				body, err := ioutil.ReadAll(res.Body)
 				printResponseBody(ctx, body)
+				return nil
+			},
+		},
+		{
+			Name:     "head",
+			Usage:    "head issues a HEAD request to the specified API endpoint",
+			Category: "UTILS",
+			Action: func(ctx *cli.Context) error {
+				endpoint := ctx.Args().Get(0)
+				if len(endpoint) == 0 {
+					return errors.New("provide endpoint as argument e.g. /tip")
+				}
+				res, err := api.HEAD(context.Background(), endpoint)
+				handleErr(err)
+				if res.Body != nil {
+					res.Body.Close()
+				}
+				fmt.Println(res.Request.URL.String())
+				fmt.Println(res.Status)
 				return nil
 			},
 		},

@@ -87,93 +87,97 @@ type (
 )
 
 // GetBlocks returns summarised details about all blocks (paginated - latest first).
-func (c *Client) GetBlocks(ctx context.Context) (*BlocksResponse, error) {
-	rsp, err := c.GET(ctx, "/blocks")
+func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error) {
+	res = &BlocksResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/blocks")
 	if err != nil {
-		return nil, err
-	}
-	res := &BlocksResponse{}
-	res.setStatus(rsp)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(body, &res.Blocks); err != nil {
-		res.applyError(body, err)
-		return res, nil
+		res.applyError(nil, err)
+		return
 	}
 
-	return res, nil
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+	if err = json.Unmarshal(body, &res.Blocks); err != nil {
+		res.applyError(body, err)
+		return
+	}
+	res.ready()
+	return
 }
 
 // GetBlockInfo returns detailed information about a specific block.
-func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (*BlockInfoResponse, error) {
+func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockInfoResponse, err error) {
+	res = &BlockInfoResponse{}
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
-	rsp, err := c.GET(ctx, "/block_info", params)
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/block_info", params)
 	if err != nil {
-		return nil, err
+		return
 	}
-	res := &BlockInfoResponse{}
-
-	res.setStatus(rsp)
 	body, err := readResponseBody(rsp)
 	if err != nil {
-		return nil, err
+		res.applyError(nil, err)
+		return
 	}
 
 	blockpl := []Block{}
 
-	if err := json.Unmarshal(body, &blockpl); err != nil {
+	if err = json.Unmarshal(body, &blockpl); err != nil {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
 
 	if rsp.StatusCode != http.StatusOK {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
 	if len(blockpl) == 1 {
 		res.Block = &blockpl[0]
 	}
+	res.ready()
 	return res, nil
 }
 
 // GetBlockTxs returns a list of all transactions included in a provided block.
-func (c *Client) GetBlockTxs(ctx context.Context, hash BlockHash) (*BlockTxsResponse, error) {
+func (c *Client) GetBlockTxs(ctx context.Context, hash BlockHash) (res *BlockTxsResponse, err error) {
+	res = &BlockTxsResponse{}
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
-	rsp, err := c.GET(ctx, "/block_txs", params)
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/block_txs", params)
 	if err != nil {
+		res.applyError(nil, err)
 		return nil, err
 	}
-	res := &BlockTxsResponse{}
 
-	res.setStatus(rsp)
 	body, err := readResponseBody(rsp)
 	if err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return
 	}
 
 	blockTxs := []struct {
 		Hash TxHash `json:"tx_hash"`
 	}{}
 
-	if err := json.Unmarshal(body, &blockTxs); err != nil {
+	if err = json.Unmarshal(body, &blockTxs); err != nil {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
 
 	if rsp.StatusCode != http.StatusOK {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
 	if len(blockTxs) > 0 {
 		for _, tx := range blockTxs {
 			res.Txs = append(res.Txs, tx.Hash)
 		}
 	}
+	res.ready()
 	return res, nil
 }

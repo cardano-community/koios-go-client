@@ -35,6 +35,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/shopspring/decimal"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -60,7 +61,7 @@ const (
 	DefaultOrigin            = "https://github.com/howijd/koios-rest-go-client"
 )
 
-// Predefined errors used by library.
+// Predefined errors used by the library.
 var (
 	ErrURLValuesLenght          = errors.New("if presenent then only single url.Values should be provided")
 	ErrHTTPClientTimeoutSetting = errors.New("http.Client.Timeout should never be 0 in production")
@@ -73,18 +74,19 @@ var (
 type (
 	// Client is api client instance.
 	Client struct {
-		mux           sync.RWMutex
-		host          string
-		version       string
-		port          uint16
-		schema        string
-		origin        string
-		url           *url.URL
-		client        *http.Client
-		commonHeaders http.Header
-		reqInterval   time.Duration
-		lastRequest   time.Time
-		totalReq      uint
+		mux             sync.RWMutex
+		host            string
+		version         string
+		port            uint16
+		schema          string
+		origin          string
+		url             *url.URL
+		client          *http.Client
+		commonHeaders   http.Header
+		reqInterval     time.Duration
+		lastRequest     time.Time
+		totalReq        uint
+		reqStatsEnabled bool
 	}
 
 	// Option is callback function which can be implemented
@@ -93,10 +95,119 @@ type (
 
 	// Response wraps API responses.
 	Response struct {
-		RequestURL string         `json:"request_url"`
-		StatusCode int            `json:"status_code"`
-		Status     string         `json:"status"`
-		Error      *ResponseError `json:"error,omitempty"`
+		// RequestURL is full request url.
+		RequestURL string `json:"request_url"`
+
+		// StatusCode of the HTTP response.
+		StatusCode int `json:"status_code"`
+
+		// Status of the HTTP response header if present.
+		Status string `json:"status"`
+
+		// Date response header.
+		Date string `json:"date,omitempty"`
+
+		// ContentLocation response header if present.
+		ContentLocation string `json:"content_location,omitempty"`
+
+		// ContentRange response header if present.
+		ContentRange string `json:"content_range,omitempty"`
+
+		// Error response body if present.
+		Error *ResponseError `json:"error,omitempty"`
+
+		// Stats of the request if stats are enabled.
+		Stats *RequestStats `json:"stats,omitempty"`
+	}
+
+	RequestStats struct {
+		// ReqStartedAt time when request was started.
+		ReqStartedAt time.Time `json:"req_started_at,omitempty"`
+
+		// DNSLookupDur DNS lookup duration.
+		DNSLookupDur time.Duration `json:"req_dns_lookup_dur,omitempty"`
+
+		// TLSHSDur time it took to perform TLS handshake.
+		TLSHSDur time.Duration `json:"tls_hs_dur,omitempty"`
+
+		// ESTCXNDur time it took to establish connection.
+		ESTCXNDur time.Duration `json:"est_cxn_dur,omitempty"`
+
+		// TTFB time it took to get the first byte of the response
+		// after connextion was established.
+		TTFB time.Duration `json:"ttfb,omitempty"`
+
+		// ReqDur total time it took to peform the request.
+		ReqDur time.Duration `json:"req_dur,omitempty"`
+
+		// ReqDurStr String representation of ReqDur.
+		ReqDurStr string `json:"req_dur_str,omitempty"`
+	}
+
+	// ResponseError represents api error messages.
+	ResponseError struct {
+		// Hint of the error reported by server.
+		Hint string `json:"hint,omitempty"`
+
+		// Details of the error reported by server.
+		Details string `json:"details,omitempty"`
+
+		// Code is error code reported by server.
+		Code string `json:"code,omitempty"`
+
+		// Message is error message reported by server.
+		Message string `json:"message,omitempty"`
+	}
+
+	// Address defines type for _address.
+	Address string
+
+	// AnyAddress defines type for _any_address.
+	AnyAddress string
+
+	// AssetName defines type for _asset_name.
+	AssetName string
+
+	// AssetPolicy defines type for _asset_policy.
+	AssetPolicy string
+
+	// BlockHash defines type for _block_hash.
+	BlockHash string
+
+	// TxHash defines type for tx_hash.
+	TxHash string
+
+	// EarnedEpochNo defines type for _earned_epoch_no.
+	EarnedEpochNo string
+
+	// EpochNo defines type for _epoch_no.
+	EpochNo uint64
+
+	// PoolBech32 defines type for _pool_bech32.
+	PoolBech32 string
+
+	// PoolBech32Optional defines type for _pool_bech32_optional.
+	PoolBech32Optional string
+
+	// ScriptHash defines type for _script_hash.
+	ScriptHash string
+
+	// StakeAddress defines type for _stake_address.
+	StakeAddress string
+
+	// Lovelace defines type for ADA lovelaces. This library uses forked snapshot
+	// of github.com/shopspring/decimal package to provide. JSON and XML
+	// serialization/deserialization and make it ease to work with calculations
+	// and deciimal precisions of ADA lovelace and native assets.
+	//
+	// For API of decimal package see
+	// https://pkg.go.dev/github.com/shopspring/decimal
+	//
+	// SEE: https://github.com/howijd/decimal
+	// issues and bug reports are welcome to:
+	// https://github.com/howijd/decimal/issues.
+	Lovelace struct {
+		decimal.Decimal
 	}
 )
 
@@ -215,15 +326,17 @@ func HTTPClient(client *http.Client) Option {
 		c.mux.Lock()
 		defer c.mux.Unlock()
 		if client == nil {
-			c.client = &http.Client{
+			client = &http.Client{
 				Timeout: time.Second * 60,
 			}
-			return nil
 		}
 		if client.Timeout == 0 {
 			return ErrHTTPClientTimeoutSetting
 		}
 		c.client = client
+		if c.client.Transport == nil {
+			c.client.Transport = http.DefaultTransport
+		}
 		return nil
 	}
 }
@@ -266,6 +379,17 @@ func Origin(origin string) Option {
 	}
 }
 
+// CollectRequestsStats when enabled uses httptrace is used
+// to collect detailed timing information about the request.
+func CollectRequestsStats(enabled bool) Option {
+	return func(c *Client) error {
+		c.mux.Lock()
+		defer c.mux.Unlock()
+		c.reqStatsEnabled = enabled
+		return nil
+	}
+}
+
 func readResponseBody(rsp *http.Response) ([]byte, error) {
 	body, err := ioutil.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
@@ -278,23 +402,27 @@ func readResponseBody(rsp *http.Response) ([]byte, error) {
 	return body, nil
 }
 
-func (r *Response) setStatus(rsp *http.Response) {
-	r.StatusCode = rsp.StatusCode
-	r.Status = rsp.Status
-	r.RequestURL = rsp.Request.URL.String()
-}
-
 func (r *Response) applyError(body []byte, err error) {
 	r.Error = &ResponseError{}
 	_ = json.Unmarshal(body, r.Error)
 	if err != nil && len(r.Error.Message) == 0 {
 		r.Error.Message = err.Error()
 	}
+	r.ready()
 }
 
-type ResponseError struct {
-	Hint    string `json:"hint,omitempty"`
-	Details string `json:"details,omitempty"`
-	Code    string `json:"code,omitempty"`
-	Message string `json:"message,omitempty"`
+func (r *Response) ready() {
+	if r.Stats == nil {
+		return
+	}
+	r.Stats.ReqDur = time.Since(r.Stats.ReqStartedAt)
+	r.Stats.ReqDurStr = fmt.Sprint(r.Stats.ReqDur)
+}
+
+func (r *Response) applyRsp(rsp *http.Response) {
+	r.StatusCode = rsp.StatusCode
+	r.Status = rsp.Status
+	r.Date = rsp.Header.Get("date")
+	r.ContentRange = rsp.Header.Get("content-range")
+	r.ContentLocation = rsp.Header.Get("content-location")
 }

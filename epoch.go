@@ -167,55 +167,58 @@ type (
 )
 
 // GetEpochInfo returns the epoch information, all epochs if no epoch specified.
-func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (*EpochInfoResponse, error) {
+func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (res *EpochInfoResponse, err error) {
+	res = &EpochInfoResponse{}
 	params := url.Values{}
 	if epochNo != nil {
 		params.Set("_epoch_no", fmt.Sprint(*epochNo))
 	}
 
-	rsp, err := c.GET(ctx, "/epoch_info", params)
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/epoch_info", params)
 	if err != nil {
-		return nil, err
+		res.applyError(nil, err)
+		return
 	}
-	res := &EpochInfoResponse{}
 
-	res.setStatus(rsp)
 	body, err := readResponseBody(rsp)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(body, &res.EpochInfo); err != nil {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
 
-	return res, nil
+	if err = json.Unmarshal(body, &res.EpochInfo); err != nil {
+		res.applyError(body, err)
+		return
+	}
+	res.ready()
+	return
 }
 
 // GetEpochParams returns the protocol parameters for specific epoch,
 // and information about all epochs if no epoch specified.
-func (c *Client) GetEpochParams(ctx context.Context, epochNo *EpochNo) (*EpochParamsResponse, error) {
+func (c *Client) GetEpochParams(ctx context.Context, epochNo *EpochNo) (res *EpochParamsResponse, err error) {
+	res = &EpochParamsResponse{}
 	params := url.Values{}
 	if epochNo != nil {
 		params.Set("_epoch_no", fmt.Sprint(*epochNo))
 	}
 
-	rsp, err := c.GET(ctx, "/epoch_params", params)
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/epoch_params", params)
 	if err != nil {
-		return nil, err
+		res.applyError(nil, err)
+		return
 	}
-	res := &EpochParamsResponse{}
 
-	res.setStatus(rsp)
 	body, err := readResponseBody(rsp)
 	if err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return
 	}
 
-	if err := json.Unmarshal(body, &res.EpochParams); err != nil {
+	if err = json.Unmarshal(body, &res.EpochParams); err != nil {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
-	return res, nil
+	res.ready()
+	return
 }

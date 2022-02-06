@@ -50,6 +50,7 @@ func main() {
 			handleErr(koios.Schema(c.String("schema"))(api))
 			handleErr(koios.RateLimit(uint8(c.Uint("rate-limit")))(api))
 			handleErr(koios.Origin(c.String("origin"))(api))
+			handleErr(koios.CollectRequestsStats(c.Bool("enable-req-stats"))(api))
 			return nil
 		},
 	}
@@ -135,6 +136,11 @@ func globalFlags() []cli.Flag {
 		&cli.BoolFlag{
 			Name:  "ugly",
 			Usage: "Ugly prints response json strings directly without calling json pretty.",
+			Value: false,
+		},
+		&cli.BoolFlag{
+			Name:  "enable-req-stats",
+			Usage: "Enable request stats.",
 			Value: false,
 		},
 	}

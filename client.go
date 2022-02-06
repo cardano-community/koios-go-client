@@ -18,43 +18,68 @@ package koios
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptrace"
 	"net/url"
 	"strings"
 	"time"
 )
 
-// GET sends api http get request to provided relative path with query params
+// HEAD sends api http HEAD request to provided relative path with query params
+// and returns an HTTP response.
+func (c *Client) HEAD(ctx context.Context, path string, query ...url.Values) (*http.Response, error) {
+	return c.request(ctx, nil, "HEAD", nil, path, query...)
+}
+
+// POST sends api http POST request to provided relative path with query params
+// and returns an HTTP response. When using POST method you are expected
+// to handle the response according to net/http.Do documentation.
+// e.g. Caller should close resp.Body when done reading from it.
+func (c *Client) POST(ctx context.Context, body io.Reader, path string, query ...url.Values) (*http.Response, error) {
+	return c.request(ctx, nil, "POST", body, path, query...)
+}
+
+// GET sends api http GET request to provided relative path with query params
 // and returns an HTTP response. When using GET method you are expected
 // to handle the response according to net/http.Do documentation.
 // e.g. Caller should close resp.Body when done reading from it.
 func (c *Client) GET(ctx context.Context, path string, query ...url.Values) (*http.Response, error) {
-	return c.request(ctx, "GET", nil, path, query...)
+	return c.request(ctx, nil, "GET", nil, path, query...)
 }
 
 func (c *Client) request(
 	ctx context.Context,
+	res *Response,
 	m string,
 	body io.Reader,
 	p string,
 	query ...url.Values) (*http.Response, error) {
 	var (
-		requrl *url.URL
+		requrl string
 	)
 
 	p = strings.TrimLeft(p, "/")
 	c.mux.RLock()
 	switch len(query) {
 	case 0:
-		requrl = c.url.ResolveReference(&url.URL{Path: p})
+		requrl = c.url.ResolveReference(&url.URL{Path: p}).String()
 	case 1:
-		requrl = c.url.ResolveReference(&url.URL{Path: p, RawQuery: query[0].Encode()})
+		requrl = c.url.ResolveReference(&url.URL{Path: p, RawQuery: query[0].Encode()}).String()
 	default:
 		c.mux.RUnlock()
-		return nil, fmt.Errorf("%w: got %d", ErrURLValuesLenght, len(query))
+		err := fmt.Errorf("%w: got %d", ErrURLValuesLenght, len(query))
+		if res != nil {
+			res.applyError(nil, err)
+		}
+		return nil, err
 	}
+	if res != nil {
+		res.RequestURL = requrl
+	}
+
 	c.mux.RUnlock()
 
 	// optain lock to update last ts and total
@@ -72,12 +97,75 @@ func (c *Client) request(
 	// Release client so that other requests can use it.
 	c.mux.Unlock()
 
-	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(m), requrl.String(), body)
+	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(m), requrl, body)
 	if err != nil {
+		if res != nil {
+			res.applyError(nil, err)
+		}
 		return nil, err
 	}
 
-	return c.client.Do(req)
+	if res != nil && c.reqStatsEnabled {
+		return c.requestWithStats(req, res)
+	}
+
+	rsp, err := c.client.Do(req)
+	if err != nil {
+		if res != nil {
+			res.applyError(nil, err)
+		}
+		return nil, err
+	}
+
+	if res != nil {
+		res.applyRsp(rsp)
+	}
+	return rsp, nil
+}
+
+func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Response, error) {
+	res.Stats = &RequestStats{}
+	var dns, tlshs, connect time.Time
+	trace := &httptrace.ClientTrace{
+		DNSStart: func(dsi httptrace.DNSStartInfo) {
+			dns = time.Now().UTC()
+		},
+		DNSDone: func(ddi httptrace.DNSDoneInfo) {
+			res.Stats.DNSLookupDur = time.Since(dns)
+		},
+		TLSHandshakeStart: func() {
+			tlshs = time.Now().UTC()
+		},
+		TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
+			if err != nil {
+				res.applyError(nil, err)
+			}
+			res.Stats.TLSHSDur = time.Since(tlshs)
+		},
+		ConnectStart: func(network, addr string) {
+			connect = time.Now().UTC()
+		},
+		ConnectDone: func(network, addr string, err error) {
+			if err != nil {
+				res.applyError(nil, err)
+			}
+			res.Stats.ESTCXNDur = time.Since(connect)
+		},
+		GotFirstResponseByte: func() {
+			res.Stats.TTFB = time.Since(res.Stats.ReqStartedAt)
+		},
+	}
+	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+
+	res.Stats.ReqStartedAt = time.Now().UTC()
+	rsp, err := c.client.Transport.RoundTrip(req)
+	if err != nil {
+		res.applyError(nil, err)
+		return nil, err
+	}
+
+	res.applyRsp(rsp)
+	return rsp, nil
 }
 
 // BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0

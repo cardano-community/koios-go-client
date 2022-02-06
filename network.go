@@ -137,81 +137,89 @@ type (
 )
 
 // GetTip returns the tip info about the latest block seen by chain.
-func (c *Client) GetTip(ctx context.Context) (*TipResponse, error) {
-	rsp, err := c.GET(ctx, "/tip")
+func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
+	res = &TipResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/tip")
 	if err != nil {
-		return nil, err
+		res.applyError(nil, err)
+		return
 	}
-	res := &TipResponse{}
-	res.setStatus(rsp)
+
 	body, err := readResponseBody(rsp)
 	if err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return
 	}
 
 	tips := []Tip{}
-	if err := json.Unmarshal(body, &tips); err != nil {
+	if err = json.Unmarshal(body, &tips); err != nil {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
 	if len(tips) == 1 {
 		res.Tip = &tips[0]
 	}
-	return res, nil
+	res.ready()
+	return
 }
 
 // GetGenesis returns the Genesis parameters used to start specific era on chain.
-func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
-	rsp, err := c.GET(ctx, "/genesis")
+func (c *Client) GetGenesis(ctx context.Context) (res *GenesisResponse, err error) {
+	res = &GenesisResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/genesis")
 	if err != nil {
-		return nil, err
+		res.applyError(nil, err)
+		return
 	}
-	res := &GenesisResponse{}
-	res.setStatus(rsp)
+
 	body, err := readResponseBody(rsp)
 	if err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return
 	}
 
 	genesisres := []Genesis{}
 
-	if err := json.Unmarshal(body, &genesisres); err != nil {
+	if err = json.Unmarshal(body, &genesisres); err != nil {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
 
 	if len(genesisres) == 1 {
 		res.Genesis = &genesisres[0]
 	}
-	return res, nil
+	res.ready()
+	return
 }
 
 // GetTotals returns the circulating utxo, treasury, rewards, supply and
 // reserves in lovelace for specified epoch, all epochs if empty.
-func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (*TotalsResponse, error) {
+func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (res *TotalsResponse, err error) {
 	params := url.Values{}
 	if epochNo != nil {
 		params.Set("_epoch_no", fmt.Sprint(*epochNo))
 	}
-
-	rsp, err := c.GET(ctx, "/totals", params)
+	res = &TotalsResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/totals", params)
 	if err != nil {
-		return nil, err
+		res.applyError(nil, err)
+		return
 	}
-	res := &TotalsResponse{}
-	res.setStatus(rsp)
+
 	body, err := readResponseBody(rsp)
 	if err != nil {
-		return nil, err
+		res.applyError(body, err)
+		return
 	}
 
 	totals := []Totals{}
-	if err := json.Unmarshal(body, &totals); err != nil {
+	if err = json.Unmarshal(body, &totals); err != nil {
 		res.applyError(body, err)
-		return res, nil
+		return
 	}
 	if len(totals) > 0 {
 		res.Totals = totals
 	}
-	return res, nil
+	res.ready()
+	return
 }
