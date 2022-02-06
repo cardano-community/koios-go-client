@@ -17,8 +17,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
 )
@@ -42,7 +40,7 @@ func addEpochCommands(app *cli.App, api *koios.Client) {
 					epochNo = &v
 				}
 
-				res, err := api.GetEpochInfo(context.Background(), epochNo)
+				res, err := api.GetEpochInfo(callctx, epochNo)
 				output(ctx, res, err)
 				return nil
 			},
@@ -64,7 +62,7 @@ func addEpochCommands(app *cli.App, api *koios.Client) {
 					epochNo = &v
 				}
 
-				res, err := api.GetEpochParams(context.Background(), epochNo)
+				res, err := api.GetEpochParams(callctx, epochNo)
 				output(ctx, res, err)
 				return nil
 			},

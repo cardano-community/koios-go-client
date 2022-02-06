@@ -72,17 +72,17 @@ type (
 	// BlocksResponse represents response from `/blocks` endpoint.
 	BlocksResponse struct {
 		Response
-		Blocks []Block `json:"response,omitempty"`
+		Data []Block `json:"data"`
 	}
 	// BlockInfoResponse represents response from `/block_info` endpoint.
 	BlockInfoResponse struct {
 		Response
-		Block *Block `json:"response,omitempty"`
+		Data *Block `json:"data"`
 	}
 	// BlockTxsHashesResponse represents response from `/block_txs` endpoint.
 	BlockTxsHashesResponse struct {
 		Response
-		TxHashes []TxHash `json:"response,omitempty"`
+		Data []TxHash `json:"data"`
 	}
 )
 
@@ -100,7 +100,7 @@ func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error)
 		res.applyError(body, err)
 		return
 	}
-	if err = json.Unmarshal(body, &res.Blocks); err != nil {
+	if err = json.Unmarshal(body, &res.Data); err != nil {
 		res.applyError(body, err)
 		return
 	}
@@ -136,7 +136,7 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 		return
 	}
 	if len(blockpl) == 1 {
-		res.Block = &blockpl[0]
+		res.Data = &blockpl[0]
 	}
 	res.ready()
 	return res, nil
@@ -176,7 +176,7 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 	}
 	if len(blockTxs) > 0 {
 		for _, tx := range blockTxs {
-			res.TxHashes = append(res.TxHashes, tx.Hash)
+			res.Data = append(res.Data, tx.Hash)
 		}
 	}
 	res.ready()

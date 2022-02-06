@@ -17,20 +17,35 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/tidwall/pretty"
 	"github.com/urfave/cli/v2"
 )
 
+var (
+	callctx context.Context
+	cancel  context.CancelFunc
+)
+
 func main() {
 	api, err := koios.New()
 	handleErr(err)
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	callctx, cancel = context.WithCancel(context.Background())
+	go func() {
+		<-c
+		cancel()
+	}()
 
 	app := &cli.App{
 		Version: koios.LibraryVersion,
@@ -65,7 +80,6 @@ func main() {
 	addAssetCommands(app, api)
 	addPoolCommands(app, api)
 	addScriptCommands(app, api)
-	addDevCommands(app, api)
 
 	handleErr(app.Run(os.Args))
 }

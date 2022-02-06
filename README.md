@@ -40,7 +40,7 @@ go install github.com/howijd/koios-rest-go-client/cmd/koios-rest@latest
 - [Usage](#usage)
   - [Basic usage](#basic-usage)
   - [Concurrency using goroutines](#concurrency-using-goroutines)
-- [Lovelace and math on assets and tokens.](#lovelace-and-math-on-assets-and-tokens)
+- [Lovelace (math on ada, assets and tokens).](#lovelace-math-on-ada-assets-and-tokens)
 - [Implemented Endpoints](#implemented-endpoints)
 
 
@@ -145,7 +145,7 @@ func main() {
 }
 ```
 
-## Lovelace and math on assets and tokens.
+## Lovelace (math on ada, assets and tokens).
 
 Liprary uses for most cases to represent lovelace using [`Lovelace`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Lovelace) data type.
 
@@ -179,9 +179,11 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | `/block_info` | `*.GetBlockInfo(...) *BlockInfoResponse` | `block-info` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlockInfo) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_info) |
 | `/block_txs` | `*.GetBlockTxs(...) *BlockTxsResponse` | `block-txs` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlockTxs) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_txs) |
 | TRANSACTIONS | | | | |
-| `/tx_info` | `*.GetTxsInfos(...) *TxsInfoResponse` | `tx-infos` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsInfos) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_info) |
+| `/tx_info` | `*.GetTxsInfos(...) *TxsInfoResponse` | `txs-infos` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsInfos) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_info) |
 | | `*.GetTxInfo(...) *TxInfoResponse` | `tx-info` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxInfo) | |
-| `/tx_utxos` | `*.GetTxsUTxOs(...) *TxsInfoResponse` | `tx-utxos` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsUTxOs) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_utxos) |
+| `/tx_utxos` | `*.GetTxsUTxOs(...) *TxUTxOsResponse` | `tx-utxos` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsUTxOs) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_utxos) |
+| `/tx_metadata` | `*.GetTxsMetadata(...) *TxsMetadataResponse` | `txs-metadata` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsMetadata) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_metadata) |
+| | `*.GetTxMetadata(...) *TxMetadataResponse` | `tx-metadata` | [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxMetadata) | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_metadata) |
 | ADDRESS | | | | |
 | ACCOUNT | | | | |
 | POOL | | | | |

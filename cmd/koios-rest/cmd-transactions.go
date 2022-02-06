@@ -17,7 +17,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 
 	"github.com/howijd/koios-rest-go-client"
@@ -36,7 +35,7 @@ func addTransactionsCommands(app *cli.App, api *koios.Client) {
 				for _, a := range ctx.Args().Slice() {
 					txs = append(txs, koios.TxHash(a))
 				}
-				res, err := api.GetTxsInfos(context.Background(), txs)
+				res, err := api.GetTxsInfos(callctx, txs)
 				output(ctx, res, err)
 				return nil
 			},
@@ -50,7 +49,7 @@ func addTransactionsCommands(app *cli.App, api *koios.Client) {
 				if ctx.NArg() != 1 {
 					return errors.New("tx-info requires single transaction hash")
 				}
-				res, err := api.GetTxInfo(context.Background(), koios.TxHash(ctx.Args().Get(0)))
+				res, err := api.GetTxInfo(callctx, koios.TxHash(ctx.Args().Get(0)))
 				output(ctx, res, err)
 				return nil
 			},
@@ -65,15 +64,39 @@ func addTransactionsCommands(app *cli.App, api *koios.Client) {
 				for _, a := range ctx.Args().Slice() {
 					txs = append(txs, koios.TxHash(a))
 				}
-				res, err := api.GetTxsUTxOs(context.Background(), txs)
+				res, err := api.GetTxsUTxOs(callctx, txs)
 				output(ctx, res, err)
 				return nil
 			},
 		},
 		{
-			Name:     "tx-metadata",
-			Category: "TRANSACTIONS",
-			Usage:    "Get metadata information (if any) for given transaction(s)..",
+			Name:      "txs-metadata",
+			Category:  "TRANSACTIONS",
+			ArgsUsage: "[tx-hashes...]",
+			Usage:     "Get metadata information (if any) for given transaction(s).",
+			Action: func(ctx *cli.Context) error {
+				var txs []koios.TxHash
+				for _, a := range ctx.Args().Slice() {
+					txs = append(txs, koios.TxHash(a))
+				}
+				res, err := api.GetTxsMetadata(callctx, txs)
+				output(ctx, res, err)
+				return nil
+			},
+		},
+		{
+			Name:      "tx-metadata",
+			Category:  "TRANSACTIONS",
+			ArgsUsage: "[tx-hash]",
+			Usage:     "Get metadata information (if any) for given transaction.",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("tx-metadata requires single transaction hash")
+				}
+				res, err := api.GetTxMetadata(callctx, koios.TxHash(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "tx-metalabels",

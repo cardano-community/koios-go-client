@@ -74,7 +74,7 @@ type (
 		Value Lovelace `json:"value"`
 	}
 
-	TxMetadata struct {
+	TxInfoMetadata struct {
 		// JSON containing details about metadata within transaction.
 		JSON map[string]interface{} `json:"json"`
 
@@ -147,7 +147,7 @@ type (
 		Collaterals []TxInput `json:"collaterals,omitempty"`
 
 		// Metadata present with-in a transaction (if any)
-		Metadata []TxMetadata `json:"metadata,omitempty"`
+		Metadata []TxInfoMetadata `json:"metadata,omitempty"`
 
 		// Array of withdrawals with-in a transaction (if any)
 		Withdrawals []TxsWithdrawal `json:"withdrawals,omitempty"`
@@ -159,20 +159,40 @@ type (
 	// TxsInfoResponse represents response from `/tx_info` endpoint.
 	TxsInfosResponse struct {
 		Response
-		TXS []TxInfo `json:"response,omitempty"`
+		Data []TxInfo `json:"response"`
 	}
 
 	// TxsInfoResponse represents response from `/tx_info` endpoint.
 	// when requesting info about single transaction.
 	TxInfoResponse struct {
 		Response
-		TX TxInfo `json:"response,omitempty"`
+		Data *TxInfo `json:"response"`
 	}
 
 	// TxUTxOsResponse represents response from `/tx_utxos` endpoint.
 	TxUTxOsResponse struct {
 		Response
-		UTxOs []UTxO `json:"response,omitempty"`
+		Data []UTxO `json:"data"`
+	}
+
+	// TxMetadata transaction metadata lookup res for `/tx_metadata` endpoint.
+	TxMetadata struct {
+		// TxHash is hash of transaction.
+		TxHash TxHash `json:"tx_hash"`
+		// Metadata present with-in a transaction (if any)
+		Metadata map[string]interface{} `json:"metadata"`
+	}
+
+	// TxMetadataResponse represents response from `/tx_metadata` endpoint.
+	TxMetadataResponse struct {
+		Response
+		Data *TxMetadata `json:"data"`
+	}
+
+	// TxsMetadataResponse represents response from `/tx_metadata` endpoint.
+	TxsMetadataResponse struct {
+		Response
+		Data []TxMetadata `json:"data"`
 	}
 )
 
@@ -181,8 +201,8 @@ func (c *Client) GetTxInfo(ctx context.Context, tx TxHash) (res *TxInfoResponse,
 	res = &TxInfoResponse{}
 	rsp, err := c.GetTxsInfos(ctx, []TxHash{tx})
 	res.Response = rsp.Response
-	if len(rsp.TXS) == 1 {
-		res.TX = rsp.TXS[0]
+	if len(rsp.Data) == 1 {
+		res.Data = &rsp.Data[0]
 	}
 	return
 }
@@ -207,7 +227,7 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosRe
 		res.applyError(body, err)
 		return
 	}
-	if err = json.Unmarshal(body, &res.TXS); err != nil {
+	if err = json.Unmarshal(body, &res.Data); err != nil {
 		res.applyError(body, err)
 		return
 	}
@@ -235,7 +255,46 @@ func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (res *TxUTxOsRes
 		res.applyError(body, err)
 		return
 	}
-	if err = json.Unmarshal(body, &res.UTxOs); err != nil {
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+	res.ready()
+	return res, nil
+}
+
+// GetTxMetadata returns metadata information (if any) for given transaction.
+func (c *Client) GetTxMetadata(ctx context.Context, tx TxHash) (res *TxMetadataResponse, err error) {
+	res = &TxMetadataResponse{}
+	rsp, err := c.GetTxsMetadata(ctx, []TxHash{tx})
+	res.Response = rsp.Response
+	if len(rsp.Data) == 1 {
+		res.Data = &rsp.Data[0]
+	}
+	return
+}
+
+// GetTxsInfos returns detailed information about transaction(s).
+func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMetadataResponse, err error) {
+	res = &TxsMetadataResponse{}
+	if len(txs) == 0 {
+		err = ErrNoTxHash
+		res.applyError(nil, err)
+		return
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_metadata")
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+	if err = json.Unmarshal(body, &res.Data); err != nil {
 		res.applyError(body, err)
 		return
 	}

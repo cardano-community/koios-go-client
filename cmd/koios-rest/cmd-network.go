@@ -17,8 +17,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
 )
@@ -30,7 +28,7 @@ func addNetworkCommands(app *cli.App, api *koios.Client) {
 			Category: "NETWORK",
 			Usage:    "Get the tip info about the latest block seen by chain.",
 			Action: func(ctx *cli.Context) error {
-				res, err := api.GetTip(context.Background())
+				res, err := api.GetTip(callctx)
 				output(ctx, res, err)
 				return nil
 			},
@@ -40,7 +38,7 @@ func addNetworkCommands(app *cli.App, api *koios.Client) {
 			Category: "NETWORK",
 			Usage:    "Get the Genesis parameters used to start specific era on chain.",
 			Action: func(ctx *cli.Context) error {
-				res, err := api.GetGenesis(context.Background())
+				res, err := api.GetGenesis(callctx)
 				output(ctx, res, err)
 				return nil
 			},
@@ -62,7 +60,7 @@ func addNetworkCommands(app *cli.App, api *koios.Client) {
 					epochNo = &v
 				}
 
-				res, err := api.GetTotals(context.Background(), epochNo)
+				res, err := api.GetTotals(callctx, epochNo)
 				output(ctx, res, err)
 				return nil
 			},

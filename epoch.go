@@ -54,7 +54,7 @@ type (
 	// EpochInfoResponse response of /epoch_info.
 	EpochInfoResponse struct {
 		Response
-		EpochInfo []EpochInfo `json:"response,omitempty"`
+		Data []EpochInfo `json:"data"`
 	}
 
 	// EpochParams defines model for epoch_params.
@@ -162,7 +162,7 @@ type (
 	// EpochParamsResponse response of /epoch_params.
 	EpochParamsResponse struct {
 		Response
-		EpochParams []EpochParams `json:"response,omitempty"`
+		Data []EpochParams `json:"data"`
 	}
 )
 
@@ -186,7 +186,7 @@ func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (res *Epoch
 		return
 	}
 
-	if err = json.Unmarshal(body, &res.EpochInfo); err != nil {
+	if err = json.Unmarshal(body, &res.Data); err != nil {
 		res.applyError(body, err)
 		return
 	}
@@ -215,7 +215,7 @@ func (c *Client) GetEpochParams(ctx context.Context, epochNo *EpochNo) (res *Epo
 		return
 	}
 
-	if err = json.Unmarshal(body, &res.EpochParams); err != nil {
+	if err = json.Unmarshal(body, &res.Data); err != nil {
 		res.applyError(body, err)
 		return
 	}

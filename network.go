@@ -48,7 +48,7 @@ type (
 	// TipResponse response of /tip.
 	TipResponse struct {
 		Response
-		Tip *Tip `json:"response,omitempty"`
+		Data *Tip `json:"data"`
 	}
 
 	// Genesis defines model for genesis.
@@ -103,7 +103,7 @@ type (
 	// GenesisResponse response of /genesis.
 	GenesisResponse struct {
 		Response
-		Genesis *Genesis `json:"response,omitempty"`
+		Data *Genesis `json:"data"`
 	}
 
 	// Totals defines model for totals.
@@ -132,7 +132,7 @@ type (
 	// TotalsResponse represents response from `/totals` endpoint.
 	TotalsResponse struct {
 		Response
-		Totals []Totals `json:"response,omitempty"`
+		Data []Totals `json:"data"`
 	}
 )
 
@@ -157,7 +157,7 @@ func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
 		return
 	}
 	if len(tips) == 1 {
-		res.Tip = &tips[0]
+		res.Data = &tips[0]
 	}
 	res.ready()
 	return
@@ -186,7 +186,7 @@ func (c *Client) GetGenesis(ctx context.Context) (res *GenesisResponse, err erro
 	}
 
 	if len(genesisres) == 1 {
-		res.Genesis = &genesisres[0]
+		res.Data = &genesisres[0]
 	}
 	res.ready()
 	return
@@ -218,7 +218,7 @@ func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (res *TotalsRe
 		return
 	}
 	if len(totals) > 0 {
-		res.Totals = totals
+		res.Data = totals
 	}
 	res.ready()
 	return
