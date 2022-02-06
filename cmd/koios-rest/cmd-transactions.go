@@ -102,6 +102,11 @@ func addTransactionsCommands(app *cli.App, api *koios.Client) {
 			Name:     "tx-metalabels",
 			Category: "TRANSACTIONS",
 			Usage:    "Get a list of all transaction metalabels.",
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetTxMetaLabels(callctx)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "submittx",

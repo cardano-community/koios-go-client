@@ -194,6 +194,18 @@ type (
 		Response
 		Data []TxMetadata `json:"data"`
 	}
+
+	// TxMetaLabelsResponse represents response from `/tx_metalabels` endpoint.
+	TxMetaLabelsResponse struct {
+		Response
+		Data []TxMetalabel `json:"data"`
+	}
+
+	// TxMetalabels defines model for tx_metalabels.
+	TxMetalabel struct {
+		// A distinct known metalabel
+		Metalabel uint64 `json:"metalabel"`
+	}
 )
 
 // GetTxInfo returns detailed information about transaction.
@@ -284,6 +296,28 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_metadata")
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+	res.ready()
+	return res, nil
+}
+
+// GetTxMetadataLabels retruns a list of all transaction metalabels.
+func (c *Client) GetTxMetaLabels(ctx context.Context) (res *TxMetaLabelsResponse, err error) {
+	res = &TxMetaLabelsResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/tx_metalabels")
 	if err != nil {
 		res.applyError(nil, err)
 		return
