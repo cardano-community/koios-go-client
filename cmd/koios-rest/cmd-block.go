@@ -67,7 +67,7 @@ func addBlockCommands(app *cli.App, api *koios.Client) {
 				},
 			},
 			Action: func(ctx *cli.Context) error {
-				res, err := api.GetBlockTxs(
+				res, err := api.GetBlockTxHashes(
 					context.Background(),
 					koios.BlockHash(ctx.String("block-hash")),
 				)

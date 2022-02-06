@@ -17,6 +17,9 @@
 package main
 
 import (
+	"context"
+	"errors"
+
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
 )
@@ -24,9 +27,33 @@ import (
 func addTransactionsCommands(app *cli.App, api *koios.Client) {
 	app.Commands = append(app.Commands, []*cli.Command{
 		{
-			Name:     "tx-info",
-			Category: "TRANSACTIONS",
-			Usage:    "Get detailed information about transaction(s).",
+			Name:      "tx-infos",
+			Category:  "TRANSACTIONS",
+			Usage:     "Get detailed information about transaction(s).",
+			ArgsUsage: "[tx-hashes...]",
+			Action: func(ctx *cli.Context) error {
+				var txs []koios.TxHash
+				for _, a := range ctx.Args().Slice() {
+					txs = append(txs, koios.TxHash(a))
+				}
+				res, err := api.GetTxsInfos(context.Background(), txs)
+				output(ctx, res, err)
+				return nil
+			},
+		},
+		{
+			Name:      "tx-info",
+			Category:  "TRANSACTIONS",
+			Usage:     "Get detailed information about single transaction.",
+			ArgsUsage: "[tx-hashes]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("tx-info requires single transaction hash")
+				}
+				res, err := api.GetTxsInfo(context.Background(), koios.TxHash(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "tx-utxos",

@@ -51,7 +51,7 @@ func addGeneralCommands(app *cli.App, api *koios.Client) {
 			Category: "UTILS",
 			Action: func(ctx *cli.Context) error {
 				endpoint := ctx.Args().Get(0)
-				if len(endpoint) == 0 {
+				if ctx.NArg() == 0 || len(endpoint) == 0 {
 					return errors.New("provide endpoint as argument e.g. /tip")
 				}
 				res, err := api.HEAD(context.Background(), endpoint)

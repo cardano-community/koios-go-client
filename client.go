@@ -104,6 +104,7 @@ func (c *Client) request(
 		}
 		return nil, err
 	}
+	c.applyReqHeaders(req)
 
 	if res != nil && c.reqStatsEnabled {
 		return c.requestWithStats(req, res)
@@ -121,6 +122,17 @@ func (c *Client) request(
 		res.applyRsp(rsp)
 	}
 	return rsp, nil
+}
+
+func (c *Client) applyReqHeaders(req *http.Request) {
+	req.Header = c.commonHeaders
+
+	switch req.Method {
+	case "POST":
+	case "PATCH":
+	case "PUT":
+		req.Header.Set("content-type", "application/json")
+	}
 }
 
 func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Response, error) {

@@ -69,6 +69,7 @@ var (
 	ErrOriginSet                = errors.New("origin can only be set as option to koios.New")
 	ErrRateLimitRange           = errors.New("rate limit must be between 1-255 requests per sec")
 	ErrResponseIsNotJSON        = errors.New("go non json response")
+	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 )
 
 type (
@@ -93,10 +94,103 @@ type (
 	// to change configurations options of API Client.
 	Option func(*Client) error
 
+	// Address defines type for _address.
+	Address string
+
+	// AnyAddress defines type for _any_address.
+	AnyAddress string
+
+	// AssetName defines type for _asset_name.
+	AssetName string
+
+	// AssetPolicy defines type for _asset_policy.
+	AssetPolicy string
+
+	// BlockHash defines type for _block_hash.
+	BlockHash string
+
+	// TxHash defines type for tx_hash.
+	TxHash string
+
+	// EarnedEpochNo defines type for _earned_epoch_no.
+	EarnedEpochNo string
+
+	// EpochNo defines type for _epoch_no.
+	EpochNo uint64
+
+	// PoolBech32 defines type for _pool_bech32.
+	PoolBech32 string
+
+	// PoolBech32Optional defines type for _pool_bech32_optional.
+	PoolBech32Optional string
+
+	// ScriptHash defines type for _script_hash.
+	ScriptHash string
+
+	// StakeAddress is Cardano staking address (reward account, bech32 encoded).
+	StakeAddress string
+
+	// Lovelace defines type for ADA lovelaces. This library uses forked snapshot
+	// of github.com/shopspring/decimal package to provide. JSON and XML
+	// serialization/deserialization and make it ease to work with calculations
+	// and deciimal precisions of ADA lovelace and native assets.
+	//
+	// For API of decimal package see
+	// https://pkg.go.dev/github.com/shopspring/decimal
+	//
+	// SEE: https://github.com/howijd/decimal
+	// issues and bug reports are welcome to:
+	// https://github.com/howijd/decimal/issues.
+	Lovelace struct {
+		decimal.Decimal
+	}
+
+	// Asset info.
+	Asset struct {
+		// Asset Name (hex).
+		AssetName string `json:"asset_name"`
+
+		// Asset Policy ID (hex).
+		PolicyID string `json:"policy_id"`
+
+		// Quantity
+		// Input: asset balance on the selected input transaction.
+		// Output: sum of assets for output UTxO.
+		// Mint: sum of minted assets (negative on burn).
+		Quantity Lovelace `json:"quantity"`
+	}
+
+	// PaymentAddr info.
+	PaymentAddr struct {
+		// Bech32 is Cardano payment/base address (bech32 encoded)
+		// for transaction's or change to be returned.
+		Bech32 string `json:"bech32"`
+
+		// Payment credential.
+		Cred string `json:"cred"`
+	}
+
+	// Certificate information.
+	Certificate struct {
+		// Index of the certificate
+		Index int `json:"index"`
+
+		// Info is A JSON object containing information from the certificate.
+		Info map[string]interface{} `json:"info"`
+
+		// Type of certificate could be:
+		// delegation, stake_registration, stake_deregistraion, pool_update,
+		// pool_retire, param_proposal, reserve_MIR, treasury_MIR).
+		Type string `json:"type"`
+	}
+
 	// Response wraps API responses.
 	Response struct {
 		// RequestURL is full request url.
 		RequestURL string `json:"request_url"`
+
+		// RequestMethod is HTTP method used for request.
+		RequestMethod string `json:"request_method"`
 
 		// StatusCode of the HTTP response.
 		StatusCode int `json:"status_code"`
@@ -120,6 +214,8 @@ type (
 		Stats *RequestStats `json:"stats,omitempty"`
 	}
 
+	// RequestStats represent collected request stats if collecting
+	// request stats is enabled.
 	RequestStats struct {
 		// ReqStartedAt time when request was started.
 		ReqStartedAt time.Time `json:"req_started_at,omitempty"`
@@ -157,57 +253,6 @@ type (
 
 		// Message is error message reported by server.
 		Message string `json:"message,omitempty"`
-	}
-
-	// Address defines type for _address.
-	Address string
-
-	// AnyAddress defines type for _any_address.
-	AnyAddress string
-
-	// AssetName defines type for _asset_name.
-	AssetName string
-
-	// AssetPolicy defines type for _asset_policy.
-	AssetPolicy string
-
-	// BlockHash defines type for _block_hash.
-	BlockHash string
-
-	// TxHash defines type for tx_hash.
-	TxHash string
-
-	// EarnedEpochNo defines type for _earned_epoch_no.
-	EarnedEpochNo string
-
-	// EpochNo defines type for _epoch_no.
-	EpochNo uint64
-
-	// PoolBech32 defines type for _pool_bech32.
-	PoolBech32 string
-
-	// PoolBech32Optional defines type for _pool_bech32_optional.
-	PoolBech32Optional string
-
-	// ScriptHash defines type for _script_hash.
-	ScriptHash string
-
-	// StakeAddress defines type for _stake_address.
-	StakeAddress string
-
-	// Lovelace defines type for ADA lovelaces. This library uses forked snapshot
-	// of github.com/shopspring/decimal package to provide. JSON and XML
-	// serialization/deserialization and make it ease to work with calculations
-	// and deciimal precisions of ADA lovelace and native assets.
-	//
-	// For API of decimal package see
-	// https://pkg.go.dev/github.com/shopspring/decimal
-	//
-	// SEE: https://github.com/howijd/decimal
-	// issues and bug reports are welcome to:
-	// https://github.com/howijd/decimal/issues.
-	Lovelace struct {
-		decimal.Decimal
 	}
 )
 
@@ -421,6 +466,7 @@ func (r *Response) ready() {
 
 func (r *Response) applyRsp(rsp *http.Response) {
 	r.StatusCode = rsp.StatusCode
+	r.RequestMethod = rsp.Request.Method
 	r.Status = rsp.Status
 	r.Date = rsp.Header.Get("date")
 	r.ContentRange = rsp.Header.Get("content-range")

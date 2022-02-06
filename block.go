@@ -24,7 +24,7 @@ import (
 )
 
 type (
-	// Totals defines model for block.
+	// Block defines model for block.
 	Block struct {
 		// Hash block hash
 		Hash BlockHash `json:"hash"`
@@ -79,10 +79,10 @@ type (
 		Response
 		Block *Block `json:"response,omitempty"`
 	}
-	// BlockTxsResponse represents response from `/block_txs` endpoint.
-	BlockTxsResponse struct {
+	// BlockTxsHashesResponse represents response from `/block_txs` endpoint.
+	BlockTxsHashesResponse struct {
 		Response
-		Txs []TxHash `json:"response,omitempty"`
+		TxHashes []TxHash `json:"response,omitempty"`
 	}
 )
 
@@ -142,9 +142,10 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 	return res, nil
 }
 
-// GetBlockTxs returns a list of all transactions included in a provided block.
-func (c *Client) GetBlockTxs(ctx context.Context, hash BlockHash) (res *BlockTxsResponse, err error) {
-	res = &BlockTxsResponse{}
+// GetBlockTxHashes returns a list of all transactions hashes
+// included in a provided block.
+func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *BlockTxsHashesResponse, err error) {
+	res = &BlockTxsHashesResponse{}
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
@@ -175,7 +176,7 @@ func (c *Client) GetBlockTxs(ctx context.Context, hash BlockHash) (res *BlockTxs
 	}
 	if len(blockTxs) > 0 {
 		for _, tx := range blockTxs {
-			res.Txs = append(res.Txs, tx.Hash)
+			res.TxHashes = append(res.TxHashes, tx.Hash)
 		}
 	}
 	res.ready()
