@@ -17,6 +17,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
 )
@@ -24,9 +26,18 @@ import (
 func addAddressCommands(app *cli.App, api *koios.Client) {
 	app.Commands = append(app.Commands, []*cli.Command{
 		{
-			Name:     "address-info",
-			Category: "ADDRESS",
-			Usage:    "Get address info - balance, associated stake address (if any) and UTxO set.",
+			Name:      "address-info",
+			Category:  "ADDRESS",
+			Usage:     "Get address info - balance, associated stake address (if any) and UTxO set.",
+			ArgsUsage: "[address]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("address-info requires single address")
+				}
+				res, err := api.GetAddressInfo(callctx, koios.Address(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "address-txs",

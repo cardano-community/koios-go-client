@@ -70,6 +70,7 @@ var (
 	ErrRateLimitRange           = errors.New("rate limit must be between 1-255 requests per sec")
 	ErrResponseIsNotJSON        = errors.New("go non json response")
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
+	ErrNoAddress                = errors.New("missing address")
 )
 
 type (
