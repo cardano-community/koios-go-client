@@ -40,9 +40,27 @@ func addAddressCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "address-txs",
-			Category: "ADDRESS",
-			Usage:    "Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive).",
+			Name:      "address-txs",
+			Category:  "ADDRESS",
+			Usage:     "Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive).",
+			ArgsUsage: "[address...]",
+			Flags: []cli.Flag{
+				&cli.Uint64Flag{
+					Name:  "after-block-height",
+					Usage: "Get transactions after specified block height.",
+					Value: uint64(0),
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				var addresses []koios.Address
+				for _, a := range ctx.Args().Slice() {
+					addresses = append(addresses, koios.Address(a))
+				}
+
+				res, err := api.GetAddressTxs(callctx, addresses, ctx.Uint64("after-block-height"))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "address-assets",

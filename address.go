@@ -19,6 +19,7 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -43,9 +44,11 @@ type (
 	AddressInfo struct {
 		// Balance ADA Lovelace balance of address
 		Balance Lovelace `json:"balance"`
+
 		// StakeAddress associated with address
-		StakeAddress StakeAddress  `json:"stake_address, omitempty"`
-		UTxOs        []AddressUTxO `json:"utxo_set"`
+		StakeAddress StakeAddress `json:"stake_address,omitempty"`
+
+		UTxOs []AddressUTxO `json:"utxo_set"`
 	}
 
 	// AddressInfoResponse represents response from `/address_info` endpoint.
@@ -92,5 +95,66 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 		res.Data = &addrs[0]
 	}
 	res.ready()
+	return res, nil
+}
+
+// AddressInfoResponse represents response from `/address_info` endpoint.
+type AddressTxsResponse struct {
+	Response
+	Data []TxHash `json:"response"`
+}
+
+// GetAddressTxs returns the transaction hash list of input address array,
+// optionally filtering after specified block height (inclusive).
+func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (res *AddressTxsResponse, err error) {
+	res = &AddressTxsResponse{}
+	if len(addrs) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+
+	var payload = struct {
+		Adresses         []Address `json:"_addresses"`
+		AfterBlockHeight uint64    `json:"_after_block_height,omitempty"`
+	}{
+		Adresses:         addrs,
+		AfterBlockHeight: h,
+	}
+
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp, err := c.request(ctx, &res.Response, "POST", rpipe, "/address_txs", nil, nil)
+	if err != nil {
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	atxs := []struct {
+		Hash TxHash `json:"tx_hash"`
+	}{}
+
+	if err = json.Unmarshal(body, &atxs); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return
+	}
+	if len(atxs) > 0 {
+		for _, tx := range atxs {
+			res.Data = append(res.Data, tx.Hash)
+		}
+	}
 	return res, nil
 }
