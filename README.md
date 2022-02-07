@@ -1,5 +1,7 @@
 <h1>Koios API Client Library for Go</h1>
 
+**:warning: UNTIL v1.0.0 RELEASE THIS LIBRARY MAY GET BREAKING CHANGES**
+
 **[Koios API] is Elastic Cardano Query Layer!**
 
 > A consistent query layer for developers to build upon Cardano, with multiple, redundant endpoints that allow for easy scalability.
@@ -25,6 +27,8 @@ import (
 # provides command `koios-rest` installed into ~/go/bin/koios-rest
 go install github.com/howijd/koios-rest-go-client/cmd/koios-rest@latest
 ```
+
+> Therefore be careful running `go get -u`
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
 ![license](https://img.shields.io/github/license/howijd/koios-rest-go-client)
