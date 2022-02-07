@@ -47,6 +47,18 @@ type (
 		Type           string     `json:"type"`
 	}
 
+	// AccountAsset.
+	AccountAsset struct {
+		// Name Asset Name (hex).
+		Name string `json:"asset_name"`
+
+		// PolicyID Asset Policy ID (hex).
+		PolicyID AssetPolicy `json:"asset_policy"`
+
+		// Quantity of assets
+		Quantity Lovelace `json:"quantity"`
+	}
+
 	// AccountAction data entry for `/account_updates`.
 	AccountAction struct {
 		ActionType string `json:"action_type"`
@@ -81,6 +93,12 @@ type (
 	AccountAddressesResponse struct {
 		Response
 		Data []Address `json:"response"`
+	}
+
+	// AccountAssetsResponse represents response from `/account_assets` endpoint.
+	AccountAssetsResponse struct {
+		Response
+		Data []AccountAsset `json:"response"`
 	}
 )
 
@@ -221,7 +239,7 @@ func (c *Client) GetAccountUpdates(
 	return res, nil
 }
 
-// GetAccountAddresses all addresses associated with an account.
+// GetAccountAddresses retruns all addresses associated with an account.
 func (c *Client) GetAccountAddresses(
 	ctx context.Context,
 	addr StakeAddress,
@@ -258,6 +276,39 @@ func (c *Client) GetAccountAddresses(
 		for _, a := range addrs {
 			res.Data = append(res.Data, a.Addr)
 		}
+	}
+	res.ready()
+	return res, nil
+}
+
+// GetAccountAssets retruns all the native asset balance of an account.
+func (c *Client) GetAccountAssets(
+	ctx context.Context,
+	addr StakeAddress,
+) (res *AccountAssetsResponse, err error) {
+	res = &AccountAssetsResponse{}
+	params := url.Values{}
+	params.Set("_address", string(addr))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_assets", params, nil)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return
 	}
 	res.ready()
 	return res, nil

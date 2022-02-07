@@ -75,7 +75,7 @@ type (
 		NameHEX string `json:"asset_name_hex"`
 
 		// Asset Policy ID (hex).
-		PolicyHEX string `json:"asset_policy_hex"`
+		PolicyID string `json:"asset_policy_hex"`
 
 		// Quantity of asset accoiated to the given address.
 		Quantity Lovelace `json:"quantity"`

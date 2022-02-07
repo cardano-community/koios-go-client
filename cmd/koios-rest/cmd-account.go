@@ -96,7 +96,7 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 			ArgsUsage: "[account]",
 			Action: func(ctx *cli.Context) error {
 				if ctx.NArg() != 1 {
-					return errors.New("account-updates requires single stake or paymentaddress")
+					return errors.New("account-updates requires single stake or payment address")
 				}
 				res, err := api.GetAccountAddresses(callctx, koios.StakeAddress(ctx.Args().Get(0)))
 				output(ctx, res, err)
@@ -104,9 +104,18 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "account-assets",
-			Category: "ACCOUNT",
-			Usage:    "Get the native asset balance of an account.",
+			Name:      "account-assets",
+			Category:  "ACCOUNT",
+			Usage:     "Get the native asset balance of an account.",
+			ArgsUsage: "[account]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("account-updates requires single stake or payment address")
+				}
+				res, err := api.GetAccountAssets(callctx, koios.StakeAddress(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "account-history",
