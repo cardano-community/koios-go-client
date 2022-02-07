@@ -47,6 +47,12 @@ type (
 		Type           string     `json:"type"`
 	}
 
+	// AccountAction data entry for `/account_updates`.
+	AccountAction struct {
+		ActionType string `json:"action_type"`
+		TxHash     TxHash `json:"tx_hash"`
+	}
+
 	// AccountListResponse represents response from `/account_list` endpoint.
 	AccountListResponse struct {
 		Response
@@ -63,6 +69,12 @@ type (
 	AccountRewardsResponse struct {
 		Response
 		Data []AccountRewards `json:"response"`
+	}
+
+	// AccountUpdatesResponse represents response from `/account_rewards` endpoint.
+	AccountUpdatesResponse struct {
+		Response
+		Data []AccountAction `json:"response"`
 	}
 )
 
@@ -156,6 +168,35 @@ func (c *Client) GetAccountRewards(
 		params.Set("_epoch_no", fmt.Sprint(*epochNo))
 	}
 	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_rewards", params, nil)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+	res.ready()
+	return res, nil
+}
+
+// AccountUpdatesResponse (History) retruns the account updates
+// (registration, deregistration, delegation and withdrawals).
+func (c *Client) GetAccountUpdates(
+	ctx context.Context,
+	addr StakeAddress,
+) (res *AccountUpdatesResponse, err error) {
+	res = &AccountUpdatesResponse{}
+	params := url.Values{}
+	params.Set("_stake_address", string(addr))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_updates", params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return

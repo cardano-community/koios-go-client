@@ -76,9 +76,18 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "account-updates",
-			Category: "ACCOUNT",
-			Usage:    "Get the account updates (registration, deregistration, delegation and withdrawals).",
+			Name:      "account-updates",
+			Category:  "ACCOUNT",
+			Usage:     "Get the account updates (registration, deregistration, delegation and withdrawals).",
+			ArgsUsage: "[stake-address]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("account-updates requires single stake address")
+				}
+				res, err := api.GetAccountUpdates(callctx, koios.StakeAddress(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "account-addresses",
