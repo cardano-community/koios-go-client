@@ -26,7 +26,12 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 		{
 			Name:     "account-list",
 			Category: "ACCOUNT",
-			Usage:    "Get a list of all accounts.",
+			Usage:    "Get a list of all accounts returns array of stake addresses.",
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetAccountList(callctx)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "account-info",
