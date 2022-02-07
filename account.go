@@ -60,7 +60,7 @@ type (
 		Name string `json:"asset_name"`
 
 		// PolicyID Asset Policy ID (hex).
-		PolicyID AssetPolicy `json:"asset_policy"`
+		PolicyID PolicyID `json:"asset_policy"`
 
 		// Quantity of assets
 		Quantity Lovelace `json:"quantity"`

@@ -155,6 +155,7 @@ func (c *Client) applyReqHeaders(req *http.Request, headers http.Header) {
 func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Response, error) {
 	res.Stats = &RequestStats{}
 	var dns, tlshs, connect time.Time
+
 	trace := &httptrace.ClientTrace{
 		DNSStart: func(dsi httptrace.DNSStartInfo) {
 			dns = time.Now().UTC()

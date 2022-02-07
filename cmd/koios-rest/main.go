@@ -98,10 +98,19 @@ func handleErr(err error) {
 
 func printResponseBody(ctx *cli.Context, body []byte) {
 	if ctx.Bool("ugly") {
-		fmt.Println(string(body))
+		if ctx.Bool("no-color") {
+			fmt.Println(string(body))
+			return
+		}
+		fmt.Println(string(pretty.Color(body, pretty.TerminalStyle)))
 		return
 	}
-	fmt.Println(string(pretty.Pretty(body)))
+	pr := pretty.Pretty(body)
+	if ctx.Bool("no-color") {
+		fmt.Println(string(pr))
+		return
+	}
+	fmt.Println(string(pretty.Color(pr, pretty.TerminalStyle)))
 }
 
 type printable interface {
@@ -155,6 +164,11 @@ func globalFlags() []cli.Flag {
 		&cli.BoolFlag{
 			Name:  "enable-req-stats",
 			Usage: "Enable request stats.",
+			Value: false,
+		},
+		&cli.BoolFlag{
+			Name:  "no-color",
+			Usage: "Disable coloring output json.",
 			Value: false,
 		},
 	}

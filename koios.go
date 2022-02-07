@@ -107,9 +107,6 @@ type (
 	// AssetName defines type for _asset_name.
 	AssetName string
 
-	// AssetPolicy defines type for _asset_policy.
-	AssetPolicy string
-
 	// BlockHash defines type for _block_hash.
 	BlockHash string
 
@@ -122,8 +119,11 @@ type (
 	// EpochNo defines type for _epoch_no.
 	EpochNo uint64
 
-	// PoolID defines (hex).
+	// PoolID.
 	PoolID string
+
+	// PolicyID.
+	PolicyID string
 
 	// ScriptHash defines type for _script_hash.
 	ScriptHash string
@@ -144,21 +144,6 @@ type (
 	// https://github.com/howijd/decimal/issues.
 	Lovelace struct {
 		decimal.Decimal
-	}
-
-	// Asset info.
-	Asset struct {
-		// Asset Name (hex).
-		Name string `json:"asset_name"`
-
-		// Asset Policy ID (hex).
-		PolicyID PoolID `json:"policy_id"`
-
-		// Quantity
-		// Input: asset balance on the selected input transaction.
-		// Output: sum of assets for output UTxO.
-		// Mint: sum of minted assets (negative on burn).
-		Quantity Lovelace `json:"quantity"`
 	}
 
 	// PaymentAddr info.

@@ -27,6 +27,11 @@ func addAssetCommands(app *cli.App, api *koios.Client) {
 			Name:     "asset-list",
 			Category: "ASSET",
 			Usage:    "Get the list of all native assets (paginated).",
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetAssetList(callctx)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "asset-address-list",

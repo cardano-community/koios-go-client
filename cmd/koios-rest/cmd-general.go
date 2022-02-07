@@ -40,6 +40,7 @@ func addGeneralCommands(app *cli.App, api *koios.Client) {
 				handleErr(err)
 				defer res.Body.Close()
 				body, err := ioutil.ReadAll(res.Body)
+
 				printResponseBody(ctx, body)
 				return nil
 			},
