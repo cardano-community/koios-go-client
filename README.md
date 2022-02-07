@@ -250,7 +250,7 @@ USAGE:
    koios-rest [global options] command [command options] [arguments...]
 
 VERSION:
-   0.1.0
+   (devel)
 
 AUTHOR:
    The Howijd.Network Authors
@@ -320,9 +320,9 @@ GLOBAL OPTIONS:
    --schema value          Set URL schema (default: "https")
    --origin value          Set Origin header for requests. (default: "https://github.com/howijd/koios-rest-go-client")
    --rate-limit value      Set API Client rate limit for outgoing requests (default: 5)
-   --ugly                  Ugly prints response json strings directly without calling json pretty. (default: false)
+   --no-format             prints response json strings directly without calling json pretty. (default: false)
    --enable-req-stats      Enable request stats. (default: false)
-   --no-color              Disable coloring output json. (default: false)
+   --testnet               use default testnet as host. (default: false)
    --help, -h              show help (default: false)
    --version, -v           print the version (default: false)
 

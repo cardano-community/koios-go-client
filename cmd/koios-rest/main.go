@@ -109,20 +109,12 @@ func handleErr(err error) {
 }
 
 func printResponseBody(ctx *cli.Context, body []byte) {
-	if ctx.Bool("ugly") {
-		if ctx.Bool("no-color") {
-			fmt.Println(string(body))
-			return
-		}
-		fmt.Println(string(pretty.Color(body, pretty.TerminalStyle)))
+	if ctx.Bool("no-format") {
+		fmt.Println(string(body))
 		return
 	}
-	pr := pretty.Pretty(body)
-	if ctx.Bool("no-color") {
-		fmt.Println(string(pr))
-		return
-	}
-	fmt.Println(string(pretty.Color(pr, pretty.TerminalStyle)))
+	fmt.Println(string(pretty.Pretty(body)))
+	return
 }
 
 type printable interface {
@@ -169,18 +161,13 @@ func globalFlags() []cli.Flag {
 			Value: uint(koios.DefaultRateLimit),
 		},
 		&cli.BoolFlag{
-			Name:  "ugly",
-			Usage: "Ugly prints response json strings directly without calling json pretty.",
+			Name:  "no-format",
+			Usage: "prints response json strings directly without calling json pretty.",
 			Value: false,
 		},
 		&cli.BoolFlag{
 			Name:  "enable-req-stats",
 			Usage: "Enable request stats.",
-			Value: false,
-		},
-		&cli.BoolFlag{
-			Name:  "no-color",
-			Usage: "Disable coloring output json.",
 			Value: false,
 		},
 		&cli.BoolFlag{
