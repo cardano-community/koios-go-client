@@ -31,11 +31,12 @@ import (
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
 ![license](https://img.shields.io/github/license/howijd/koios-rest-go-client)
+![GitHub last commit](https://img.shields.io/github/last-commit/howijd/koios-rest-go-client)
 
 ![tests](https://github.com/howijd/koios-rest-go-client/workflows/tests/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/howijd/koios-rest-go-client/badge.svg?branch=main)](https://coveralls.io/github/howijd/koios-rest-go-client?branch=main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/howijd/koios-rest-go-client)](https://goreportcard.com/report/github.com/howijd/koios-rest-go-client)
-![GitHub last commit](https://img.shields.io/github/last-commit/howijd/koios-rest-go-client)
+
 
 --- 
 
@@ -223,15 +224,6 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | **SCRIPT** | | | |
 | `/script_list` | [`*.GetScriptList(...) *ScriptRedeemersResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetScriptList) | `script-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_list) |
 | `/script_redeemers` | [`*.GetScriptRedeemers(...) *ScriptListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetScriptRedeemers) | `script-redeemers` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_redeemers) |
-
-
-<!-- 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)]() | [![](https://img.shields.io/badge/API-doc-%2349cc90)]()
--->
-<!-- LINKS -->
-[Koios API]: https://koios.rest "Koios API"
-[github.com/shopspring/decimal]: https://github.com/shopspring/decimal
-
 
 ## CLI Application
 
@@ -433,6 +425,6 @@ verify installation
 
 `koios-rest --version`
 
-
-
-
+<!-- LINKS -->
+[Koios API]: https://koios.rest "Koios API"
+[github.com/shopspring/decimal]: https://github.com/shopspring/decimal
