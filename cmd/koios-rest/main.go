@@ -35,6 +35,13 @@ var (
 	cancel  context.CancelFunc
 )
 
+var (
+	// Populated by goreleaser during build
+	version = "dev"
+	commit  = "?"
+	date    = ""
+)
+
 func main() {
 	api, err := koios.New()
 	handleErr(err)
@@ -48,7 +55,7 @@ func main() {
 	}()
 
 	app := &cli.App{
-		Version: koios.LibraryVersion,
+		Version: version,
 		Flags:   globalFlags(),
 		Authors: []*cli.Author{
 			&cli.Author{
@@ -59,7 +66,12 @@ func main() {
 		Usage:                "CLI Client to consume Koios API https://api.koios.rest",
 		EnableBashCompletion: true,
 		Before: func(c *cli.Context) error {
-			handleErr(koios.Host(c.String("host"))(api))
+
+			if c.Bool("testnet") {
+				handleErr(koios.Host(koios.TestnetHost)(api))
+			} else {
+				handleErr(koios.Host(c.String("host"))(api))
+			}
 			handleErr(koios.APIVersion(c.String("api-version"))(api))
 			handleErr(koios.Port(uint16(c.Uint("port")))(api))
 			handleErr(koios.Schema(c.String("schema"))(api))
@@ -169,6 +181,11 @@ func globalFlags() []cli.Flag {
 		&cli.BoolFlag{
 			Name:  "no-color",
 			Usage: "Disable coloring output json.",
+			Value: false,
+		},
+		&cli.BoolFlag{
+			Name:  "testnet",
+			Usage: "use default testnet as host.",
 			Value: false,
 		},
 	}
