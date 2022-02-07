@@ -56,6 +56,29 @@ type (
 		Response
 		Data *AddressInfo `json:"response"`
 	}
+
+	// AddressInfoResponse represents response from `/address_info` endpoint.
+	AddressTxsResponse struct {
+		Response
+		Data []TxHash `json:"response"`
+	}
+
+	AddressAsset struct {
+		// Asset Name (hex).
+		NameHEX string `json:"asset_name_hex"`
+
+		// Asset Policy ID (hex).
+		PolicyHEX string `json:"asset_policy_hex"`
+
+		// Quantity of asset accoiated to the given address.
+		Quantity Lovelace `json:"quantity"`
+	}
+
+	// AddressAssetsResponse represents response from `/address_info` endpoint.
+	AddressAssetsResponse struct {
+		Response
+		Data []AddressAsset `json:"response"`
+	}
 )
 
 // GetAddressInfo returns address info - balance,
@@ -96,12 +119,6 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 	}
 	res.ready()
 	return res, nil
-}
-
-// AddressInfoResponse represents response from `/address_info` endpoint.
-type AddressTxsResponse struct {
-	Response
-	Data []TxHash `json:"response"`
 }
 
 // GetAddressTxs returns the transaction hash list of input address array,
@@ -156,5 +173,41 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 			res.Data = append(res.Data, tx.Hash)
 		}
 	}
+	return res, nil
+}
+
+// GetAddressAssets returns the list of all the assets (policy, name and quantity)
+// for a given address.
+func (c *Client) GetAddressAssets(ctx context.Context, addr Address) (res *AddressAssetsResponse, err error) {
+	res = &AddressAssetsResponse{}
+	if len(addr) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+	params := url.Values{}
+	params.Set("_address", string(addr))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/address_assets", params, nil)
+	if err != nil {
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return
+	}
+
+	res.ready()
 	return res, nil
 }

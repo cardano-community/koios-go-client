@@ -3,7 +3,7 @@
 **:warning: UNTIL v1.0.0 RELEASE THIS LIBRARY MAY GET BREAKING CHANGES**
 
 - before updating e.g. `go get -u` check for changes to prevent inconveniences. 
-- `v1.0.0` enhancements are tracked under following issue howijd/koios-rest-go-client#1
+- `v1.0.0` enhancements are tracked under following [issue](https://github.com/howijd/koios-rest-go-client/issues/1)
 
 **[Koios API] is Elastic Cardano Query Layer!**
 
@@ -197,6 +197,7 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | ADDRESS | | | |
 | `/address_info` | [`*.GetAddressInfo(...) *AddressInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAddressInfo) | `address-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_info) |
 | `/address_txs` | [`*.GetAddressTxs(...) *AddressTxsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAddressTxs) | `address-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_txs) |
+| `/address_assets` | [`*.GetAddressAssets(...) *AddressAssetsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAddressAssets) | `address-assets` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_assets) |
 | ACCOUNT | | | |
 | POOL | | | |
 | SCRIPT | | | |

@@ -149,7 +149,7 @@ type (
 	// Asset info.
 	Asset struct {
 		// Asset Name (hex).
-		AssetName string `json:"asset_name"`
+		Name string `json:"asset_name"`
 
 		// Asset Policy ID (hex).
 		PolicyID string `json:"policy_id"`

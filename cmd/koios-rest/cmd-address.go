@@ -63,9 +63,18 @@ func addAddressCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "address-assets",
-			Category: "ADDRESS",
-			Usage:    "Get the list of all the assets (policy, name and quantity) for a given address.",
+			Name:      "address-assets",
+			Category:  "ADDRESS",
+			Usage:     "Get the list of all the assets (policy, name and quantity) for a given address.",
+			ArgsUsage: "[address]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("address-info requires single address")
+				}
+				res, err := api.GetAddressAssets(callctx, koios.Address(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "credential-txs",
