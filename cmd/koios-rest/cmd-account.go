@@ -65,12 +65,12 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 				if ctx.NArg() != 1 {
 					return errors.New("account-rewards requires single stake address")
 				}
-				var epochNo *koios.EpochNo
+				var epoch *koios.EpochNo
 				if ctx.Uint("epoch") > 0 {
 					v := koios.EpochNo(ctx.Uint64("epoch"))
-					epochNo = &v
+					epoch = &v
 				}
-				res, err := api.GetAccountRewards(callctx, koios.StakeAddress(ctx.Args().Get(0)), epochNo)
+				res, err := api.GetAccountRewards(callctx, koios.StakeAddress(ctx.Args().Get(0)), epoch)
 				output(ctx, res, err)
 				return nil
 			},

@@ -54,13 +54,13 @@ func addNetworkCommands(app *cli.App, api *koios.Client) {
 				},
 			},
 			Action: func(ctx *cli.Context) error {
-				var epochNo *koios.EpochNo
+				var epoch *koios.EpochNo
 				if ctx.Uint("epoch") > 0 {
 					v := koios.EpochNo(ctx.Uint("epoch"))
-					epochNo = &v
+					epoch = &v
 				}
 
-				res, err := api.GetTotals(callctx, epochNo)
+				res, err := api.GetTotals(callctx, epoch)
 				output(ctx, res, err)
 				return nil
 			},

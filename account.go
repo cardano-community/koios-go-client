@@ -196,13 +196,13 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 func (c *Client) GetAccountRewards(
 	ctx context.Context,
 	addr StakeAddress,
-	epochNo *EpochNo,
+	epoch *EpochNo,
 ) (res *AccountRewardsResponse, err error) {
 	res = &AccountRewardsResponse{}
 	params := url.Values{}
 	params.Set("_stake_address", string(addr))
-	if epochNo != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epochNo))
+	if epoch != nil {
+		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_rewards", params, nil)
 	if err != nil {

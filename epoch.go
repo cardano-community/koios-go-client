@@ -33,7 +33,7 @@ type (
 		BlkCount int `json:"blk_count"`
 
 		// Epoch number
-		EpochNo EpochNo `json:"epoch_no"`
+		Epoch EpochNo `json:"epoch_no"`
 
 		// Total fees incurred by transactions in epoch
 		Fees Lovelace `json:"fees"`
@@ -80,7 +80,7 @@ type (
 		Entropy string `json:"entropy"`
 
 		// Epoch number
-		EpochNo EpochNo `json:"epoch_no"`
+		Epoch EpochNo `json:"epoch_no"`
 
 		// The pledge influence on pool rewards
 		Influence float64 `json:"influence"`
@@ -167,11 +167,11 @@ type (
 )
 
 // GetEpochInfo returns the epoch information, all epochs if no epoch specified.
-func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (res *EpochInfoResponse, err error) {
+func (c *Client) GetEpochInfo(ctx context.Context, epoch *EpochNo) (res *EpochInfoResponse, err error) {
 	res = &EpochInfoResponse{}
 	params := url.Values{}
-	if epochNo != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epochNo))
+	if epoch != nil {
+		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/epoch_info", params, nil)
@@ -196,11 +196,11 @@ func (c *Client) GetEpochInfo(ctx context.Context, epochNo *EpochNo) (res *Epoch
 
 // GetEpochParams returns the protocol parameters for specific epoch,
 // and information about all epochs if no epoch specified.
-func (c *Client) GetEpochParams(ctx context.Context, epochNo *EpochNo) (res *EpochParamsResponse, err error) {
+func (c *Client) GetEpochParams(ctx context.Context, epoch *EpochNo) (res *EpochParamsResponse, err error) {
 	res = &EpochParamsResponse{}
 	params := url.Values{}
-	if epochNo != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epochNo))
+	if epoch != nil {
+		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/epoch_params", params, nil)

@@ -71,6 +71,7 @@ var (
 	ErrResponseIsNotJSON        = errors.New("go non json response")
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 	ErrNoAddress                = errors.New("missing address")
+	ErrNoPoolID                 = errors.New("missing pool id")
 )
 
 type (
@@ -101,9 +102,6 @@ type (
 	// PaymentCredential.
 	PaymentCredential string
 
-	// AnyAddress defines type for _any_address.
-	AnyAddress string
-
 	// AssetName defines type for _asset_name.
 	AssetName string
 
@@ -112,9 +110,6 @@ type (
 
 	// TxHash defines type for tx_hash.
 	TxHash string
-
-	// EarnedEpochNo defines type for _earned_epoch_no.
-	EarnedEpochNo string
 
 	// EpochNo defines type for _epoch_no.
 	EpochNo uint64

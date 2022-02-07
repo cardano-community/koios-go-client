@@ -113,7 +113,7 @@ type (
 		Circulation Lovelace `json:"circulation"`
 
 		// Epoch number.
-		EpochNo EpochNo `json:"epoch_no"`
+		Epoch EpochNo `json:"epoch_no"`
 
 		// Total Reserves yet to be unlocked on chain.
 		Reserves Lovelace `json:"reserves"`
@@ -194,10 +194,10 @@ func (c *Client) GetGenesis(ctx context.Context) (res *GenesisResponse, err erro
 
 // GetTotals returns the circulating utxo, treasury, rewards, supply and
 // reserves in lovelace for specified epoch, all epochs if empty.
-func (c *Client) GetTotals(ctx context.Context, epochNo *EpochNo) (res *TotalsResponse, err error) {
+func (c *Client) GetTotals(ctx context.Context, epoch *EpochNo) (res *TotalsResponse, err error) {
 	params := url.Values{}
-	if epochNo != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epochNo))
+	if epoch != nil {
+		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 	res = &TotalsResponse{}
 	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/totals", params, nil)

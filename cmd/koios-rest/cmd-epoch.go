@@ -35,13 +35,13 @@ func addEpochCommands(app *cli.App, api *koios.Client) {
 				},
 			},
 			Action: func(ctx *cli.Context) error {
-				var epochNo *koios.EpochNo
+				var epoch *koios.EpochNo
 				if ctx.Uint("epoch") > 0 {
 					v := koios.EpochNo(ctx.Uint64("epoch"))
-					epochNo = &v
+					epoch = &v
 				}
 
-				res, err := api.GetEpochInfo(callctx, epochNo)
+				res, err := api.GetEpochInfo(callctx, epoch)
 				output(ctx, res, err)
 				return nil
 			},
@@ -58,13 +58,13 @@ func addEpochCommands(app *cli.App, api *koios.Client) {
 				},
 			},
 			Action: func(ctx *cli.Context) error {
-				var epochNo *koios.EpochNo
+				var epoch *koios.EpochNo
 				if ctx.Uint("epoch") > 0 {
 					v := koios.EpochNo(ctx.Uint64("epoch"))
-					epochNo = &v
+					epoch = &v
 				}
 
-				res, err := api.GetEpochParams(callctx, epochNo)
+				res, err := api.GetEpochParams(callctx, epoch)
 				output(ctx, res, err)
 				return nil
 			},
