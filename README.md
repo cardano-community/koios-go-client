@@ -204,6 +204,7 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | `/account_info` | [`*.GetAccountInfo(...) *AccountListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountInfo) | `account-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_info) |
 | `/account_rewards` | [`*.GetAccountRewards(...) *AccountRewardsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountRewards) | `account-rewards` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_info) |
 | `/account_updates` | [`*.GetAccountUpdates(...) *AccountUpdatesResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountUpdates) | `account-updates` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_updates) |
+| `/account_addresses` | [`*.GetAccountAddresses(...) *AccountAddressesResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountAddresses) | `account-addresses` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_addresses) |
 | **POOL** | | | |
 | **SCRIPT** | | | |
 

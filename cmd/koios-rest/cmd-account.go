@@ -90,9 +90,18 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "account-addresses",
-			Category: "ACCOUNT",
-			Usage:    "Get all addresses associated with an account.",
+			Name:      "account-addresses",
+			Category:  "ACCOUNT",
+			Usage:     "Get all addresses associated with an account payment or staking address",
+			ArgsUsage: "[account]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("account-updates requires single stake or paymentaddress")
+				}
+				res, err := api.GetAccountAddresses(callctx, koios.StakeAddress(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "account-assets",

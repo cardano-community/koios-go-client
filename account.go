@@ -76,6 +76,12 @@ type (
 		Response
 		Data []AccountAction `json:"response"`
 	}
+
+	// AccountAddressesResponse represents response from `/account_addresses` endpoint.
+	AccountAddressesResponse struct {
+		Response
+		Data []Address `json:"response"`
+	}
 )
 
 // GetTip returns the tip info about the latest block seen by chain.
@@ -186,7 +192,7 @@ func (c *Client) GetAccountRewards(
 	return res, nil
 }
 
-// AccountUpdatesResponse (History) retruns the account updates
+// GetAccountUpdates (History) retruns the account updates
 // (registration, deregistration, delegation and withdrawals).
 func (c *Client) GetAccountUpdates(
 	ctx context.Context,
@@ -210,6 +216,48 @@ func (c *Client) GetAccountUpdates(
 	if err = json.Unmarshal(body, &res.Data); err != nil {
 		res.applyError(body, err)
 		return
+	}
+	res.ready()
+	return res, nil
+}
+
+// GetAccountAddresses all addresses associated with an account.
+func (c *Client) GetAccountAddresses(
+	ctx context.Context,
+	addr StakeAddress,
+) (res *AccountAddressesResponse, err error) {
+	res = &AccountAddressesResponse{}
+	params := url.Values{}
+	params.Set("_address", string(addr))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_addresses", params, nil)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	addrs := []struct {
+		Addr Address `json:"address"`
+	}{}
+
+	if err = json.Unmarshal(body, &addrs); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return
+	}
+	if len(addrs) > 0 {
+		for _, a := range addrs {
+			res.Data = append(res.Data, a.Addr)
+		}
 	}
 	res.ready()
 	return res, nil

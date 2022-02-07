@@ -182,6 +182,7 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 			res.Data = append(res.Data, tx.Hash)
 		}
 	}
+	res.ready()
 	return res, nil
 }
 
@@ -278,5 +279,6 @@ func (c *Client) GetCredentialTxs(
 			res.Data = append(res.Data, tx.Hash)
 		}
 	}
+	res.ready()
 	return res, nil
 }
