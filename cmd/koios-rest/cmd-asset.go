@@ -37,6 +37,27 @@ func addAssetCommands(app *cli.App, api *koios.Client) {
 			Name:     "asset-address-list",
 			Category: "ASSET",
 			Usage:    "Get the list of all addresses holding a given asset.",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:     "policy",
+					Usage:    "Asset Policy ID in hexadecimal format (hex)",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "name",
+					Usage:    "Asset Name in hexadecimal format (hex)",
+					Required: true,
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetAssetAddressList(
+					callctx,
+					koios.PolicyID(ctx.String("policy")),
+					koios.AssetName(ctx.String("name")),
+				)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "asset-info",

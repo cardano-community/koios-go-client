@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"net/url"
 )
 
 type (
@@ -52,12 +53,59 @@ type (
 		Response
 		Data []AssetListItem `json:"response"`
 	}
+
+	AssetHolder struct {
+		PaymentAddress Address  `json:"payment_address"`
+		Quantity       Lovelace `json:"quantity"`
+	}
+
+	// AssetAddressListResponse represents response from `/asset_address_list` endpoint.
+	AssetAddressListResponse struct {
+		Response
+		Data []AssetHolder `json:"response"`
+	}
 )
 
 // GetTip returns the list of all native assets (paginated).
 func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err error) {
 	res = &AssetListResponse{}
 	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/asset_list", nil, nil)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return
+	}
+	return res, nil
+}
+
+// GetAssetAddressList returns the list of all addresses holding a given asset.
+func (c *Client) GetAssetAddressList(
+	ctx context.Context,
+	policy PolicyID,
+	name AssetName,
+) (res *AssetAddressListResponse, err error) {
+	res = &AssetAddressListResponse{}
+
+	params := url.Values{}
+	params.Set("_asset_policy", string(policy))
+	params.Set("_asset_name", string(name))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/asset_address_list", params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
