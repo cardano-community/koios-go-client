@@ -201,6 +201,7 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | `/credential_txs` | [`*.GetCredentialTxs(...) *CredentialTxsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetCredentialTxs) | `credential-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/credential_txs) |
 | **ACCOUNT** | | | |
 | `/account_list` | [`*.GetAccountList(...) *AccountListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountList) | `account-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_list) |
+| `/account_info` | [`*.GetAccountInfo(...) *AccountListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountInfo) | `account-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_info) |
 | **POOL** | | | |
 | **SCRIPT** | | | |
 

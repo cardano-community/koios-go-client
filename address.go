@@ -90,6 +90,7 @@ type (
 
 // GetAddressInfo returns address info - balance,
 // associated stake address (if any) and UTxO set.
+//nolint: dupl
 func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *AddressInfoResponse, err error) {
 	res = &AddressInfoResponse{}
 	if len(addr) == 0 {

@@ -17,6 +17,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
 )
@@ -34,9 +36,18 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "account-info",
-			Category: "ACCOUNT",
-			Usage:    "Get the account info of any (payment or staking) address.",
+			Name:      "account-info",
+			Category:  "ACCOUNT",
+			Usage:     "Get the account info of any (payment or staking) address.",
+			ArgsUsage: "[account]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("account-info requires single address")
+				}
+				res, err := api.GetAccountInfo(callctx, koios.Address(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "account-rewards",

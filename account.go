@@ -20,14 +20,33 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"net/url"
 )
 
 type (
+	// AccountInfo date returned by `/account_info`.
+	AccountInfo struct {
+		Status           string     `json:"status"`
+		DelegatedPool    PoolBech32 `json:"delegated_pool"`
+		TotalBalance     Lovelace   `json:"total_balance"`
+		UTxO             Lovelace   `json:"utxo"`
+		Rewards          Lovelace   `json:"rewards"`
+		Withdrawals      Lovelace   `json:"withdrawals"`
+		RewardsAvailable Lovelace   `json:"rewards_available"`
+		Reserves         Lovelace   `json:"reserves"`
+		Treasury         Lovelace   `json:"treasury"`
+	}
 
 	// AccountListResponse represents response from `/account_list` endpoint.
 	AccountListResponse struct {
 		Response
 		Data []StakeAddress `json:"response"`
+	}
+
+	// AccountInfoResponse represents response from `/account_info` endpoint.
+	AccountInfoResponse struct {
+		Response
+		Data *AccountInfo `json:"response"`
 	}
 )
 
@@ -64,5 +83,45 @@ func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, 
 			res.Data = append(res.Data, a.ID)
 		}
 	}
+	return res, nil
+}
+
+// GetAccountInfo returns the account info of any (payment or staking) address.
+//nolint: dupl
+func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *AccountInfoResponse, err error) {
+	res = &AccountInfoResponse{}
+	if len(addr) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+	params := url.Values{}
+	params.Set("_address", string(addr))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_info", params, nil)
+	if err != nil {
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	addrs := []AccountInfo{}
+
+	if err = json.Unmarshal(body, &addrs); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return
+	}
+	if len(addrs) == 1 {
+		res.Data = &addrs[0]
+	}
+	res.ready()
 	return res, nil
 }
