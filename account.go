@@ -27,24 +27,31 @@ import (
 type (
 	// AccountInfo data returned by `/account_info`.
 	AccountInfo struct {
-		Status           string     `json:"status"`
-		DelegatedPool    PoolBech32 `json:"delegated_pool"`
-		TotalBalance     Lovelace   `json:"total_balance"`
-		UTxO             Lovelace   `json:"utxo"`
-		Rewards          Lovelace   `json:"rewards"`
-		Withdrawals      Lovelace   `json:"withdrawals"`
-		RewardsAvailable Lovelace   `json:"rewards_available"`
-		Reserves         Lovelace   `json:"reserves"`
-		Treasury         Lovelace   `json:"treasury"`
+		Status           string   `json:"status"`
+		DelegatedPool    PoolID   `json:"delegated_pool"`
+		TotalBalance     Lovelace `json:"total_balance"`
+		UTxO             Lovelace `json:"utxo"`
+		Rewards          Lovelace `json:"rewards"`
+		Withdrawals      Lovelace `json:"withdrawals"`
+		RewardsAvailable Lovelace `json:"rewards_available"`
+		Reserves         Lovelace `json:"reserves"`
+		Treasury         Lovelace `json:"treasury"`
 	}
 
 	// AccountRewards data returned by `/account_rewards`.
 	AccountRewards struct {
-		PoolID         PoolBech32 `json:"pool_id"`
-		EarnedEpoch    EpochNo    `json:"earned_epoch"`
-		SpendableEpoch EpochNo    `json:"spendable_epoch"`
-		Amount         Lovelace   `json:"amount"`
-		Type           string     `json:"type"`
+		PoolID         PoolID   `json:"pool_id"`
+		EarnedEpoch    EpochNo  `json:"earned_epoch"`
+		SpendableEpoch EpochNo  `json:"spendable_epoch"`
+		Amount         Lovelace `json:"amount"`
+		Type           string   `json:"type"`
+	}
+
+	AccountHistoryEntry struct {
+		StakeAddress StakeAddress `json:"stake_address"`
+		PoolID       PoolID       `json:"pool_id"`
+		Epoch        EpochNo      `json:"epoch_no"`
+		ActiveStake  Lovelace     `json:"active_stake"`
 	}
 
 	// AccountAsset.
@@ -99,6 +106,12 @@ type (
 	AccountAssetsResponse struct {
 		Response
 		Data []AccountAsset `json:"response"`
+	}
+
+	// AccountHistoryResponse represents response from `/account_history` endpoint.
+	AccountHistoryResponse struct {
+		Response
+		Data []AccountHistoryEntry `json:"response"`
 	}
 )
 
@@ -291,6 +304,39 @@ func (c *Client) GetAccountAssets(
 	params.Set("_address", string(addr))
 
 	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_assets", params, nil)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return
+	}
+	res.ready()
+	return res, nil
+}
+
+// GetAccountHistory retruns the staking history of an account.
+func (c *Client) GetAccountHistory(
+	ctx context.Context,
+	addr StakeAddress,
+) (res *AccountHistoryResponse, err error) {
+	res = &AccountHistoryResponse{}
+	params := url.Values{}
+	params.Set("_address", string(addr))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_history", params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return

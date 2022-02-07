@@ -121,6 +121,14 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 			Name:     "account-history",
 			Category: "ACCOUNT",
 			Usage:    "Get the staking history of an account.",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("account-history requires single stake or payment address")
+				}
+				res, err := api.GetAccountHistory(callctx, koios.StakeAddress(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 	}...)
 }

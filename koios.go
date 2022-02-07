@@ -122,8 +122,8 @@ type (
 	// EpochNo defines type for _epoch_no.
 	EpochNo uint64
 
-	// PoolBech32 defines type for _pool_bech32.
-	PoolBech32 string
+	// PoolID defines (hex).
+	PoolID string
 
 	// ScriptHash defines type for _script_hash.
 	ScriptHash string
@@ -152,7 +152,7 @@ type (
 		Name string `json:"asset_name"`
 
 		// Asset Policy ID (hex).
-		PolicyID string `json:"policy_id"`
+		PolicyID PoolID `json:"policy_id"`
 
 		// Quantity
 		// Input: asset balance on the selected input transaction.
