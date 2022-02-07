@@ -210,6 +210,9 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | **ASSET** | | | |
 | `/asset_list` | [`*.GetAssetList(...) *AssetAddressListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetList) | `asset-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_address_list) |
 | `/asset_address_list` | [`*.GetAssetAddressList(...) *AssetAddressListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetAddressList) | `asset-address-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_address_list) |
+| `/asset_info` | [`*.GetAssetInfo(...) *AssetInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetInfo) | `asset-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_info) |
+| `/asset_summary` | [`*.GetAssetSummary(...) *AssetSummaryResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetSummary) | `asset-summary` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_summary) |
+| `/asset_txs` | [`*.GetAssetTxs(...) *AssetTxsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetTxs) | `asset-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_txs) |
 | **POOL** | | | |
 | **SCRIPT** | | | |
 

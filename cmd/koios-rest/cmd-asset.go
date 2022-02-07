@@ -63,16 +63,79 @@ func addAssetCommands(app *cli.App, api *koios.Client) {
 			Name:     "asset-info",
 			Category: "ASSET",
 			Usage:    "Get the information of an asset including first minting & token registry metadata.",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:     "policy",
+					Usage:    "Asset Policy ID in hexadecimal format (hex)",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "name",
+					Usage:    "Asset Name in hexadecimal format (hex)",
+					Required: true,
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetAssetInfo(
+					callctx,
+					koios.PolicyID(ctx.String("policy")),
+					koios.AssetName(ctx.String("name")),
+				)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "asset-summary",
 			Category: "ASSET",
 			Usage:    "Get the summary of an asset (total transactions exclude minting/total wallets include only wallets with asset balance).",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:     "policy",
+					Usage:    "Asset Policy ID in hexadecimal format (hex)",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "name",
+					Usage:    "Asset Name in hexadecimal format (hex)",
+					Required: true,
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetAssetSummary(
+					callctx,
+					koios.PolicyID(ctx.String("policy")),
+					koios.AssetName(ctx.String("name")),
+				)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "asset-txs",
 			Category: "ASSET",
 			Usage:    "Get the list of all asset transaction hashes (newest first).",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:     "policy",
+					Usage:    "Asset Policy ID in hexadecimal format (hex)",
+					Required: true,
+				},
+				&cli.StringFlag{
+					Name:     "name",
+					Usage:    "Asset Name in hexadecimal format (hex)",
+					Required: true,
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetAssetTxs(
+					callctx,
+					koios.PolicyID(ctx.String("policy")),
+					koios.AssetName(ctx.String("name")),
+				)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 	}...)
 }
