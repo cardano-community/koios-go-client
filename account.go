@@ -19,12 +19,13 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 )
 
 type (
-	// AccountInfo date returned by `/account_info`.
+	// AccountInfo data returned by `/account_info`.
 	AccountInfo struct {
 		Status           string     `json:"status"`
 		DelegatedPool    PoolBech32 `json:"delegated_pool"`
@@ -37,6 +38,15 @@ type (
 		Treasury         Lovelace   `json:"treasury"`
 	}
 
+	// AccountRewards data returned by `/account_rewards`.
+	AccountRewards struct {
+		PoolID         PoolBech32 `json:"pool_id"`
+		EarnedEpoch    EpochNo    `json:"earned_epoch"`
+		SpendableEpoch EpochNo    `json:"spendable_epoch"`
+		Amount         Lovelace   `json:"amount"`
+		Type           string     `json:"type"`
+	}
+
 	// AccountListResponse represents response from `/account_list` endpoint.
 	AccountListResponse struct {
 		Response
@@ -47,6 +57,12 @@ type (
 	AccountInfoResponse struct {
 		Response
 		Data *AccountInfo `json:"response"`
+	}
+
+	// AccountRewardsResponse represents response from `/account_rewards` endpoint.
+	AccountRewardsResponse struct {
+		Response
+		Data []AccountRewards `json:"response"`
 	}
 )
 
@@ -121,6 +137,38 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 	}
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
+	}
+	res.ready()
+	return res, nil
+}
+
+// GetAccountRewards retruns the full rewards history (including MIR)
+// for a stake address, or certain epoch if specified.
+func (c *Client) GetAccountRewards(
+	ctx context.Context,
+	addr StakeAddress,
+	epochNo *EpochNo,
+) (res *AccountRewardsResponse, err error) {
+	res = &AccountRewardsResponse{}
+	params := url.Values{}
+	params.Set("_stake_address", string(addr))
+	if epochNo != nil {
+		params.Set("_epoch_no", fmt.Sprint(*epochNo))
+	}
+	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_rewards", params, nil)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if err = json.Unmarshal(body, &res.Data); err != nil {
+		res.applyError(body, err)
+		return
 	}
 	res.ready()
 	return res, nil

@@ -125,9 +125,6 @@ type (
 	// PoolBech32 defines type for _pool_bech32.
 	PoolBech32 string
 
-	// PoolBech32Optional defines type for _pool_bech32_optional.
-	PoolBech32Optional string
-
 	// ScriptHash defines type for _script_hash.
 	ScriptHash string
 

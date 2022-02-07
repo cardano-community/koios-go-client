@@ -28,15 +28,16 @@ func addEpochCommands(app *cli.App, api *koios.Client) {
 			Category: "EPOCH",
 			Usage:    "Get the epoch information, all epochs if no epoch specified.",
 			Flags: []cli.Flag{
-				&cli.UintFlag{
-					Name:  "epoch-no",
+				&cli.Uint64Flag{
+					Name:  "epoch",
 					Usage: "Epoch Number to fetch details for",
+					Value: uint64(0),
 				},
 			},
 			Action: func(ctx *cli.Context) error {
 				var epochNo *koios.EpochNo
-				if ctx.Uint("epoch-no") > 0 {
-					v := koios.EpochNo(ctx.Uint("epoch-no"))
+				if ctx.Uint("epoch") > 0 {
+					v := koios.EpochNo(ctx.Uint64("epoch"))
 					epochNo = &v
 				}
 
@@ -50,15 +51,16 @@ func addEpochCommands(app *cli.App, api *koios.Client) {
 			Category: "EPOCH",
 			Usage:    "Get the protocol parameters for specific epoch, returns information about all epochs if no epoch specified.",
 			Flags: []cli.Flag{
-				&cli.UintFlag{
-					Name:  "epoch-no",
+				&cli.Uint64Flag{
+					Name:  "epoch",
 					Usage: "Epoch Number to fetch details for",
+					Value: uint64(0),
 				},
 			},
 			Action: func(ctx *cli.Context) error {
 				var epochNo *koios.EpochNo
-				if ctx.Uint("epoch-no") > 0 {
-					v := koios.EpochNo(ctx.Uint("epoch-no"))
+				if ctx.Uint("epoch") > 0 {
+					v := koios.EpochNo(ctx.Uint64("epoch"))
 					epochNo = &v
 				}
 

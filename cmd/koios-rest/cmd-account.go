@@ -50,9 +50,30 @@ func addAccountCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "account-rewards",
-			Category: "ACCOUNT",
-			Usage:    "Get the full rewards history (including MIR) for a stake address, or certain epoch if specified.",
+			Name:      "account-rewards",
+			Category:  "ACCOUNT",
+			Usage:     "Get the full rewards history (including MIR) for a stake address, or certain epoch if specified.",
+			ArgsUsage: "[stake-address]",
+			Flags: []cli.Flag{
+				&cli.Uint64Flag{
+					Name:  "epoch",
+					Usage: "Filter for earned rewards Epoch Number.",
+					Value: uint64(0),
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("account-rewards requires single stake address")
+				}
+				var epochNo *koios.EpochNo
+				if ctx.Uint("epoch") > 0 {
+					v := koios.EpochNo(ctx.Uint64("epoch"))
+					epochNo = &v
+				}
+				res, err := api.GetAccountRewards(callctx, koios.StakeAddress(ctx.Args().Get(0)), epochNo)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
 			Name:     "account-updates",
