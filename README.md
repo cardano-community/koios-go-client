@@ -2,6 +2,8 @@
 
 **:warning: UNTIL v1.0.0 RELEASE THIS LIBRARY MAY GET BREAKING CHANGES**
 
+![license](https://img.shields.io/github/license/howijd/koios-rest-go-client)
+
 - before updating e.g. `go get -u` check for changes to prevent inconveniences. 
 - `v1.0.0` enhancements are tracked under following [issue](https://github.com/howijd/koios-rest-go-client/issues/1)
 
@@ -10,9 +12,10 @@
 > A consistent query layer for developers to build upon Cardano, with   
 > multiple, redundant endpoints that allow for easy scalability.
 
-**Repository contains**
+**[Koios API] Client Library for Go**
 
-1. **[Koios API] Client Library for Go**
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
+[![Go Report Card](https://goreportcard.com/badge/github.com/howijd/koios-rest-go-client)](https://goreportcard.com/report/github.com/howijd/koios-rest-go-client)
 
 ```
 go get github.com/howijd/koios-rest-go-client
@@ -25,18 +28,22 @@ import (
 ...
 ```
 
-2. **CLI Application to interact with [Koios API] from Command-line see**
+**CLI Application to interact with [Koios API] from Command-line see**
 
 [See installing instruction](#cli-application)
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
-![license](https://img.shields.io/github/license/howijd/koios-rest-go-client)
+**Build Status**
+
+[![linux](https://github.com/howijd/koios-rest-go-client/workflows/linux/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/linux.yaml)
+[![macos](https://github.com/howijd/koios-rest-go-client/workflows/macos/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/macos.yaml)
+[![windows](https://github.com/howijd/koios-rest-go-client/workflows/windows/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/windows.yaml)
+
+**Development Status**
+
 ![GitHub last commit](https://img.shields.io/github/last-commit/howijd/koios-rest-go-client)
-
-![tests](https://github.com/howijd/koios-rest-go-client/workflows/tests/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/howijd/koios-rest-go-client/badge.svg?branch=main)](https://coveralls.io/github/howijd/koios-rest-go-client?branch=main)
-[![Go Report Card](https://goreportcard.com/badge/github.com/howijd/koios-rest-go-client)](https://goreportcard.com/report/github.com/howijd/koios-rest-go-client)
-
+[![coverage](https://coveralls.io/repos/github/howijd/koios-rest-go-client/badge.svg?branch=main)](https://coveralls.io/github/howijd/koios-rest-go-client?branch=main)
+[![codeql](https://github.com/howijd/koios-rest-go-client/workflows/codeql/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/codeql.yaml)
+[![misspell](https://github.com/howijd/koios-rest-go-client/workflows/misspell/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/misspell.yaml)
 
 --- 
 

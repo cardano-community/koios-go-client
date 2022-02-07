@@ -66,6 +66,20 @@ func (c *Client) GET(
 	return c.request(ctx, nil, "GET", nil, path, query, headers)
 }
 
+// BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0
+func (c *Client) BaseURL() string {
+	c.mux.RLock()
+	defer c.mux.RUnlock()
+	return c.url.String()
+}
+
+// TotalRequests retruns number of total requests made by API client.
+func (c *Client) TotalRequests() uint64 {
+	c.mux.RLock()
+	defer c.mux.RUnlock()
+	return c.totalReq
+}
+
 func (c *Client) request(
 	ctx context.Context,
 	res *Response,
@@ -196,20 +210,6 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 
 	res.applyRsp(rsp)
 	return rsp, nil
-}
-
-// BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0
-func (c *Client) BaseURL() string {
-	c.mux.RLock()
-	defer c.mux.RUnlock()
-	return c.url.String()
-}
-
-// TotalRequests retruns number of total requests made by API client.
-func (c *Client) TotalRequests() uint {
-	c.mux.RLock()
-	defer c.mux.RUnlock()
-	return c.totalReq
 }
 
 func (c *Client) updateBaseURL() error {

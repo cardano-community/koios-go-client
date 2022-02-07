@@ -56,7 +56,7 @@ const (
 	DefaultAPIVersion        = "v0"
 	DefaultPort       uint16 = 443
 	DefaultSchema            = "https"
-	LibraryVersion           = "0.1.0"
+	LibraryVersion           = "v0"
 	DefaultRateLimit  uint8  = 5
 	DefaultOrigin            = "https://github.com/howijd/koios-rest-go-client"
 )
@@ -88,7 +88,7 @@ type (
 		commonHeaders   http.Header
 		reqInterval     time.Duration
 		lastRequest     time.Time
-		totalReq        uint
+		totalReq        uint64
 		reqStatsEnabled bool
 	}
 
