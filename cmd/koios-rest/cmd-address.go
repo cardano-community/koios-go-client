@@ -77,9 +77,27 @@ func addAddressCommands(app *cli.App, api *koios.Client) {
 			},
 		},
 		{
-			Name:     "credential-txs",
-			Category: "ADDRESS",
-			Usage:    "Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive).",
+			Name:      "credential-txs",
+			Category:  "ADDRESS",
+			Usage:     "Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive).",
+			ArgsUsage: "[address...]",
+			Flags: []cli.Flag{
+				&cli.Uint64Flag{
+					Name:  "after-block-height",
+					Usage: "Get transactions after specified block height.",
+					Value: uint64(0),
+				},
+			},
+			Action: func(ctx *cli.Context) error {
+				var credentials []koios.PaymentCredential
+				for _, c := range ctx.Args().Slice() {
+					credentials = append(credentials, koios.PaymentCredential(c))
+				}
+
+				res, err := api.GetCredentialTxs(callctx, credentials, ctx.Uint64("after-block-height"))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 	}...)
 }

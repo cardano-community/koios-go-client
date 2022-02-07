@@ -98,6 +98,9 @@ type (
 	// Address defines type for _address.
 	Address string
 
+	// PaymentCredential.
+	PaymentCredential string
+
 	// AnyAddress defines type for _any_address.
 	AnyAddress string
 
@@ -168,7 +171,7 @@ type (
 		Bech32 string `json:"bech32"`
 
 		// Payment credential.
-		Cred string `json:"cred"`
+		Cred PaymentCredential `json:"cred"`
 	}
 
 	// Certificate information.

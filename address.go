@@ -57,12 +57,19 @@ type (
 		Data *AddressInfo `json:"response"`
 	}
 
-	// AddressInfoResponse represents response from `/address_info` endpoint.
+	// AddressTxsResponse represents response from `/address_txs` endpoint.
 	AddressTxsResponse struct {
 		Response
 		Data []TxHash `json:"response"`
 	}
 
+	// CredentialTxsResponse represents response from `/credential_txs` endpoint.
+	CredentialTxsResponse struct {
+		Response
+		Data []TxHash `json:"response"`
+	}
+
+	// AddressAsset payload item returned by.
 	AddressAsset struct {
 		// Asset Name (hex).
 		NameHEX string `json:"asset_name_hex"`
@@ -123,6 +130,7 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 
 // GetAddressTxs returns the transaction hash list of input address array,
 // optionally filtering after specified block height (inclusive).
+//nolint: dupl
 func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (res *AddressTxsResponse, err error) {
 	res = &AddressTxsResponse{}
 	if len(addrs) == 0 {
@@ -209,5 +217,65 @@ func (c *Client) GetAddressAssets(ctx context.Context, addr Address) (res *Addre
 	}
 
 	res.ready()
+	return res, nil
+}
+
+// GetCredentialTxs returns the transaction hash list of input
+// payment credential array, optionally filtering after specified block height (inclusive).
+//nolint: dupl
+func (c *Client) GetCredentialTxs(
+	ctx context.Context,
+	creds []PaymentCredential,
+	h uint64,
+) (res *CredentialTxsResponse, err error) {
+	res = &CredentialTxsResponse{}
+	if len(creds) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+
+	var payload = struct {
+		Credentials      []PaymentCredential `json:"_payment_credentials"`
+		AfterBlockHeight uint64              `json:"_after_block_height,omitempty"`
+	}{
+		Credentials:      creds,
+		AfterBlockHeight: h,
+	}
+
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp, err := c.request(ctx, &res.Response, "POST", rpipe, "/credential_txs", nil, nil)
+	if err != nil {
+		return
+	}
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	atxs := []struct {
+		Hash TxHash `json:"tx_hash"`
+	}{}
+
+	if err = json.Unmarshal(body, &atxs); err != nil {
+		res.applyError(body, err)
+		return
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		res.applyError(body, err)
+		return
+	}
+	if len(atxs) > 0 {
+		for _, tx := range atxs {
+			res.Data = append(res.Data, tx.Hash)
+		}
+	}
 	return res, nil
 }
