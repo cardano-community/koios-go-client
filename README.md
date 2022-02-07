@@ -169,8 +169,6 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 
 ## Implemented Endpoints
 
-> WORK IN PROGRESS
-
 | **endpoint** | Go API | CLI command | API Doc |
 | --- | --- | --- | --- | 
 | **NETWORK** | | | |
@@ -223,6 +221,9 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 | `/pool_relays` | [`*.GetPoolRelays(...) *PoolRelaysResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolRelays) | `pool-relays` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_relays) |
 | `/pool_metadata` | [`*.GetPoolMetadata(...) *PoolMetadataResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolMetadata) | `pool-metadata` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_metadata) |
 | **SCRIPT** | | | |
+| `/script_list` | [`*.GetScriptList(...) *ScriptRedeemersResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetScriptList) | `script-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_list) |
+| `/script_redeemers` | [`*.GetScriptRedeemers(...) *ScriptListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetScriptRedeemers) | `script-redeemers` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_redeemers) |
+
 
 <!-- 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)]() | [![](https://img.shields.io/badge/API-doc-%2349cc90)]()

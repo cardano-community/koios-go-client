@@ -17,6 +17,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/howijd/koios-rest-go-client"
 	"github.com/urfave/cli/v2"
 )
@@ -27,11 +29,25 @@ func addScriptCommands(app *cli.App, api *koios.Client) {
 			Name:     "script-list",
 			Category: "SCRIPT",
 			Usage:    "List of all existing script hashes along with their creation transaction hashes.",
+			Action: func(ctx *cli.Context) error {
+				res, err := api.GetScriptList(callctx)
+				output(ctx, res, err)
+				return nil
+			},
 		},
 		{
-			Name:     "script-redeemers",
-			Category: "SCRIPT",
-			Usage:    "List of all redeemers for a given script hash.",
+			Name:      "script-redeemers",
+			Category:  "SCRIPT",
+			Usage:     "List of all redeemers for a given script hash.",
+			ArgsUsage: "[script_hash]",
+			Action: func(ctx *cli.Context) error {
+				if ctx.NArg() != 1 {
+					return errors.New("script-redeemers requires single script-hash as arg")
+				}
+				res, err := api.GetScriptRedeemers(callctx, koios.ScriptHash(ctx.Args().Get(0)))
+				output(ctx, res, err)
+				return nil
+			},
 		},
 	}...)
 }
