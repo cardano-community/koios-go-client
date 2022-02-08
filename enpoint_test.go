@@ -18,6 +18,7 @@ package koios_test
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -41,7 +42,7 @@ func TestNetworkTipEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Len(t, expected, 1)
-	assert.Equal(t, expected[0], *res.Data)
+	assert.Equal(t, &expected[0], res.Data)
 }
 
 func TestNetworkGenesiEndpoint(t *testing.T) {
@@ -59,7 +60,7 @@ func TestNetworkGenesiEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Len(t, expected, 1)
-	assert.Equal(t, expected[0], *res.Data)
+	assert.Equal(t, &expected[0], res.Data)
 }
 
 func TestNetworkTotalsEndpoint(t *testing.T) {
@@ -258,4 +259,94 @@ func TestAccountHistoryEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetAddressInfoEndpoint(t *testing.T) {
+	expected := []koios.AddressInfo{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_address_info.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAddressInfo(context.TODO(), koios.Address(spec.Request.Query.Get("_address")))
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestGetAddressTxsEndpoint(t *testing.T) {
+	expected := []struct {
+		TxHash koios.TxHash `json:"tx_hash"`
+	}{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_address_txs.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	var payload = struct {
+		Adresses         []koios.Address `json:"_addresses"`
+		AfterBlockHeight uint64          `json:"_after_block_height,omitempty"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.GetAddressTxs(context.TODO(), payload.Adresses, payload.AfterBlockHeight)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	for _, e := range expected {
+		assert.Contains(t, res.Data, e.TxHash)
+	}
+}
+
+func TestGetAddressAssetsEndpoint(t *testing.T) {
+	expected := []koios.AddressAsset{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_address_assets.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAddressAssets(context.TODO(), koios.Address(spec.Request.Query.Get("_address")))
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetCredentialTxsEndpoint(t *testing.T) {
+	expected := []struct {
+		TxHash koios.TxHash `json:"tx_hash"`
+	}{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_credential_txs.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	var payload = struct {
+		Credentials      []koios.PaymentCredential `json:"_payment_credentials"`
+		AfterBlockHeight uint64                    `json:"_after_block_height,omitempty"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.GetCredentialTxs(context.TODO(), payload.Credentials, payload.AfterBlockHeight)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	for _, e := range expected {
+		assert.Contains(t, res.Data, e.TxHash)
+	}
 }
