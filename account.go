@@ -118,7 +118,7 @@ type (
 // GetTip returns the tip info about the latest block seen by chain.
 func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, err error) {
 	res = &AccountListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_list", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_list", nil, nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -163,7 +163,7 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_info", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_info", nil, params, nil)
 	if err != nil {
 		return
 	}
@@ -204,7 +204,7 @@ func (c *Client) GetAccountRewards(
 	if epoch != nil {
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_rewards", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_rewards", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -233,7 +233,7 @@ func (c *Client) GetAccountUpdates(
 	params := url.Values{}
 	params.Set("_stake_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_updates", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_updates", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -261,7 +261,7 @@ func (c *Client) GetAccountAddresses(
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_addresses", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_addresses", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -303,7 +303,7 @@ func (c *Client) GetAccountAssets(
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_assets", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_assets", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -336,7 +336,7 @@ func (c *Client) GetAccountHistory(
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/account_history", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_history", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return

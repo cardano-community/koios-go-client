@@ -89,7 +89,7 @@ type (
 // hashes along with their creation transaction hashes.
 func (c *Client) GetScriptList(ctx context.Context) (res *ScriptListResponse, err error) {
 	res = &ScriptListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/script_list", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/script_list", nil, nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -123,7 +123,7 @@ func (c *Client) GetScriptRedeemers(
 	params := url.Values{}
 	params.Set("_script_hash", fmt.Sprint(sh))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/script_redeemers", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/script_redeemers", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return

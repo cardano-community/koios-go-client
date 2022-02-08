@@ -36,7 +36,7 @@ func (c *Client) HEAD(
 	query url.Values,
 	headers http.Header,
 ) (*http.Response, error) {
-	return c.request(ctx, nil, "HEAD", nil, path, query, headers)
+	return c.request(ctx, nil, "HEAD", path, nil, query, headers)
 }
 
 // POST sends api http POST request to provided relative path with query params
@@ -45,12 +45,12 @@ func (c *Client) HEAD(
 // e.g. Caller should close resp.Body when done reading from it.
 func (c *Client) POST(
 	ctx context.Context,
-	body io.Reader,
 	path string,
+	body io.Reader,
 	query url.Values,
 	headers http.Header,
 ) (*http.Response, error) {
-	return c.request(ctx, nil, "POST", body, path, query, headers)
+	return c.request(ctx, nil, "POST", path, body, query, headers)
 }
 
 // GET sends api http GET request to provided relative path with query params
@@ -63,7 +63,7 @@ func (c *Client) GET(
 	query url.Values,
 	headers http.Header,
 ) (*http.Response, error) {
-	return c.request(ctx, nil, "GET", nil, path, query, headers)
+	return c.request(ctx, nil, "GET", path, nil, query, headers)
 }
 
 // BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0
@@ -83,21 +83,21 @@ func (c *Client) TotalRequests() uint64 {
 func (c *Client) request(
 	ctx context.Context,
 	res *Response,
-	m string,
+	method string,
+	path string,
 	body io.Reader,
-	p string,
 	query url.Values,
 	headers http.Header) (*http.Response, error) {
 	var (
 		requrl string
 	)
 
-	p = strings.TrimLeft(p, "/")
+	path = strings.TrimLeft(path, "/")
 	c.mux.RLock()
 	if query == nil {
-		requrl = c.url.ResolveReference(&url.URL{Path: p}).String()
+		requrl = c.url.ResolveReference(&url.URL{Path: path}).String()
 	} else {
-		requrl = c.url.ResolveReference(&url.URL{Path: p, RawQuery: query.Encode()}).String()
+		requrl = c.url.ResolveReference(&url.URL{Path: path, RawQuery: query.Encode()}).String()
 	}
 	if res != nil {
 		res.RequestURL = requrl
@@ -120,7 +120,7 @@ func (c *Client) request(
 	// Release client so that other requests can use it.
 	c.mux.Unlock()
 
-	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(m), requrl, body)
+	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), requrl, body)
 	if err != nil {
 		if res != nil {
 			res.applyError(nil, err)

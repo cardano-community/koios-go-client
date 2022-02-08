@@ -138,8 +138,8 @@ type (
 
 	// AssetInfoResponse represents response from `/asset_info` endpoint.
 	AssetInfoResponse struct {
-		Response
 		Data *AssetInfo `json:"response"`
+		Response
 	}
 
 	// AssetSummaryResponse represents response from `/asset_summary` endpoint.
@@ -158,7 +158,7 @@ type (
 // GetTip returns the list of all native assets (paginated).
 func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err error) {
 	res = &AssetListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/asset_list", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_list", nil, nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -194,7 +194,7 @@ func (c *Client) GetAssetAddressList(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/asset_address_list", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -232,7 +232,7 @@ func (c *Client) GetAssetInfo(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/asset_info", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_info", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -277,7 +277,7 @@ func (c *Client) GetAssetSummary(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/asset_summary", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -320,7 +320,7 @@ func (c *Client) GetAssetTxs(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/asset_txs", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return

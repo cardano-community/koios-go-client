@@ -101,7 +101,7 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/address_info", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/address_info", nil, params, nil)
 	if err != nil {
 		return
 	}
@@ -154,7 +154,7 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 		defer w.Close()
 	}()
 
-	rsp, err := c.request(ctx, &res.Response, "POST", rpipe, "/address_txs", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/address_txs", rpipe, nil, nil)
 	if err != nil {
 		return
 	}
@@ -198,7 +198,7 @@ func (c *Client) GetAddressAssets(ctx context.Context, addr Address) (res *Addre
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/address_assets", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/address_assets", nil, params, nil)
 	if err != nil {
 		return
 	}
@@ -251,7 +251,7 @@ func (c *Client) GetCredentialTxs(
 		defer w.Close()
 	}()
 
-	rsp, err := c.request(ctx, &res.Response, "POST", rpipe, "/credential_txs", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, nil, nil)
 	if err != nil {
 		return
 	}

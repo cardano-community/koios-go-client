@@ -19,9 +19,7 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 
@@ -94,18 +92,6 @@ func main() {
 	addScriptCommands(app, api)
 
 	handleErr(app.Run(os.Args))
-}
-
-func handleErr(err error) {
-	if err == nil {
-		return
-	}
-	trace := err
-	for errors.Unwrap(trace) != nil {
-		trace = errors.Unwrap(trace)
-		log.Println(trace)
-	}
-	log.Fatal(err)
 }
 
 func printResponseBody(ctx *cli.Context, body []byte) {

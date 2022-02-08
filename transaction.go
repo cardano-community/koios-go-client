@@ -267,7 +267,7 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosRe
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_info", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_info", txHashesPL(txs), nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -295,7 +295,7 @@ func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (res *TxUTxOsRes
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_utxos", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -334,7 +334,7 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_metadata", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_metadata", txHashesPL(txs), nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -356,7 +356,7 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 // GetTxMetadataLabels retruns a list of all transaction metalabels.
 func (c *Client) GetTxMetaLabels(ctx context.Context) (res *TxMetaLabelsResponse, err error) {
 	res = &TxMetaLabelsResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/tx_metalabels", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -388,7 +388,7 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (res *Submi
 	h := http.Header{}
 	h.Set("Content-Type", "application/cbor")
 	h.Set("Content-Length", fmt.Sprint(len(cborb)))
-	rsp, err := c.request(ctx, &res.Response, "POST", bytes.NewBuffer(cborb), "/submittx", nil, h)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/submittx", bytes.NewBuffer(cborb), nil, h)
 
 	if err != nil {
 		res.applyError(nil, err)
@@ -430,7 +430,7 @@ func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (res *TxsStat
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", txHashesPL(txs), "/tx_status", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_status", txHashesPL(txs), nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return

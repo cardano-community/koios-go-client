@@ -139,7 +139,7 @@ type (
 // GetTip returns the tip info about the latest block seen by chain.
 func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
 	res = &TipResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/tip", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/tip", nil, nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -166,7 +166,7 @@ func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
 // GetGenesis returns the Genesis parameters used to start specific era on chain.
 func (c *Client) GetGenesis(ctx context.Context) (res *GenesisResponse, err error) {
 	res = &GenesisResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/genesis", nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/genesis", nil, nil, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
@@ -200,7 +200,7 @@ func (c *Client) GetTotals(ctx context.Context, epoch *EpochNo) (res *TotalsResp
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 	res = &TotalsResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", nil, "/totals", params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/totals", nil, params, nil)
 	if err != nil {
 		res.applyError(nil, err)
 		return
