@@ -127,3 +127,135 @@ func TestEpochParamsEndpoint(t *testing.T) {
 	assert.Len(t, expected, 1)
 	assert.Equal(t, expected[0], res.Data[0])
 }
+
+func TestAccountListEndpoint(t *testing.T) {
+	expected := []struct {
+		StakeAddress koios.StakeAddress `json:"id"`
+	}{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_account_list.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAccountList(context.TODO())
+	assert.NoError(t, err)
+
+	testHeaders(t, spec, res.Response)
+
+	for _, e := range expected {
+		assert.Contains(t, res.Data, e.StakeAddress)
+	}
+}
+
+func TestAccountInfoEndpoint(t *testing.T) {
+	expected := []koios.AccountInfo{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_account_info.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAccountInfo(context.TODO(), koios.Address(spec.Request.Query.Get("_address")))
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Len(t, expected, 1)
+	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestAccountRewardsEndpoint(t *testing.T) {
+	expected := []koios.AccountRewards{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_account_rewards.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	epochNo, err := strconv.ParseUint(spec.Request.Query.Get("_epoch_no"), 10, 64)
+	assert.NoError(t, err)
+	epoch := koios.EpochNo(epochNo)
+
+	res, err := api.GetAccountRewards(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")), &epoch)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Len(t, expected, 1)
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestAccountUpdatesEndpoint(t *testing.T) {
+	expected := []koios.AccountAction{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_account_updates.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAccountUpdates(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")))
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestAccountAddressesEndpoint(t *testing.T) {
+	expected := []struct {
+		Address koios.Address `json:"address"`
+	}{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_account_addresses.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAccountAddresses(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")))
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	for _, e := range expected {
+		assert.Contains(t, res.Data, e.Address)
+	}
+}
+func TestAccountAssetsEndpoint(t *testing.T) {
+	expected := []koios.AccountAsset{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_account_assets.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAccountAssets(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")))
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestAccountHistoryEndpoint(t *testing.T) {
+	expected := []koios.AccountHistoryEntry{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_account_history.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAccountHistory(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")))
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
