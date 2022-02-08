@@ -78,7 +78,7 @@ func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
 func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *internal.APITestSpec {
 	spec := &internal.APITestSpec{}
 	spec.Response.Body = exp
-	gzfile, err := os.Open(filepath.Join("testdata", filename+".gz"))
+	gzfile, err := os.Open(filepath.Join("testdata", filename))
 	assert.NoErrorf(t, err, "failed to open test compressed spec: %s", filename)
 	defer gzfile.Close()
 
