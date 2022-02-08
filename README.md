@@ -4,23 +4,21 @@
 
 ![license](https://img.shields.io/github/license/howijd/koios-rest-go-client)
 
-- before updating e.g. `go get -u` check for changes to prevent inconveniences.
+- before updating e.g. `go get -u` check for changes to prevent inconveniences. 
 - `v1.0.0` enhancements are tracked under following [issue](https://github.com/howijd/koios-rest-go-client/issues/1)
 
 **[Koios API] is Elastic Cardano Query Layer!**
 
-> A consistent query layer for developers to build upon Cardano, with
+> A consistent query layer for developers to build upon Cardano, with   
 > multiple, redundant endpoints that allow for easy scalability.
 
 **[Koios API] Client Library for Go**
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
-[![Go Report Card](https://goreportcard.com/badge/github.com/howijd/koios-rest-go-client)](https://goreportcard.com/report/github.com/howijd/koios-rest-go-client)
 
 ```
 go get github.com/howijd/koios-rest-go-client
 ```
-
 ```go
 ...
 import (
@@ -45,6 +43,7 @@ import (
 [![coverage](https://coveralls.io/repos/github/howijd/koios-rest-go-client/badge.svg?branch=main)](https://coveralls.io/github/howijd/koios-rest-go-client?branch=main)
 [![codeql](https://github.com/howijd/koios-rest-go-client/workflows/codeql/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/codeql.yaml)
 [![misspell](https://github.com/howijd/koios-rest-go-client/workflows/misspell/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/misspell.yaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/howijd/koios-rest-go-client)](https://goreportcard.com/report/github.com/howijd/koios-rest-go-client)
 
 ---
 
@@ -56,10 +55,31 @@ import (
 - [CLI Application](#cli-application)
   - [List of all commands](#list-of-all-commands)
   - [Example Usage](#example-usage)
-    - [**Example to query mainnet tip from cli**](#example-to-query-mainnet-tip-from-cli)
-    - [**Example to query testnet tip from cli**](#example-to-query-testnet-tip-from-cli)
+    - [Example to query mainnet tip from cli](#example-to-query-mainnet-tip-from-cli)
+    - [Example to query testnet tip from cli](#example-to-query-testnet-tip-from-cli)
   - [Install](#install)
     - [Install from Source](#install-from-source)
+- [Contributing](#contributing)
+  - [Code of Conduct](#code-of-conduct)
+  - [Got a Question or Problem?](#got-a-question-or-problem)
+  - [Issues and Bugs](#issues-and-bugs)
+  - [Feature Requests](#feature-requests)
+  - [Submission Guidelines](#submission-guidelines)
+    - [Submitting an Issue](#submitting-an-issue)
+    - [Submitting a Pull Request (PR)](#submitting-a-pull-request-pr)
+    - [After your pull request is merged](#after-your-pull-request-is-merged)
+  - [Coding Rules](#coding-rules)
+  - [Commit Message Guidelines](#commit-message-guidelines)
+    - [Commit Message Format](#commit-message-format)
+    - [Revert](#revert)
+    - [Type](#type)
+    - [Scope](#scope)
+    - [Subject](#subject)
+    - [Body](#body)
+    - [Footer](#footer)
+  - [Development Documentation](#development-documentation)
+    - [Setup your machine](#setup-your-machine)
+      - [Prerequisites:](#prerequisites)
 
 ---
 
@@ -161,7 +181,7 @@ func main() {
 
 ## Lovelace (math on ada, assets and tokens).
 
-Liprary uses for most cases to represent lovelace using [`Lovelace`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Lovelace) data type.
+Library uses for most cases to represent lovelace using [`Lovelace`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Lovelace) data type.
 
 This library uses forked snapshot of [github.com/shopspring/decimal] package to provide  
 JSON and XML serialization/deserialization and make it ease to work with calculations  
@@ -172,7 +192,9 @@ and deciimal precisions of ADA lovelace and native assets.
 [![](https://pkg.go.dev/badge/github.com/shopspring/decimal)](https://pkg.go.dev/github.com/shopspring/decimal)
 
 FORK: https://github.com/howijd/decimal  
-issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
+issues and bug reports are welcome to: https://github.com/howijd/decimal/issue.
+So that we can ensure that [github.com/shopspring/decimal] repository is not polluted with 
+issues which are not problems with upstream library.
 
 ## Implemented Endpoints
 
@@ -234,6 +256,8 @@ issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
 ## CLI Application
 
 source of cli: [./cmd/koios-rest](./cmd/koios-rest).
+
+[Installation instructions](#install)
 
 ### List of all commands
 
@@ -334,7 +358,7 @@ COPYRIGHT:
 
 ### Example Usage
 
-#### **Example to query mainnet tip from cli**
+#### Example to query mainnet tip from cli
 
 ```cli
 koios-rest --enable-req-stats tip
@@ -372,7 +396,7 @@ response
 
 ---
 
-#### **Example to query testnet tip from cli**
+#### Example to query testnet tip from cli
 
 ```cli
 koios-rest --enable-req-stats --testnet tip
@@ -429,6 +453,309 @@ verify installation
 
 `koios-rest --version`
 
+---
+
+## Contributing
+
+We would love for you to contribute to [Koios API Client Library for Go][github] and help make it even better than it is today! As a contributor, here are the guidelines we would like you to follow:
+
+ - [Code of Conduct](#coc)
+ - [Question or Problem?](#got-a-question-or-problem)
+ - [Found a Bug?](#issues-and-bugs)
+ - [Missing a Feature?](#feature-requests)
+ - [Submission Guidelines](#submission-guidelines)
+ - [Coding Rules](#coding-rules)
+ - [Commit Message Guidelines](#commit-message-guidelines)
+ - [Development Documentation](#development-documentation)
+
+### Code of Conduct
+
+Help us keep [Koios API Client Library for Go][github] open and inclusive. Please read and follow our [Code of Conduct][code-of-conduc]
+
+---
+
+### Got a Question or Problem?
+
+Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests. You've got much better chances of getting your question answered on [Koios Telegram Group](https://t.me/joinchat/+zE4Lce_QUepiY2U1)
+
+---
+
+### Issues and Bugs
+
+If you find a bug in the source code, you can help us by
+[submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
+[submit a Pull Request](#submit-pr) with a fix.
+
+---
+
+### Feature Requests
+You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub
+Repository. If you would like to *implement* a new feature, please submit an issue with
+a proposal for your work first, to be sure that we can use it.
+Please consider what kind of change it is:
+
+* For a **Major Feature**, first open an issue and outline your proposal so that it can be
+discussed. This will also allow us to better coordinate our efforts, prevent duplication of work,
+and help you to craft the change so that it is successfully accepted into the project.
+* **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
+
+---
+
+### Submission Guidelines
+
+#### Submitting an Issue
+
+Before you submit an issue, please search the issue tracker, maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
+
+You can file new issues by filling out our [new issue form](https://github.com/howijd/koios-rest-go-client/issues/new).
+
+---
+
+#### Submitting a Pull Request (PR)
+
+Before you submit your Pull Request (PR) consider the following guidelines:
+
+1. Search [GitHub](https://github.com/howijd/koios-rest-go-client/pulls) for an open or closed PR that relates to your submission. You don't want to duplicate effort.
+2. Fork the [howijd/koios-rest-go-client][github] repo.
+3. Setup you local repository
+
+    ```shell
+    git@github.com:<your-github-username>/koios-rest-go-client.git
+    cd koios-rest-go-client
+    git remote add upstream git@github.com:howijd/koios-rest-go-client.git
+    ```
+4. Make your changes in a new git branch and ensure that you always start from up to date main branch. **Repeat this step every time you are about to start woking on new PR**.
+
+    e.g. Start new change work to update readme:
+    ```shell
+    # if you are not in main branch e.g. still on previous work branch
+    git checkout main
+    git pull --ff upstream main
+    git checkout -b update-readme main
+    ```
+5. Create your patch, **including appropriate test cases**.
+6. Follow our [Coding Rules](#rules).
+7. If changes are in source code except documentations then run the full test suite, as described in the [developer documentation](#dev-doc), and ensure that all tests pass.
+8.  Commit your changes using a descriptive commit message that follows our
+  [commit message conventions](#commit). Adherence to these conventions
+  is necessary because release notes are automatically generated from these messages.
+
+     ```shell
+     git add -A
+     git commit --signoff
+     # or in short
+     git commit -sm"docs(markdown): update readme examples"
+     ```
+9. Push your branch to GitHub:
+
+    ```shell
+    git push origin update-readme
+    ```
+10. In GitHub, send a pull request to `main` branch.
+* If we suggest changes then:
+  * Make the required updates.
+  * Re-run the test suites to ensure tests are still passing.
+  * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+
+     ```shell
+    git fetch --all
+    git rebase upstream main
+    git push -uf origin update-readme
+    ```
+That's it! Thank you for your contribution!
+
+---
+
+#### After your pull request is merged
+
+After your pull request is merged, you can safely delete your branch and pull the changes from the main (upstream) repository:
+
+* Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
+  
+    ```shell
+    git push origin --delete update-readme
+    ```
+* Check out the main branch:
+  
+    ```shell
+    git checkout main -f
+    ```
+
+* Delete the local branch:
+
+    ```shell
+    git branch -D update-readme
+    ```
+* Update your master with the latest upstream version:
+
+    ```shell
+    git pull --ff upstream main
+    ```
+---
+
+### Coding Rules
+
+To ensure consistency throughout the source code, keep these rules in mind as you are working:
+
+* All features or bug fixes **must be tested** by one or more specs (unit-tests).
+* All public API methods **must be documented**.
+
+---
+
+### Commit Message Guidelines
+
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+
+We have very precise rules over how our git commit messages can be formatted. This leads to **more readable messages** that are easy to follow when looking through the **project history**. Commit messages should be well formatted, and to make that "standardized", we are using Conventional Commits. Our release workflow uses these rules to generate changelogs.
+
+---
+
+#### Commit Message Format
+
+Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special format that includes a **type**, a **scope** and a **subject**:
+
+```
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+The **header** is mandatory and the **scope** of the header is optional.
+
+Any line of the commit message cannot be longer 100 characters! This allows the message to be easier to read on GitHub as well as in various git tools.
+
+The footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
+
+Samples:
+
+```
+docs(markdown): update readme examples
+```
+
+```
+fix(cli): fix cli command get action
+
+description of your change.
+```
+
+```
+refactor(client): change Client GET function signature
+
+change order of client GET method arguments.
+
+BREAKING CHANGE: Clien.Get signature has changed
+```
+
+---
+
+#### Revert
+
+If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
+
+---
+
+#### Type
+
+Must be one of the following:
+
+* **build**: Changes that affect the build system or external dependencies (example scopes: goreleaser)
+* **ci**: Changes to our CI configuration files and scripts.
+* **dep**: Changes related to dependecies e.g. `go.mod`
+* **docs**: Documentation only changes (example scopes: markdown, godoc)
+* **feat**: A new feature
+* **fix**: A bug fix
+* **perf**: A code change that improves performance
+* **refactor**: A code change that neither fixes a bug nor adds a feature
+* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+* **test**: Adding missing tests or correcting existing tests
+
+---
+
+#### Scope
+
+The following is the list of supported scopes:
+
+| scope | description |
+| --- | --- |
+| **cli** | CLI app related changes |
+| **client** | API client related changes |
+| **endpoint** | Changes related to api endpoints |
+| **godoc** | Go documentation |
+| **markdown** | Markdown files |
+| **packaging** | Used for changes that change the release packages |
+
+---
+
+#### Subject
+
+The subject contains a succinct description of the change:
+
+* use the imperative, present tense: "change" not "changed" nor "changes"
+* don't capitalize the first letter
+* no dot (.) at the end
+  
+#### Body
+Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
+The body should include the motivation for the change and contrast this with previous behavior.
+
+#### Footer
+The footer should contain any information about **Breaking Changes** and is also the place to
+reference GitHub issues that this commit **Closes**.
+
+**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
+
+A detailed explanation can be found in this [document][commit-message-format].
+
+---
+
+### Development Documentation
+
+#### Setup your machine
+
+##### Prerequisites:
+
+* Working Go environment. [See the install instructions for Go](http://golang.org/doc/install.html).
+* [golangci-lint](https://golangci-lint.run/usage/install/#local-installation) - Go linters aggregator should be installed
+* [taskfile](https://taskfile.dev/#/installation) - task runner / build tool should be installed
+* [svu](https://github.com/caarlos0/svu#install) - Semantic Version Util tool should be installed
+
+**Setup local env**
+
+```shell
+task setup
+```
+
+**Lint your code**
+
+```shell
+task lint
+```
+
+**Test your change**
+
+```shell
+task test
+```
+
+
+**View code coverage report from in browser (results from `task test`)**
+
+```shell
+task cover
+```
+
+**Build snapshot binaries to ./cmd/koios-rest/dist.**
+
+> use it if you want to test release packages
+
+```shell
+task build:snapshot
+```
+
 <!-- LINKS -->
 [Koios API]: https://koios.rest "Koios API"
 [github.com/shopspring/decimal]: https://github.com/shopspring/decimal
+[coc]: https://github.com/howijd/.github/blob/main/CODE_OF_CONDUCT.md
+[github]: https://github.com/howijd/koios-rest-go-client

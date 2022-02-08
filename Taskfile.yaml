@@ -7,7 +7,7 @@ dotenv:
 
 tasks:
 
-  build-snapshot:
+  build:snapshot:
     dir: cmd/koios-rest
     desc: |
       Build snapshot binaries to ./cmd/koios-rest/dist.
