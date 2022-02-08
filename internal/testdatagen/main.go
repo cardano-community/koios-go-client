@@ -86,16 +86,16 @@ func main() {
 						err error
 					)
 
-					log.Printf("requesting: %s\n", spec.Request.Endpoint)
+					log.Printf("requesting: %s\n", spec.Endpoint)
 					switch spec.Request.Method {
 					case "GET":
-						res, err = api.GET(callctx, spec.Request.Endpoint, spec.Request.Query, nil)
+						res, err = api.GET(callctx, spec.Endpoint, spec.Request.Query, nil)
 						handleErr(err)
 					case "HEAD":
-						res, err = api.HEAD(callctx, spec.Request.Endpoint, spec.Request.Query, nil)
+						res, err = api.HEAD(callctx, spec.Endpoint, spec.Request.Query, nil)
 						handleErr(err)
 					case "POST":
-						res, err = api.POST(callctx, spec.Request.Endpoint, spec.Request.Body, spec.Request.Query, nil)
+						res, err = api.POST(callctx, spec.Endpoint, spec.Request.Body, spec.Request.Query, nil)
 						handleErr(err)
 
 					}
@@ -140,10 +140,10 @@ func specs() []internal.APITestSpec {
 	return []internal.APITestSpec{
 		{
 			Filename: "endpoint_api_tip.json",
+			Endpoint: "/tip",
 			Request: internal.APITestRequestSpec{
-				Method:   "GET",
-				Endpoint: "/tip",
-				Body:     nil, //  bytes.NewReader(data)
+				Method: "GET",
+				Body:   nil, //  bytes.NewReader(data)
 			},
 		},
 	}

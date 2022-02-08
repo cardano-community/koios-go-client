@@ -19,7 +19,7 @@ tasks:
     cmds:
       - go tool cover -html=coverage.txt
 
-  generate:testdata:
+  gen:testdata:
     desc: Updates testdata in testdata directory.
     dir: internal/testdatagen
     cmds:

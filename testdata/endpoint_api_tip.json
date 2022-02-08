@@ -1,8 +1,8 @@
 {
  "filename": "endpoint_api_tip.json",
+ "path": "/tip",
  "request": {
-  "method": "GET",
-  "path": "/tip"
+  "method": "GET"
  },
  "response": {
   "code": 200,
@@ -14,7 +14,7 @@
     "application/json; charset=utf-8"
    ],
    "Date": [
-    "Tue, 08 Feb 2022 15:58:20 GMT"
+    "Tue, 08 Feb 2022 16:42:39 GMT"
    ],
    "X-Frame-Options": [
     ": DENY"
@@ -22,12 +22,12 @@
   },
   "body": [
    {
-    "abs_slot": 49966651,
-    "block_no": 3303697,
-    "block_time": "2022-02-08T15:57:47",
+    "abs_slot": 49969308,
+    "block_no": 3303777,
+    "block_time": "2022-02-08T16:42:04",
     "epoch": 185,
-    "epoch_slot": 416251,
-    "hash": "6a2432b03a2f8ee8910fe67f848db92a54697f2527f1c623a208886496a33b37"
+    "epoch_slot": 418908,
+    "hash": "01cc98401ecb09af6a95604e82c21fdf61f1292d6654e10a3544d47bb3ae66d4"
    }
   ]
  }

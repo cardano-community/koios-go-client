@@ -17,13 +17,23 @@
 package koios_test
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"net/url"
+	"os"
+	"path/filepath"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/howijd/koios-rest-go-client"
+	"github.com/howijd/koios-rest-go-client/internal"
 )
 
 func TestNewDefaults(t *testing.T) {
@@ -42,4 +52,108 @@ func TestNewDefaults(t *testing.T) {
 		assert.NoError(t, err, "default url can not be constructed")
 		assert.Equal(t, u.String(), api.BaseURL(), "invalid default base url")
 	}
+}
+
+func TestNetworkTip(t *testing.T) {
+	expected := []koios.Tip{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_api_tip.json", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetTip(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Len(t, expected, 1)
+	assert.Equal(t, expected[0].AbsSlot, res.Data.AbsSlot, "wrong AbsSlot")
+	assert.Equal(t, expected[0].BlockNo, res.Data.BlockNo, "wrong BlockNo")
+	assert.Equal(t, expected[0].BlockTime, res.Data.BlockTime, "wrong BlockTime")
+	assert.Equal(t, expected[0].Epoch, res.Data.Epoch, "wrong Epoch")
+	assert.Equal(t, expected[0].EpochSlot, res.Data.EpochSlot, "wrong EpochSlot")
+	assert.Equal(t, expected[0].Hash, res.Data.Hash, "wrong Hash")
+}
+
+// testHeaders universal header tester.
+// Currently testing only headers we care about.
+func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
+	assert.Equalf(t, res.RequestMethod, spec.Request.Method, "%s: invalid request method", spec.Request.Method)
+	assert.Equalf(t, res.StatusCode, spec.Response.Code, "%s: invalid response code", spec.Request.Method)
+	assert.Equalf(
+		t,
+		res.ContentRange,
+		spec.Response.Header.Get("content-range"),
+		"%s: has invalid content-range header", spec.Request.Method,
+	)
+	assert.Equalf(
+		t,
+		res.ContentLocation,
+		spec.Response.Header.Get("content-location"),
+		"%s: has invalid content-location header",
+		spec.Request.Method,
+	)
+}
+
+// loadEndpointTestSpec load specs for endpoint.
+func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *internal.APITestSpec {
+	spec := &internal.APITestSpec{}
+	spec.Response.Body = exp
+	specfile, err := os.Open(filepath.Join("testdata", filename))
+	assert.NoErrorf(t, err, "failed to open test spec: %s", filename)
+
+	specb, err := ioutil.ReadAll(specfile)
+	assert.NoErrorf(t, err, "failed to read test spec: %s", filename)
+
+	assert.NoErrorf(t, json.Unmarshal(specb, &spec), "failed to Unmarshal test spec: %s", filename)
+	return spec
+}
+
+// createTestServerAndClient httptest server and api client based on specs.
+func createTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httptest.Server, *koios.Client) {
+	mux := http.NewServeMux()
+	endpoint := fmt.Sprintf("/api/%s%s", koios.DefaultAPIVersion, spec.Endpoint)
+	mux.HandleFunc(endpoint, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != spec.Request.Method && r.Method != "HEAD" {
+			http.Error(w, "Method Not Allowed.", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Add response headers
+		for header, values := range spec.Response.Header {
+			for _, value := range values {
+				w.Header().Add(header, value)
+			}
+		}
+		w.WriteHeader(spec.Response.Code)
+
+		// Add response payload
+		res, err := json.Marshal(spec.Response.Body)
+		if err != nil {
+			http.Error(w, "failed to marshal response", http.StatusInternalServerError)
+			return
+		}
+		w.Write(res)
+	})
+
+	ts := httptest.NewUnstartedServer(mux)
+	ts.EnableHTTP2 = true
+	ts.StartTLS()
+
+	u, err := url.Parse(ts.URL)
+	assert.NoErrorf(t, err, "failed to parse test server url: %s", ts.URL)
+	port, err := strconv.ParseUint(u.Port(), 0, 16)
+	assert.NoError(t, err, "failed to parse port from server url %s", ts.URL)
+
+	client := ts.Client()
+	client.Timeout = time.Second * 10
+	c, err := koios.New(
+		koios.HTTPClient(client),
+		koios.Port(uint16(port)),
+		koios.Host(u.Hostname()),
+	)
+	assert.NoError(t, err, "failed to create api client")
+	return ts, c
 }
