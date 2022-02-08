@@ -7,7 +7,7 @@ dotenv:
 
 tasks:
 
-  build:snapshot:
+  build-snapshot:
     dir: cmd/koios-rest
     desc: |
       Build snapshot binaries to ./cmd/koios-rest/dist.
@@ -18,6 +18,12 @@ tasks:
     desc: Open the cover tool
     cmds:
       - go tool cover -html=coverage.txt
+
+  generate:testdata:
+    desc: Updates testdata in testdata directory.
+    dir: internal/testdatagen
+    cmds:
+      - go run . ../../testdata
 
   goreleaser:
     desc: Run GoReleaser either in snapshot or release mode
@@ -34,6 +40,12 @@ tasks:
     desc: Lint the code with golangci-lint
     cmds:
       - golangci-lint run ./... --fix
+
+  print:next:
+    desc: |
+      Prints next version based on Conventional Commits spec.
+    cmds:
+      - svu n
 
   # https://github.com/caarlos0/svu
   release:

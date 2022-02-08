@@ -548,7 +548,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 9. Push your branch to GitHub:
 
     ```shell
-    git push origin update-readme
+    git push -u origin update-readme
     ```
 10. In GitHub, send a pull request to `main` branch.
 * If we suggest changes then:
