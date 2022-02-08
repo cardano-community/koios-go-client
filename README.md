@@ -79,7 +79,6 @@ import (
     - [Footer](#footer)
   - [Development Documentation](#development-documentation)
     - [Setup your machine](#setup-your-machine)
-      - [Prerequisites:](#prerequisites)
 
 ---
 
@@ -714,12 +713,20 @@ A detailed explanation can be found in this [document][commit-message-format].
 
 #### Setup your machine
 
-##### Prerequisites:
+**Prerequisites:**
 
 * Working Go environment. [See the install instructions for Go](http://golang.org/doc/install.html).
 * [golangci-lint](https://golangci-lint.run/usage/install/#local-installation) - Go linters aggregator should be installed
 * [taskfile](https://taskfile.dev/#/installation) - task runner / build tool should be installed
 * [svu](https://github.com/caarlos0/svu#install) - Semantic Version Util tool should be installed
+* Fork the [howijd/koios-rest-go-client][github] repo.
+* Setup you local repository
+
+    ```shell
+    git@github.com:<your-github-username>/koios-rest-go-client.git
+    cd koios-rest-go-client
+    git remote add upstream git@github.com:howijd/koios-rest-go-client.git
+    ```
 
 **Setup local env**
 
