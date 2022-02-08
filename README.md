@@ -146,7 +146,7 @@ func main() {
       defer wg.Done()
       // switching host. all options changes are safe to call from goroutines.
       koios.Host(host)(api)
-      res, _ := api.GET(ctx, "/tip", make(map[string][]string), make(map[string][]string))
+      res, _ := api.GET(ctx, "/tip", nil, nil)
       defer res.Body.Close()
       body, _ := ioutil.ReadAll(res.Body)
       fmt.Println("Host: ", host)
