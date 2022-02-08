@@ -55,21 +55,21 @@ import (
 - [CLI Application](#cli-application)
   - [List of all commands](#list-of-all-commands)
   - [Example Usage](#example-usage)
-    - [**Example to query mainnet tip from cli**](#example-to-query-mainnet-tip-from-cli)
-    - [**Example to query testnet tip from cli**](#example-to-query-testnet-tip-from-cli)
-  - [<a name="install"> Install](#a-nameinstall-install)
+    - [Example to query mainnet tip from cli](#example-to-query-mainnet-tip-from-cli)
+    - [Example to query testnet tip from cli](#example-to-query-testnet-tip-from-cli)
+  - [Install](#install)
     - [Install from Source](#install-from-source)
 - [Contributing](#contributing)
-  - [<a name="coc"></a> Code of Conduct](#-code-of-conduct)
-  - [<a name="question"></a> Got a Question or Problem?](#-got-a-question-or-problem)
-  - [<a name="issue"></a> Found a Bug?](#-found-a-bug)
-  - [<a name="feature"></a> Missing a Feature?](#-missing-a-feature)
-  - [<a name="submit"></a> Submission Guidelines](#-submission-guidelines)
-    - [<a name="submit-issue"></a> **Submitting an Issue**](#-submitting-an-issue)
-    - [<a name="submit-pr"></a> **Submitting a Pull Request (PR)**](#-submitting-a-pull-request-pr)
-    - [**After your pull request is merged**](#after-your-pull-request-is-merged)
-  - [<a name="rules"></a> Coding Rules](#-coding-rules)
-  - [<a name="commit"></a> Commit Message Guidelines](#-commit-message-guidelines)
+  - [Code of Conduct](#code-of-conduct)
+  - [Got a Question or Problem?](#got-a-question-or-problem)
+  - [Issues and Bugs](#issues-and-bugs)
+  - [Feature Requests](#feature-requests)
+  - [Submission Guidelines](#submission-guidelines)
+    - [Submitting an Issue](#submitting-an-issue)
+    - [Submitting a Pull Request (PR)](#submitting-a-pull-request-pr)
+    - [After your pull request is merged](#after-your-pull-request-is-merged)
+  - [Coding Rules](#coding-rules)
+  - [Commit Message Guidelines](#commit-message-guidelines)
     - [Commit Message Format](#commit-message-format)
     - [Revert](#revert)
     - [Type](#type)
@@ -77,7 +77,7 @@ import (
     - [Subject](#subject)
     - [Body](#body)
     - [Footer](#footer)
-  - [<a name="dev-doc"></a> Development Documentation](#-development-documentation)
+  - [Development Documentation](#development-documentation)
     - [Setup your machine](#setup-your-machine)
       - [Prerequisites:](#prerequisites)
 
@@ -358,7 +358,7 @@ COPYRIGHT:
 
 ### Example Usage
 
-#### **Example to query mainnet tip from cli**
+#### Example to query mainnet tip from cli
 
 ```cli
 koios-rest --enable-req-stats tip
@@ -396,7 +396,7 @@ response
 
 ---
 
-#### **Example to query testnet tip from cli**
+#### Example to query testnet tip from cli
 
 ```cli
 koios-rest --enable-req-stats --testnet tip
@@ -434,7 +434,7 @@ response
 }
 ```
 
-### <a name="install"> Install
+### Install
 
 It's highly recommended installing a specific version of koios-rest available on the [releases page](https://github.com/howijd/koios-rest-go-client/releases).
 
@@ -460,34 +460,35 @@ verify installation
 We would love for you to contribute to [Koios API Client Library for Go][github] and help make it even better than it is today! As a contributor, here are the guidelines we would like you to follow:
 
  - [Code of Conduct](#coc)
- - [Question or Problem?](#question)
- - [Issues and Bugs](#issue)
- - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
- - [Coding Rules](#rules)
- - [Commit Message Guidelines](#commit)
- - [Development Documentation](#dev-doc)
+ - [Question or Problem?](#got-a-question-or-problem)
+ - [Found a Bug?](#issues-and-bugs)
+ - [Missing a Feature?](#feature-requests)
+ - [Submission Guidelines](#submission-guidelines)
+ - [Coding Rules](#coding-rules)
+ - [Commit Message Guidelines](#commit-message-guidelines)
+ - [Development Documentation](#development-documentation)
 
-### <a name="coc"></a> Code of Conduct
+### Code of Conduct
 
-Help us keep [Koios API Client Library for Go][github] open and inclusive. Please read and follow our [Code of Conduct][coc]
+Help us keep [Koios API Client Library for Go][github] open and inclusive. Please read and follow our [Code of Conduct][code-of-conduc]
 
 ---
 
-### <a name="question"></a> Got a Question or Problem?
+### Got a Question or Problem?
 
 Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests. You've got much better chances of getting your question answered on [Koios Telegram Group](https://t.me/joinchat/+zE4Lce_QUepiY2U1)
 
 ---
 
-### <a name="issue"></a> Found a Bug?
+### Issues and Bugs
+
 If you find a bug in the source code, you can help us by
 [submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
 [submit a Pull Request](#submit-pr) with a fix.
 
 ---
 
-### <a name="feature"></a> Missing a Feature?
+### Feature Requests
 You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub
 Repository. If you would like to *implement* a new feature, please submit an issue with
 a proposal for your work first, to be sure that we can use it.
@@ -500,9 +501,9 @@ and help you to craft the change so that it is successfully accepted into the pr
 
 ---
 
-### <a name="submit"></a> Submission Guidelines
+### Submission Guidelines
 
-#### <a name="submit-issue"></a> **Submitting an Issue**
+#### Submitting an Issue
 
 Before you submit an issue, please search the issue tracker, maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
 
@@ -510,7 +511,7 @@ You can file new issues by filling out our [new issue form](https://github.com/h
 
 ---
 
-#### <a name="submit-pr"></a> **Submitting a Pull Request (PR)**
+#### Submitting a Pull Request (PR)
 
 Before you submit your Pull Request (PR) consider the following guidelines:
 
@@ -542,6 +543,8 @@ Before you submit your Pull Request (PR) consider the following guidelines:
      ```shell
      git add -A
      git commit --signoff
+     # or in short
+     git commit -sm"docs(markdown): update readme examples"
      ```
 9. Push your branch to GitHub:
 
@@ -557,13 +560,13 @@ Before you submit your Pull Request (PR) consider the following guidelines:
      ```shell
     git fetch --all
     git rebase upstream main
-    git push -f origin update-readme
+    git push -uf origin update-readme
     ```
 That's it! Thank you for your contribution!
 
 ---
 
-#### **After your pull request is merged**
+#### After your pull request is merged
 
 After your pull request is merged, you can safely delete your branch and pull the changes from the main (upstream) repository:
 
@@ -590,7 +593,7 @@ After your pull request is merged, you can safely delete your branch and pull th
     ```
 ---
 
-### <a name="rules"></a> Coding Rules
+### Coding Rules
 
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
@@ -599,7 +602,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 ---
 
-### <a name="commit"></a> Commit Message Guidelines
+### Commit Message Guidelines
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
@@ -628,7 +631,7 @@ The footer should contain a [closing reference to an issue](https://help.github.
 Samples:
 
 ```
-docs(markdown): update readme examles
+docs(markdown): update readme examples
 ```
 
 ```
@@ -707,7 +710,7 @@ A detailed explanation can be found in this [document][commit-message-format].
 
 ---
 
-### <a name="dev-doc"></a> Development Documentation
+### Development Documentation
 
 #### Setup your machine
 
@@ -756,4 +759,3 @@ task build:snapshot
 [github.com/shopspring/decimal]: https://github.com/shopspring/decimal
 [coc]: https://github.com/howijd/.github/blob/main/CODE_OF_CONDUCT.md
 [github]: https://github.com/howijd/koios-rest-go-client
-
