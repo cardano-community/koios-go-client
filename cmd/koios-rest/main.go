@@ -19,12 +19,13 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 
 	"github.com/howijd/koios-rest-go-client"
-	"github.com/tidwall/pretty"
 	"github.com/urfave/cli/v2"
 )
 
@@ -99,7 +100,9 @@ func printResponseBody(ctx *cli.Context, body []byte) {
 		fmt.Println(string(body))
 		return
 	}
-	fmt.Println(string(pretty.Pretty(body)))
+	out, err := json.MarshalIndent(body, "", " ")
+	handleErr(err)
+	fmt.Println(string(out))
 	return
 }
 
@@ -108,9 +111,16 @@ type printable interface {
 }
 
 func output(ctx *cli.Context, data interface{}, err error) {
-	out, err := json.Marshal(data)
+	if ctx.Bool("no-format") {
+		out, err := json.Marshal(data)
+		handleErr(err)
+		fmt.Println(string(out))
+		return
+	}
+
+	out, err := json.MarshalIndent(data, "", " ")
 	handleErr(err)
-	printResponseBody(ctx, out)
+	fmt.Println(string(out))
 }
 
 func globalFlags() []cli.Flag {
@@ -162,4 +172,16 @@ func globalFlags() []cli.Flag {
 			Value: false,
 		},
 	}
+}
+
+func handleErr(err error) {
+	if err == nil {
+		return
+	}
+	trace := err
+	for errors.Unwrap(trace) != nil {
+		trace = errors.Unwrap(trace)
+		log.Println(trace)
+	}
+	log.Fatal(err)
 }
