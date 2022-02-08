@@ -90,7 +90,7 @@ tasks:
       - task: testdata:unpack
 
   testdata:unpack:
-    desc: Updates testdata in testdata directory.
+    desc: Unpack testdata - useful if you want to inspect it.
     dir: internal/testdatagen
     cmds:
       - go run . unpack ../../testdata

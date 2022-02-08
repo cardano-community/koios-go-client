@@ -17,7 +17,7 @@
 package koios_test
 
 import (
-	"context"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -54,29 +54,6 @@ func TestNewDefaults(t *testing.T) {
 	}
 }
 
-func TestNetworkTip(t *testing.T) {
-	expected := []koios.Tip{}
-
-	spec := loadEndpointTestSpec(t, "endpoint_api_tip.json", &expected)
-
-	ts, api := createTestServerAndClient(t, spec)
-
-	defer ts.Close()
-
-	res, err := api.GetTip(context.TODO())
-
-	assert.NoError(t, err)
-	testHeaders(t, spec, res.Response)
-
-	assert.Len(t, expected, 1)
-	assert.Equal(t, expected[0].AbsSlot, res.Data.AbsSlot, "wrong AbsSlot")
-	assert.Equal(t, expected[0].BlockNo, res.Data.BlockNo, "wrong BlockNo")
-	assert.Equal(t, expected[0].BlockTime, res.Data.BlockTime, "wrong BlockTime")
-	assert.Equal(t, expected[0].Epoch, res.Data.Epoch, "wrong Epoch")
-	assert.Equal(t, expected[0].EpochSlot, res.Data.EpochSlot, "wrong EpochSlot")
-	assert.Equal(t, expected[0].Hash, res.Data.Hash, "wrong Hash")
-}
-
 // testHeaders universal header tester.
 // Currently testing only headers we care about.
 func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
@@ -101,11 +78,16 @@ func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
 func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *internal.APITestSpec {
 	spec := &internal.APITestSpec{}
 	spec.Response.Body = exp
-	specfile, err := os.Open(filepath.Join("testdata", filename))
-	assert.NoErrorf(t, err, "failed to open test spec: %s", filename)
+	gzfile, err := os.Open(filepath.Join("testdata", filename+".gz"))
+	assert.NoErrorf(t, err, "failed to open test compressed spec: %s", filename)
+	defer gzfile.Close()
 
-	specb, err := ioutil.ReadAll(specfile)
+	gzr, err := gzip.NewReader(gzfile)
+	assert.NoErrorf(t, err, "failed create reader for test spec: %s", filename)
+
+	specb, err := ioutil.ReadAll(gzr)
 	assert.NoErrorf(t, err, "failed to read test spec: %s", filename)
+	gzr.Close()
 
 	assert.NoErrorf(t, json.Unmarshal(specb, &spec), "failed to Unmarshal test spec: %s", filename)
 	return spec
