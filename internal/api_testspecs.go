@@ -17,7 +17,6 @@
 package internal
 
 import (
-	"io"
 	"net/http"
 	"net/url"
 )
@@ -25,7 +24,7 @@ import (
 type APITestRequestSpec struct {
 	Method string     `json:"method"`
 	Query  url.Values `json:"query,omitempty"`
-	Body   io.Reader  `json:"body,omitempty"`
+	Body   []byte     `json:"body,omitempty"`
 }
 
 type APITestResponseSpec struct {

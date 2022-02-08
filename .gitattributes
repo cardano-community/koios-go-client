@@ -17,11 +17,16 @@
 # TEXT:
 # Ensure that the following files, and file name patterns are treated correctly
 ################################################################################
-.editorconfig text
-.gitattributes text
-.gitignore text
-.md text
-LICENSE text
-*.yml text
-*.yaml text
+.editorconfig   text
+LICENSE         text
 
+*.md            text diff=markdown
+*.json          text
+*.yaml          text
+*.yml           text
+
+*.gz            binary
+
+.gitattributes export-ignore
+.gitignore     export-ignore
+.gitkeep       export-ignore

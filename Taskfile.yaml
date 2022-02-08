@@ -19,12 +19,6 @@ tasks:
     cmds:
       - go tool cover -html=coverage.txt
 
-  gen:testdata:
-    desc: Updates testdata in testdata directory.
-    dir: internal/testdatagen
-    cmds:
-      - go run . ../../testdata
-
   goreleaser:
     desc: Run GoReleaser either in snapshot or release mode
     dir: cmd/koios-rest
@@ -66,6 +60,7 @@ tasks:
     cmds:
       - task: setup:repo
       - task: setup:cmd
+      - task: testdata:unpack
 
   setup:repo:
     cmds:
@@ -86,3 +81,16 @@ tasks:
       TEST_PATTERN: '{{default "." .TEST_PATTERN}}'
     cmds:
       - go test {{.TEST_OPTIONS}} -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt {{.SOURCE_FILES}} -run {{.TEST_PATTERN}} -timeout=5m
+
+  testdata:gen:
+    desc: Updates testdata in testdata directory.
+    dir: internal/testdatagen
+    cmds:
+      - go run . generate ../../testdata
+      - task: testdata:unpack
+
+  testdata:unpack:
+    desc: Updates testdata in testdata directory.
+    dir: internal/testdatagen
+    cmds:
+      - go run . unpack ../../testdata
