@@ -4,12 +4,12 @@
 
 ![license](https://img.shields.io/github/license/howijd/koios-rest-go-client)
 
-- before updating e.g. `go get -u` check for changes to prevent inconveniences. 
+- before updating e.g. `go get -u` check for changes to prevent inconveniences.
 - `v1.0.0` enhancements are tracked under following [issue](https://github.com/howijd/koios-rest-go-client/issues/1)
 
 **[Koios API] is Elastic Cardano Query Layer!**
 
-> A consistent query layer for developers to build upon Cardano, with   
+> A consistent query layer for developers to build upon Cardano, with
 > multiple, redundant endpoints that allow for easy scalability.
 
 **[Koios API] Client Library for Go**
@@ -20,6 +20,7 @@
 ```
 go get github.com/howijd/koios-rest-go-client
 ```
+
 ```go
 ...
 import (
@@ -45,7 +46,7 @@ import (
 [![codeql](https://github.com/howijd/koios-rest-go-client/workflows/codeql/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/codeql.yaml)
 [![misspell](https://github.com/howijd/koios-rest-go-client/workflows/misspell/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/misspell.yaml)
 
---- 
+---
 
 - [Usage](#usage)
   - [Basic usage](#basic-usage)
@@ -60,7 +61,6 @@ import (
   - [Install](#install)
     - [Install from Source](#install-from-source)
 
-
 ---
 
 ## Usage
@@ -71,7 +71,7 @@ Additionally you can find all usecases by looking source of `koio-rest` Command-
 **NOTE**
 
 Library normalizes some of the API responses and constructs Typed response for each end point.
-If you wish to work with `*http.Response` directly you can do so by using api client `GET,POST, HEAD` methods. 
+If you wish to work with `*http.Response` directly you can do so by using api client `GET,POST, HEAD` methods.
 
 ### Basic usage
 
@@ -108,12 +108,12 @@ func main() {
   fmt.Println("status: ", res.Status)
   fmt.Println("statu_code: ", res.StatusCode)
 
-  fmt.Println("abs_slot: ", res.Tip.AbsSlot)
-  fmt.Println("block_no: ", res.Tip.BlockNo)
-  fmt.Println("block_time: ", res.Tip.BlockTime)
-  fmt.Println("epoch: ", res.Tip.Epoch)
-  fmt.Println("epoch_slot: ", res.Tip.EpochSlot)
-  fmt.Println("hash: ", res.Tip.Hash)
+  fmt.Println("abs_slot: ", res.Data.AbsSlot)
+  fmt.Println("block_no: ", res.Data.BlockNo)
+  fmt.Println("block_time: ", res.Data.BlockTime)
+  fmt.Println("epoch: ", res.Data.Epoch)
+  fmt.Println("epoch_slot: ", res.Data.EpochSlot)
+  fmt.Println("hash: ", res.Data.Hash)
 }
 ```
 
@@ -126,12 +126,11 @@ This library is thread-safe so you can freerly use same api client instance pass
 ```go
 func main() {
   api, _ := koios.New(
-    // limit client request 1 per second even though 
+    // limit client request 1 per second even though
     // this example will send requests in goroutines.
     koios.RateLimit(1),
   )
   ctx := context.Background()
-  defer cancel()
   var wg sync.WaitGroup
   servers := []string{
     "api.koios.rest",
@@ -147,13 +146,14 @@ func main() {
       defer wg.Done()
       // switching host. all options changes are safe to call from goroutines.
       koios.Host(host)(api)
-      res, _ := api.GET(ctx, "/tip")
+      res, _ := api.GET(ctx, "/tip", make(map[string][]string), make(map[string][]string))
       defer res.Body.Close()
       body, _ := ioutil.ReadAll(res.Body)
-      fmt.Println(string(body))
+      fmt.Println("Host: ", host)
+      fmt.Println("Response: ", string(body))
     }(ctx, host)
   }
-  
+
   wg.Wait()
   fmt.Println("requests done: ", api.TotalRequests())
 }
@@ -167,10 +167,9 @@ This library uses forked snapshot of [github.com/shopspring/decimal] package to 
 JSON and XML serialization/deserialization and make it ease to work with calculations  
 and deciimal precisions of ADA lovelace and native assets.
 
-
 **For decimal package API see**
 
-[![](https://pkg.go.dev/badge/github.com/shopspring/decimal)](https://pkg.go.dev/github.com/shopspring/decimal) 
+[![](https://pkg.go.dev/badge/github.com/shopspring/decimal)](https://pkg.go.dev/github.com/shopspring/decimal)
 
 FORK: https://github.com/howijd/decimal  
 issues and bug reports are welcome to: https://github.com/howijd/decimal/issues.
@@ -409,13 +408,11 @@ response
     "hash": "d7623e68cb78f450f42ba4b5a169124b26677f08f676ca4241b27edb6dbf0071"
   }
 }
-
 ```
 
 ### Install
 
 It's highly recommended installing a specific version of koios-rest available on the [releases page](https://github.com/howijd/koios-rest-go-client/releases).
-
 
 #### Install from Source
 
