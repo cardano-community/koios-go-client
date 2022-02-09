@@ -47,7 +47,7 @@ type (
 	// TxInput an transaxtion input.
 	TxInput struct {
 		// An array of assets contained on input UTxO.
-		AssetList []Asset `json:"asset_list,omitempty"`
+		AssetList []Asset `json:"asset_list"`
 
 		// input UTxO.
 		PaymentAddr PaymentAddr `json:"payment_addr"`
@@ -68,7 +68,7 @@ type (
 	// TxOutput an transaxtion output.
 	TxOutput struct {
 		// An array of assets to be included in output UTxO.
-		AssetList []Asset `json:"asset_list,omitempty"`
+		AssetList []Asset `json:"asset_list"`
 
 		// where funds were sent or change to be returned.
 		PaymentAddr PaymentAddr `json:"payment_addr"`
@@ -156,19 +156,19 @@ type (
 		Outputs []TxOutput `json:"outputs,omitempty"`
 
 		// AssetsMinted An array of minted assets with-in a transaction (if any).
-		AssetsMinted []Asset `json:"assets_minted,omitempty"`
+		AssetsMinted []Asset `json:"assets_minted"`
 
 		// Collaterals An array of collateral inputs needed when dealing with smart contracts.
-		Collaterals []TxInput `json:"collaterals,omitempty"`
+		Collaterals []TxInput `json:"collaterals"`
 
 		// Metadata present with-in a transaction (if any)
-		Metadata []TxInfoMetadata `json:"metadata,omitempty"`
+		Metadata []TxInfoMetadata `json:"metadata"`
 
 		// Array of withdrawals with-in a transaction (if any)
-		Withdrawals []TxsWithdrawal `json:"withdrawals,omitempty"`
+		Withdrawals []TxsWithdrawal `json:"withdrawals"`
 
 		// Certificates present with-in a transaction (if any)
-		Certificates []Certificate `json:"certificates,omitempty"`
+		Certificates []Certificate `json:"certificates"`
 	}
 
 	// TxsInfoResponse represents response from `/tx_info` endpoint.

@@ -685,3 +685,111 @@ func TestGetScriptRedeemersEndpoint(t *testing.T) {
 
 	assert.Equal(t, &expected[0], res.Data)
 }
+
+func TestGetTxInfoEndpoint(t *testing.T) {
+	expected := []koios.TxInfo{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_tx_info.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	var payload = struct {
+		TxHashes []koios.TxHash `json:"_tx_hashes"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.GetTxInfo(context.TODO(), payload.TxHashes[0])
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestGetTxMetadataEndpoint(t *testing.T) {
+	expected := []koios.TxMetadata{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_tx_metadata.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	var payload = struct {
+		TxHashes []koios.TxHash `json:"_tx_hashes"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.GetTxMetadata(context.TODO(), payload.TxHashes[0])
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestGetTxMetaLabelsEndpoint(t *testing.T) {
+	expected := []koios.TxMetalabel{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_tx_metalabels.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetTxMetaLabels(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetTxStatusEndpoint(t *testing.T) {
+	expected := []koios.TxStatus{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_tx_status.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	var payload = struct {
+		TxHashes []koios.TxHash `json:"_tx_hashes"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.GetTxStatus(context.TODO(), payload.TxHashes[0])
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
+func TestGetTxsUTxOsEndpoint(t *testing.T) {
+	expected := []koios.UTxO{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_tx_utxos.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	var payload = struct {
+		TxHashes []koios.TxHash `json:"_tx_hashes"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.GetTxsUTxOs(context.TODO(), payload.TxHashes)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
