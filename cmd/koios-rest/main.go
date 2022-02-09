@@ -178,6 +178,7 @@ func handleErr(err error) {
 	if err == nil {
 		return
 	}
+	cancel()
 	trace := err
 	for errors.Unwrap(trace) != nil {
 		trace = errors.Unwrap(trace)

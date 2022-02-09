@@ -548,7 +548,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 9. Push your branch to GitHub:
 
     ```shell
-    git push origin update-readme
+    git push -u origin update-readme
     ```
 10. In GitHub, send a pull request to `main` branch.
 * If we suggest changes then:
@@ -621,6 +621,16 @@ Each commit message consists of a **header**, a **body** and a **footer**.  The 
 <footer>
 ```
 
+*When maintainers are merging PR merge commit should be edited:*
+
+```
+<type>(<scope>): <subject> (#pr)
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
 The **header** is mandatory and the **scope** of the header is optional.
 
 Any line of the commit message cannot be longer 100 characters! This allows the message to be easier to read on GitHub as well as in various git tools.
@@ -647,6 +657,7 @@ change order of client GET method arguments.
 BREAKING CHANGE: Clien.Get signature has changed
 ```
 
+
 ---
 
 #### Revert
@@ -660,6 +671,7 @@ If the commit reverts a previous commit, it should begin with `revert: `, follow
 Must be one of the following:
 
 * **build**: Changes that affect the build system or external dependencies (example scopes: goreleaser)
+* **chore**: Other changes that don't modify src or test files.
 * **ci**: Changes to our CI configuration files and scripts.
 * **dep**: Changes related to dependecies e.g. `go.mod`
 * **docs**: Documentation only changes (example scopes: markdown, godoc)
@@ -667,6 +679,7 @@ Must be one of the following:
 * **fix**: A bug fix
 * **perf**: A code change that improves performance
 * **refactor**: A code change that neither fixes a bug nor adds a feature
+* **revert**: Reverts a previous commit
 * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
 

@@ -7,7 +7,7 @@ dotenv:
 
 tasks:
 
-  build:snapshot:
+  build-snapshot:
     dir: cmd/koios-rest
     desc: |
       Build snapshot binaries to ./cmd/koios-rest/dist.
@@ -35,6 +35,12 @@ tasks:
     cmds:
       - golangci-lint run ./... --fix
 
+  print:next:
+    desc: |
+      Prints next version based on Conventional Commits spec.
+    cmds:
+      - svu n
+
   # https://github.com/caarlos0/svu
   release:
     dir: cmd/koios-rest
@@ -54,6 +60,7 @@ tasks:
     cmds:
       - task: setup:repo
       - task: setup:cmd
+      - task: testdata:unpack
 
   setup:repo:
     cmds:
@@ -74,3 +81,16 @@ tasks:
       TEST_PATTERN: '{{default "." .TEST_PATTERN}}'
     cmds:
       - go test {{.TEST_OPTIONS}} -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt {{.SOURCE_FILES}} -run {{.TEST_PATTERN}} -timeout=5m
+
+  testdata:gen:
+    desc: Updates testdata in testdata directory.
+    dir: internal/testdatagen
+    cmds:
+      - go run . generate ../../testdata
+      - task: testdata:unpack
+
+  testdata:unpack:
+    desc: Unpack testdata - useful if you want to inspect it.
+    dir: internal/testdatagen
+    cmds:
+      - go run . unpack ../../testdata
