@@ -350,3 +350,104 @@ func TestGetCredentialTxsEndpoint(t *testing.T) {
 		assert.Contains(t, res.Data, e.TxHash)
 	}
 }
+
+func TestAssetListEndpoint(t *testing.T) {
+	expected := []koios.AssetListItem{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_asset_list.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAssetList(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetAssetAddressListEndpoint(t *testing.T) {
+	expected := []koios.AssetHolder{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_asset_address_list.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAssetAddressList(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetAssetInfoEndpoint(t *testing.T) {
+	expected := []koios.AssetInfo{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_asset_info.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAssetInfo(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestGetAssetSummaryEndpoint(t *testing.T) {
+	expected := []koios.AssetSummary{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_asset_summary.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAssetSummary(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestGetAssetTxsEndpoint(t *testing.T) {
+	expected := []koios.AssetTxs{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_asset_txs.json.gz", &expected)
+
+	ts, api := createTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAssetTxs(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}

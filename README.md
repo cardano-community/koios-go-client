@@ -621,6 +621,16 @@ Each commit message consists of a **header**, a **body** and a **footer**.  The 
 <footer>
 ```
 
+*When maintainers are merging PR merge commit should be edited:*
+
+```
+<type>(<scope>): <subject> (#pr)
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
 The **header** is mandatory and the **scope** of the header is optional.
 
 Any line of the commit message cannot be longer 100 characters! This allows the message to be easier to read on GitHub as well as in various git tools.
@@ -646,6 +656,7 @@ change order of client GET method arguments.
 
 BREAKING CHANGE: Clien.Get signature has changed
 ```
+
 
 ---
 
