@@ -1,9 +1,8 @@
 <h1>Koios API Client Library for Go</h1>
 
-**:warning: UNTIL v1.0.0 RELEASE THIS LIBRARY MAY GET BREAKING CHANGES**
+**:warning: UNTIL v1.0.0 RELEASE THIS LIBRARY WILL GET BREAKING CHANGES :warning:**
 
-![license](https://img.shields.io/github/license/howijd/koios-rest-go-client)
-
+- before v1 every `v0.x.x` MINOR semver update most likely has breaking change. 
 - before updating e.g. `go get -u` check for changes to prevent inconveniences. 
 - `v1.0.0` enhancements are tracked under following [issue](https://github.com/howijd/koios-rest-go-client/issues/1)
 
@@ -435,7 +434,7 @@ response
 
 ### Install
 
-It's highly recommended installing a specific version of koios-rest available on the [releases page](https://github.com/howijd/koios-rest-go-client/releases).
+It's highly recommended installing a latest version of koios-rest available on the [releases page](https://github.com/howijd/koios-rest-go-client/releases/latest).
 
 #### Install from Source
 
