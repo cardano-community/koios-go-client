@@ -650,3 +650,38 @@ func TestGetPoolUpdatesEndpoint(t *testing.T) {
 
 	assert.Equal(t, expected, res.Data)
 }
+
+func TestGetScriptListEndpoint(t *testing.T) {
+	expected := []koios.ScriptListItem{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_script_list.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetScriptList(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetScriptRedeemersEndpoint(t *testing.T) {
+	expected := []koios.ScriptRedeemers{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_script_redeemers.json.gz", &expected)
+	ts, api := setupTestServerAndClient(t, spec)
+	defer ts.Close()
+
+	res, err := api.GetScriptRedeemers(
+		context.TODO(),
+		koios.ScriptHash(spec.Request.Query.Get("_script_hash")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
