@@ -1,3 +1,12 @@
+#############################################################################
+# NOTICE!
+# You should not modify this file in this repository.
+# This Workflow file is tested with workflow found at:
+# https://github.com/howijd/.github/blob/main/.github/workflows/semantic-pull-request.yml
+#
+# And opens self update pull request if base template is updated at:
+# https://github.com/howijd/.github/blob/main/workflow-templates/semantic-pull-request.yml
+#############################################################################
 name: "Lint PR Conventional Commits"
 
 on:
@@ -40,7 +49,7 @@ jobs:
             markdown
             packaging
           # Configure that a scope must always be provided.
-          requireScope: true
+          requireScope: false
           # Configure additional validation for the subject based on a regex.
           # This example ensures the subject doesn't start with an uppercase character.
           subjectPattern: ^(?![A-Z]).+$
