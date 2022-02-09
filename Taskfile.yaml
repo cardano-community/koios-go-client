@@ -22,8 +22,8 @@ tasks:
   goreleaser:
     desc: Run GoReleaser either in snapshot or release mode
     dir: cmd/koios-rest
-    deps:
-      - build
+    # deps:
+    #   - build
     vars:
       SNAPSHOT:
         sh: 'if [[ $GITHUB_REF != refs/tags/v* ]]; then echo "--snapshot"; fi'

@@ -669,7 +669,7 @@ If the commit reverts a previous commit, it should begin with `revert: `, follow
 
 Must be one of the following:
 
-* **build**: Changes that affect the build system or external dependencies (example scopes: goreleaser)
+* **build**: Changes that affect the build system or external dependencies (example scopes: goreleaser, taskfile)
 * **chore**: Other changes that don't modify src or test files.
 * **ci**: Changes to our CI configuration files and scripts.
 * **dep**: Changes related to dependecies e.g. `go.mod`
