@@ -32,7 +32,7 @@ func TestNetworkTipEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_network_tip.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -50,7 +50,7 @@ func TestNetworkGenesiEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_network_genesis.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -68,7 +68,7 @@ func TestNetworkTotalsEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_network_totals.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -90,7 +90,7 @@ func TestEpochInfoEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_epoch_info.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -112,7 +112,7 @@ func TestEpochParamsEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_epoch_params.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -136,7 +136,7 @@ func TestAccountListEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_account_list.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -155,7 +155,7 @@ func TestAccountInfoEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_account_info.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -173,7 +173,7 @@ func TestAccountRewardsEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_account_rewards.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -195,7 +195,7 @@ func TestAccountUpdatesEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_account_updates.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -214,7 +214,7 @@ func TestAccountAddressesEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_account_addresses.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -232,7 +232,7 @@ func TestAccountAssetsEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_account_assets.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -249,7 +249,7 @@ func TestAccountHistoryEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_account_history.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -266,7 +266,7 @@ func TestGetAddressInfoEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_address_info.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -285,7 +285,7 @@ func TestGetAddressTxsEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_address_txs.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -311,7 +311,7 @@ func TestGetAddressAssetsEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_address_assets.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -330,7 +330,7 @@ func TestGetCredentialTxsEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_credential_txs.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -356,7 +356,7 @@ func TestAssetListEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_asset_list.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -373,7 +373,7 @@ func TestGetAssetAddressListEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_asset_address_list.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -394,7 +394,7 @@ func TestGetAssetInfoEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_asset_info.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -415,7 +415,7 @@ func TestGetAssetSummaryEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_asset_summary.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -436,7 +436,7 @@ func TestGetAssetTxsEndpoint(t *testing.T) {
 
 	spec := loadEndpointTestSpec(t, "endpoint_asset_txs.json.gz", &expected)
 
-	ts, api := createTestServerAndClient(t, spec)
+	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
@@ -450,4 +450,65 @@ func TestGetAssetTxsEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestGetBlockInfoEndpoint(t *testing.T) {
+	expected := []koios.Block{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_block_info.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetBlockInfo(
+		context.TODO(),
+		koios.BlockHash(spec.Request.Query.Get("_block_hash")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestGetBlockTxsEndpoint(t *testing.T) {
+	expected := []struct {
+		TxHash koios.TxHash `json:"tx_hash"`
+	}{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_block_txs.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetBlockTxHashes(
+		context.TODO(),
+		koios.BlockHash(spec.Request.Query.Get("_block_hash")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	for _, e := range expected {
+		assert.Contains(t, res.Data, e.TxHash)
+	}
+}
+
+func TestGetBlocksEndpoint(t *testing.T) {
+	expected := []koios.Block{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_blocks.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetBlocks(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
 }

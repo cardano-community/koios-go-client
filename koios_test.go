@@ -93,8 +93,8 @@ func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *inter
 	return spec
 }
 
-// createTestServerAndClient httptest server and api client based on specs.
-func createTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httptest.Server, *koios.Client) {
+// setupTestServerAndClient httptest server and api client based on specs.
+func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httptest.Server, *koios.Client) {
 	mux := http.NewServeMux()
 	endpoint := fmt.Sprintf("/api/%s%s", koios.DefaultAPIVersion, spec.Endpoint)
 	mux.HandleFunc(endpoint, func(w http.ResponseWriter, r *http.Request) {
