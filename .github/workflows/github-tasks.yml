@@ -717,7 +717,8 @@ jobs:
               'howi',
               'howijd.network',
               'howijd.org',
-              'howijd.com' ]
+              'howijd.com',
+            ]
 
             const getmonday = () => {
               const now = new Date()
