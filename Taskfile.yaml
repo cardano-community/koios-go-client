@@ -19,17 +19,6 @@ tasks:
     cmds:
       - go tool cover -html=coverage.txt
 
-  goreleaser:
-    desc: Run GoReleaser either in snapshot or release mode
-    dir: cmd/koios-rest
-    # deps:
-    #   - build
-    vars:
-      SNAPSHOT:
-        sh: 'if [[ $GITHUB_REF != refs/tags/v* ]]; then echo "--snapshot"; fi'
-    cmds:
-      - goreleaser release --rm-dist {{.SNAPSHOT}}
-
   lint:
     desc: Lint the code with golangci-lint
     cmds:
@@ -40,20 +29,43 @@ tasks:
       Prints next version based on Conventional Commits spec.
     cmds:
       - svu n
+  release:
+    desc: |
+      To release new version in github, you must be maintainer
+      and have GITHUB_TOKEN env set e.g. in (.env) file
+    cmds:
+      - task: setup:repo
+      - task: setup:cmd
+      - task: release:tag
 
   # https://github.com/caarlos0/svu
-  release:
+  release:tag:
     dir: cmd/koios-rest
     vars:
       NEXT:
         sh: svu n
-    desc: |
-      Release new version, you must be maintainer
-      and have GITHUB_TOKEN env set e.g. in (.env) file.
+    desc: create new tag
+    preconditions:
+      - sh: git diff-index --quiet HEAD
+        msg: "Commit or stash changes first"
     cmds:
       - git tag -sm"{{.NEXT}}" {{.NEXT}}
       - git push
       - git push --tags
+      - echo "call 'task release:pkg' to create GitHub release from tag $NEXT"
+      - echo "and generate/upload release packages."
+
+  release:pkg:
+    desc: |
+      Run GoReleaser either in snapshot or release mode
+    dir: cmd/koios-rest
+    # deps:
+    #   - build
+    vars:
+      SNAPSHOT:
+        sh: 'if [[ $GITHUB_REF != refs/tags/v* ]]; then echo "--snapshot"; fi'
+    cmds:
+      - goreleaser release --rm-dist {{.SNAPSHOT}}
 
   setup:
     desc: Setup development env.
@@ -64,11 +76,13 @@ tasks:
 
   setup:repo:
     cmds:
+      - go mod tidy
       - go mod download
 
   setup:cmd:
     dir: cmd/koios-rest
     cmds:
+      - go mod tidy
       - go mod download
 
   test:
