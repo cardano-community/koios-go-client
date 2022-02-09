@@ -63,7 +63,7 @@ tasks:
     #   - build
     vars:
       SNAPSHOT:
-        sh: 'if [[ $GITHUB_REF != refs/tags/v* ]]; then echo "--snapshot"; fi'
+        sh: 'if [[ $(git describe --exact-match HEAD) != v* ]]; then echo "--snapshot"; fi'
     cmds:
       - goreleaser release --rm-dist {{.SNAPSHOT}}
 
