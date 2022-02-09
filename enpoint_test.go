@@ -512,3 +512,141 @@ func TestGetBlocksEndpoint(t *testing.T) {
 
 	assert.Equal(t, expected, res.Data)
 }
+
+func TestGetPoolBlocksEndpoint(t *testing.T) {
+	expected := []koios.PoolBlockInfo{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_pool_blocks.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	epochNo, err := strconv.ParseUint(spec.Request.Query.Get("_epoch_no"), 10, 64)
+	assert.NoError(t, err)
+	epoch := koios.EpochNo(epochNo)
+
+	res, err := api.GetPoolBlocks(
+		context.TODO(),
+		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+		&epoch,
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetPoolDelegatorsEndpoint(t *testing.T) {
+	expected := []koios.PoolDelegator{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_pool_delegators.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	epochNo, err := strconv.ParseUint(spec.Request.Query.Get("_epoch_no"), 10, 64)
+	assert.NoError(t, err)
+	epoch := koios.EpochNo(epochNo)
+
+	res, err := api.GetPoolDelegators(
+		context.TODO(),
+		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+		&epoch,
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetPoolInfoEndpoint(t *testing.T) {
+	expected := []koios.PoolInfo{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_pool_info.json.gz", &expected)
+	ts, api := setupTestServerAndClient(t, spec)
+	defer ts.Close()
+
+	res, err := api.GetPoolInfo(
+		context.TODO(),
+		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+}
+
+func TestGetPoolListEndpoint(t *testing.T) {
+	expected := []koios.PoolListItem{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_pool_list.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetPoolList(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetPoolMetadataEndpoint(t *testing.T) {
+	expected := []koios.PoolMetadata{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_pool_metadata.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetPoolMetadata(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetPoolRelaysEndpoint(t *testing.T) {
+	expected := []koios.PoolRelays{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_pool_relays.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetPoolRelays(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
+
+func TestGetPoolUpdatesEndpoint(t *testing.T) {
+	expected := []koios.PoolUpdateInfo{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_pool_updates.json.gz", &expected)
+	ts, api := setupTestServerAndClient(t, spec)
+	defer ts.Close()
+
+	poolID := koios.PoolID(spec.Request.Query.Get("_pool_bech32"))
+	res, err := api.GetPoolUpdates(
+		context.TODO(),
+		&poolID,
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+}
