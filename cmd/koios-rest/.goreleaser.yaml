@@ -1,6 +1,7 @@
 project_name: koios-rest
 
 release:
+  draft: true
   github:
     owner: howijd
     name: koios-rest-go-client
