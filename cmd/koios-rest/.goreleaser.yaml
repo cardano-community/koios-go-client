@@ -58,7 +58,7 @@ checksum:
   name_template: '{{ .ProjectName }}-{{ .Version }}-checksums.txt'
 
 changelog:
-  sort: asc
+  sort: desc
   filters:
     exclude:
     - '^.github:'
