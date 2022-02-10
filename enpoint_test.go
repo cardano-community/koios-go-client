@@ -22,7 +22,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/test-go/testify/assert"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/howijd/koios-rest-go-client"
 )
@@ -77,12 +77,17 @@ func TestNetworkTotalsEndpoint(t *testing.T) {
 	epoch := koios.EpochNo(epochNo)
 
 	res, err := api.GetTotals(context.TODO(), &epoch)
-
 	assert.NoError(t, err)
 	testHeaders(t, spec, res.Response)
-
 	assert.Len(t, expected, 1)
 	assert.Equal(t, expected[0], res.Data[0])
+
+	// test data without epoch
+	res2, err := api.GetTotals(context.TODO(), nil)
+	assert.NoError(t, err)
+	testHeaders(t, spec, res2.Response)
+	assert.Len(t, expected, 1)
+	assert.Equal(t, expected[0], res2.Data[0])
 }
 
 func TestEpochInfoEndpoint(t *testing.T) {
@@ -701,12 +706,19 @@ func TestGetTxInfoEndpoint(t *testing.T) {
 	err := json.Unmarshal(spec.Request.Body, &payload)
 	assert.NoError(t, err)
 
+	// Valid
 	res, err := api.GetTxInfo(context.TODO(), payload.TxHashes[0])
-
 	assert.NoError(t, err)
 	testHeaders(t, spec, res.Response)
-
 	assert.Equal(t, &expected[0], res.Data)
+
+	// Empty payload
+	res2, err := api.GetTxInfo(context.TODO(), koios.TxHash(""))
+	assert.ErrorIs(t, err, koios.ErrNoTxHash)
+	assert.Nil(t, res2.Data)
+	if assert.NotNil(t, res2.Error) {
+		assert.Equal(t, koios.ErrNoTxHash.Error(), res2.Error.Message)
+	}
 }
 
 func TestGetTxMetadataEndpoint(t *testing.T) {

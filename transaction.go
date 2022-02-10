@@ -261,7 +261,7 @@ func (c *Client) GetTxInfo(ctx context.Context, tx TxHash) (res *TxInfoResponse,
 // GetTxsInfos returns detailed information about transaction(s).
 func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosResponse, err error) {
 	res = &TxsInfosResponse{}
-	if len(txs) == 0 {
+	if len(txs) == 0 || len(txs[0]) == 0 {
 		err = ErrNoTxHash
 		res.applyError(nil, err)
 		return
@@ -289,7 +289,7 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosRe
 // GetTxsUTxOs returns UTxO set (inputs/outputs) of transactions.
 func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (res *TxUTxOsResponse, err error) {
 	res = &TxUTxOsResponse{}
-	if len(txs) == 0 {
+	if len(txs) == 0 || len(txs[0]) == 0 {
 		err = ErrNoTxHash
 		res.applyError(nil, err)
 		return
