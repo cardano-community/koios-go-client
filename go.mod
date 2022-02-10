@@ -7,7 +7,6 @@ replace github.com/shopspring/decimal => github.com/howijd/decimal v1.3.1
 require (
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.7.0
-	github.com/test-go/testify v1.1.4
 	golang.org/x/text v0.3.7
 )
 
