@@ -4,20 +4,20 @@
 
 - before v1 every `v0.x.x` MINOR semver update most likely has breaking change. 
 - before updating e.g. `go get -u` check for changes to prevent inconveniences. 
-- `v1.0.0` enhancements are tracked under following [issue](https://github.com/cardano-community/koios-go-client/issues/1)
 
 **[Koios API] is Elastic Cardano Query Layer!**
 
 > A consistent query layer for developers to build upon Cardano, with   
-> multiple, redundant endpoints that allow for easy scalability.
+> multiple, redundant endpoints that allow $$for easy scalability.
 
 **[Koios API] Client Library for Go**
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client)](https://pkg.go.dev/github.com/cardano-community/koios-go-client)
 
-```
+```shell
 go get github.com/cardano-community/koios-go-client
 ```
+
 ```go
 ...
 import (
@@ -26,9 +26,9 @@ import (
 ...
 ```
 
-**CLI Application to interact with [Koios API] from Command-line see**
+**There is CLI Application to interact with [Koios API] from Command-line see:**
 
-[See installing instruction](#cli-application)
+[koios cli repository for souce and installing instruction of koios cli][koios-cli]
 
 **Build Status**
 
@@ -38,8 +38,8 @@ import (
 
 **Development Status**
 
-![GitHub last commit](https://img.shields.io/github/last-commit/howijd/koios-rest-go-client)
-[![coverage](https://coveralls.io/repos/github/howijd/koios-rest-go-client/badge.svg?branch=main)](https://coveralls.io/github/howijd/koios-rest-go-client?branch=main)
+![GitHub last commit](https://img.shields.io/github/last-commit/cardano-community/koios-go-client)
+<!-- coverge -->
 [![codeql](https://github.com/cardano-community/koios-go-client/workflows/codeql/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/codeql.yaml)
 [![misspell](https://github.com/cardano-community/koios-go-client/workflows/misspell/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/misspell.yaml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/cardano-community/koios-go-client)](https://goreportcard.com/report/github.com/cardano-community/koios-go-client)
@@ -51,13 +51,6 @@ import (
   - [Concurrency using goroutines](#concurrency-using-goroutines)
 - [Lovelace (math on ada, assets and tokens).](#lovelace-math-on-ada-assets-and-tokens)
 - [Implemented Endpoints](#implemented-endpoints)
-- [CLI Application](#cli-application)
-  - [List of all commands](#list-of-all-commands)
-  - [Example Usage](#example-usage)
-    - [Example to query mainnet tip from cli](#example-to-query-mainnet-tip-from-cli)
-    - [Example to query testnet tip from cli](#example-to-query-testnet-tip-from-cli)
-  - [Install](#install)
-    - [Install from Source](#install-from-source)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
   - [Got a Question or Problem?](#got-a-question-or-problem)
@@ -78,13 +71,15 @@ import (
     - [Footer](#footer)
   - [Development Documentation](#development-documentation)
     - [Setup your machine](#setup-your-machine)
+- [Credits](#credits)
 
 ---
 
 ## Usage
 
 See Godoc [![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client)](https://pkg.go.dev/github.com/cardano-community/koios-go-client)
-Additionally you can find all usecases by looking source of `koio-rest` Command-line application [source](./cmd/koios-rest) which utilizes entire API of this library.
+
+Additionally you can find all usecases by looking source of `koio-cli` Command-line application [koios-cli] which utilizes entire API of this library.
 
 **NOTE**
 
@@ -181,18 +176,10 @@ func main() {
 
 Library uses for most cases to represent lovelace using [`Lovelace`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Lovelace) data type.
 
-This library uses forked snapshot of [github.com/shopspring/decimal] package to provide  
-JSON and XML serialization/deserialization and make it ease to work with calculations  
-and deciimal precisions of ADA lovelace and native assets.
-
 **For decimal package API see**
 
 [![](https://pkg.go.dev/badge/github.com/shopspring/decimal)](https://pkg.go.dev/github.com/shopspring/decimal)
 
-FORK: https://github.com/howijd/decimal  
-issues and bug reports are welcome to: https://github.com/howijd/decimal/issue.
-So that we can ensure that [github.com/shopspring/decimal] repository is not polluted with 
-issues which are not problems with upstream library.
 
 ## Implemented Endpoints
 
@@ -251,206 +238,6 @@ issues which are not problems with upstream library.
 | `/script_list` | [`*.GetScriptList(...) *ScriptRedeemersResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetScriptList) | `script-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_list) |
 | `/script_redeemers` | [`*.GetScriptRedeemers(...) *ScriptListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetScriptRedeemers) | `script-redeemers` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_redeemers) |
 
-## CLI Application
-
-source of cli: [./cmd/koios-rest](./cmd/koios-rest).
-
-[Installation instructions](#install)
-
-### List of all commands
-
-<details>
-  <summary><code>koios-rest --help</code></summary>
-
-```
-NAME:
-   koios-rest - CLI Client to consume Koios API https://api.koios.rest
-
-USAGE:
-   koios-rest [global options] command [command options] [arguments...]
-
-VERSION:
-   (devel)
-
-AUTHOR:
-   The Cardano Community Authors
-
-COMMANDS:
-   help, h  Shows a list of commands or help for one command
-   ACCOUNT:
-     account-list       Get a list of all accounts returns array of stake addresses.
-     account-info       Get the account info of any (payment or staking) address.
-     account-rewards    Get the full rewards history (including MIR) for a stake address, or certain epoch if specified.
-     account-updates    Get the account updates (registration, deregistration, delegation and withdrawals).
-     account-addresses  Get all addresses associated with an account payment or staking address
-     account-assets     Get the native asset balance of an account.
-     account-history    Get the staking history of an account.
-   ADDRESS:
-     address-info    Get address info - balance, associated stake address (if any) and UTxO set.
-     address-txs     Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive).
-     address-assets  Get the list of all the assets (policy, name and quantity) for a given address.
-     credential-txs  Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive).
-   ASSET:
-     asset-list          Get the list of all native assets (paginated).
-     asset-address-list  Get the list of all addresses holding a given asset.
-     asset-info          Get the information of an asset including first minting & token registry metadata.
-     asset-summary       Get the summary of an asset (total transactions exclude minting/total wallets include only wallets with asset balance).
-     asset-txs           Get the list of all asset transaction hashes (newest first).
-   BLOCK:
-     blocks      Get summarised details about all blocks (paginated - latest first).
-     block-info  Get detailed information about a specific block.
-     block-txs   Get a list of all transactions included in a provided block.
-   EPOCH:
-     epoch-info    Get the epoch information, all epochs if no epoch specified.
-     epoch-params  Get the protocol parameters for specific epoch, returns information about all epochs if no epoch specified.
-   NETWORK:
-     tip      Get the tip info about the latest block seen by chain.
-     genesis  Get the Genesis parameters used to start specific era on chain.
-     totals   Get the circulating utxo, treasury, rewards, supply and reserves in lovelace for specified epoch, all epochs if empty.
-   POOL:
-     pool-list        A list of all currently registered/retiring (not retired) pools.
-     pool-infos       Current pool statuses and details for a specified list of pool ids.
-     pool-info        Current pool status and details for a specified pool by pool id.
-     pool-delegators  Return information about delegators by a given pool and optional epoch (current if omitted).
-     pool-blocks      Return information about blocks minted by a given pool in current epoch (or _epoch_no if provided).
-     pool-updates     Return all pool updates for all pools or only updates for specific pool if specified.
-     pool-relays      A list of registered relays for all currently registered/retiring (not retired) pools.
-     pool-metadata    Metadata(on & off-chain) for all currently registered/retiring (not retired) pools.
-   SCRIPT:
-     script-list       List of all existing script hashes along with their creation transaction hashes.
-     script-redeemers  List of all redeemers for a given script hash.
-   TRANSACTIONS:
-     txs-infos      Get detailed information about transaction(s).
-     tx-info        Get detailed information about single transaction.
-     tx-utxos       Get UTxO set (inputs/outputs) of transactions.
-     txs-metadata   Get metadata information (if any) for given transaction(s).
-     tx-metadata    Get metadata information (if any) for given transaction.
-     tx-metalabels  Get a list of all transaction metalabels.
-     tx-submit      Submit signed transaction to the network.
-     txs-statuses   Get the number of block confirmations for a given transaction hash list
-     tx-status      Get the number of block confirmations for a given transaction hash
-   UTILS:
-     get   get issues a GET request to the specified API endpoint
-     head  head issues a HEAD request to the specified API endpoint
-
-GLOBAL OPTIONS:
-   --port value, -p value  Set port (default: 443)
-   --host value            Set host (default: "api.koios.rest")
-   --api-version value     Set API version (default: "v0")
-   --schema value          Set URL schema (default: "https")
-   --origin value          Set Origin header for requests. (default: "https://github.com/cardano-community/koios-go-client")
-   --rate-limit value      Set API Client rate limit for outgoing requests (default: 5)
-   --no-format             prints response json strings directly without calling json pretty. (default: false)
-   --enable-req-stats      Enable request stats. (default: false)
-   --testnet               use default testnet as host. (default: false)
-   --help, -h              show help (default: false)
-   --version, -v           print the version (default: false)
-
-COPYRIGHT:
-   (c) 2022
-```
-
-</details>
-
----
-
-### Example Usage
-
-#### Example to query mainnet tip from cli
-
-```cli
-koios-rest --enable-req-stats tip
-```
-
-response
-
-```json
-{
-  "request_url": "https://api.koios.rest/api/v0/tip",
-  "request_method": "GET",
-  "status_code": 200,
-  "status": "200 OK",
-  "date": "Mon, 07 Feb 2022 12:49:49 GMT",
-  "content_range": "0-0/*",
-  "stats": {
-    "req_started_at": "2022-02-07T12:49:48.565834833Z",
-    "req_dns_lookup_dur": 1284269, // dns lookup duration in nanosecons.
-    "tls_hs_dur": 208809082, // handshake duration in nanosecons.
-    "est_cxn_dur": 159857626, // time it took to establish connection with server in nanosecons.
-    "ttfb": 998874037, // time since start of the request it took to recieve first byte.
-    "req_dur": 999186595, // total request duration in nanoseconds
-    "req_dur_str": "999.186595ms" // string of req_dur
-  },
-  "data": {
-    "abs_slot": 52671876,
-    "block_no": 6852764,
-    "block_time": "2022-02-07T12:49:27",
-    "epoch": 319,
-    "epoch_slot": 227076,
-    "hash": "1dad134750188460dd48068e655b5935403d2f51afaf53a39337a4c89771754a"
-  }
-
-```
-
----
-
-#### Example to query testnet tip from cli
-
-```cli
-koios-rest --enable-req-stats --testnet tip
-# OR
-koios-rest --enable-req-stats --host testnet.koios.rest tip
-```
-
-response
-
-```json
-{
-  "request_url": "https://testnet.koios.rest/api/v0/tip",
-  "request_method": "GET",
-  "status_code": 200,
-  "status": "200 OK",
-  "date": "Mon, 07 Feb 2022 12:50:04 GMT",
-  "content_range": "0-0/*",
-  "stats": {
-    "req_started_at": "2022-02-07T12:50:03.98615637Z",
-    "req_dns_lookup_dur": 1383437,
-    "tls_hs_dur": 69093093,
-    "est_cxn_dur": 43733700,
-    "ttfb": 167423049,
-    "req_dur": 167738287,
-    "req_dur_str": "167.738287ms"
-  },
-  "data": {
-    "abs_slot": 49868948,
-    "block_no": 3300758,
-    "block_time": "2022-02-07T12:49:24",
-    "epoch": 185,
-    "epoch_slot": 318548,
-    "hash": "d7623e68cb78f450f42ba4b5a169124b26677f08f676ca4241b27edb6dbf0071"
-  }
-}
-```
-
-### Install
-
-It's highly recommended installing a latest version of koios-rest available on the [releases page](https://github.com/cardano-community/koios-go-client/releases/latest).
-
-#### Install from Source
-
-Installing from source requires a working Go environment. [See the install instructions for Go](http://golang.org/doc/install.html).
-
-Since `koios-rest` cli application uses `replace` in [./cmd/koiso-rest/go.mod](https://github.com/cardano-community/koios-go-client/blob/main/cmd/koios-rest/go.mod).
-Then `go install won't work`. To install it from source use following commands.
-
-1. `git clone git@github.com:howijd/koios-rest-go-client.git`
-2. `cd ./koios-rest-go-client/cmd/koios-rest`
-3. `go install .`
-
-verify installation
-
-`koios-rest --version`
-
 ---
 
 ## Contributing
@@ -468,7 +255,7 @@ We would love for you to contribute to [Koios API Client Library for Go][github]
 
 ### Code of Conduct
 
-Help us keep [Koios API Client Library for Go][github] open and inclusive. Please read and follow our [Code of Conduct][code-of-conduc]
+Help us keep [Koios API Client Library for Go][github] open and inclusive. Please read and follow our [Code of Conduct][coc]
 
 ---
 
@@ -487,6 +274,7 @@ If you find a bug in the source code, you can help us by
 ---
 
 ### Feature Requests
+
 You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub
 Repository. If you would like to *implement* a new feature, please submit an issue with
 a proposal for your work first, to be sure that we can use it.
@@ -514,13 +302,13 @@ You can file new issues by filling out our [new issue form](https://github.com/c
 Before you submit your Pull Request (PR) consider the following guidelines:
 
 1. Search [GitHub](https://github.com/cardano-community/koios-go-client/pulls) for an open or closed PR that relates to your submission. You don't want to duplicate effort.
-2. Fork the [howijd/koios-rest-go-client][github] repo.
+2. Fork the [cardano-community/koios-go-client][github] repo.
 3. Setup you local repository
 
     ```shell
-    git@github.com:<your-github-username>/koios-rest-go-client.git
-    cd koios-rest-go-client
-    git remote add upstream git@github.com:howijd/koios-rest-go-client.git
+    git@github.com:<your-github-username>/koios-go-client.git
+    cd koios-go-client
+    git remote add upstream git@github.com:cardano-community/koios-go-client.git
     ```
 4. Make your changes in a new git branch and ensure that you always start from up to date main branch. **Repeat this step every time you are about to start woking on new PR**.
 
@@ -731,13 +519,13 @@ A detailed explanation can be found in this [document][commit-message-format].
 * [golangci-lint](https://golangci-lint.run/usage/install/#local-installation) - Go linters aggregator should be installed
 * [taskfile](https://taskfile.dev/#/installation) - task runner / build tool should be installed
 * [svu](https://github.com/caarlos0/svu#install) - Semantic Version Util tool should be installed
-* Fork the [howijd/koios-rest-go-client][github] repo.
+* Fork the [cardano-community/koios-go-client][github] repo.
 * Setup you local repository
 
     ```shell
-    git@github.com:<your-github-username>/koios-rest-go-client.git
-    cd koios-rest-go-client
-    git remote add upstream git@github.com:howijd/koios-rest-go-client.git
+    git@github.com:<your-github-username>/koios-go-client.git
+    cd koios-go-client
+    git remote add upstream git@github.com:cardano-community/koios-go-client.git
     ```
 
 **Setup local env**
@@ -773,8 +561,17 @@ task cover
 task build:snapshot
 ```
 
+## Credits
+[![GitHub contributors](https://img.shields.io/github/contributors/cardano-community/koios-go-client?style=flat-square)](https://github.com/cardano-community/koios-go-client/graphs/contributors)
+
+<sub>**Original author.**</sub>  
+<sup>koios-go-client was moved under Cardano Community from <a href="https://github.com/howijd/koios-rest-go-client">howijd/koios-rest-go-client</a></sup>
+
 <!-- LINKS -->
 [Koios API]: https://koios.rest "Koios API"
 [github.com/shopspring/decimal]: https://github.com/shopspring/decimal
-[coc]: https://github.com/howijd/.github/blob/main/CODE_OF_CONDUCT.md
+[coc]: https://github.com/cardano-community/.github/blob/main/CODE_OF_CONDUCT.md
 [github]: https://github.com/cardano-community/koios-go-client
+[koios-cli]: https://github.com/cardano-community/koios-cli "cardano-community/koios-cli"
+
+

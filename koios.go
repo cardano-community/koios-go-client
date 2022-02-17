@@ -133,10 +133,6 @@ type (
 	//
 	// For API of decimal package see
 	// https://pkg.go.dev/github.com/shopspring/decimal
-	//
-	// SEE: https://github.com/howijd/decimal
-	// issues and bug reports are welcome to:
-	// https://github.com/howijd/decimal/issues.
 	Lovelace struct {
 		decimal.Decimal
 	}
@@ -268,7 +264,7 @@ func New(opts ...Option) (*Client, error) {
 	c.commonHeaders.Set(
 		"User-Agent",
 		fmt.Sprintf(
-			"go-koios/%s (%s %s) %s/%s https://github.com/howijd/go-koios",
+			"go-koios/%s (%s %s) %s/%s https://github.com/cardano-community/go-koios",
 			LibraryVersion,
 			cases.Title(language.English).String(runtime.GOOS),
 			runtime.GOARCH,

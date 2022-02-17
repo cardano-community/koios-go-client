@@ -28,13 +28,13 @@ tasks:
       Prints next version based on Conventional Commits spec.
     cmds:
       - svu n
+
   release:
     desc: |
       To release new version in github, you must be maintainer
       and have GITHUB_TOKEN env set e.g. in (.env) file
     cmds:
-      - task: setup:repo
-      - task: setup:cmd
+      - task: setup
       - task: release:tag
 
   # https://github.com/caarlos0/svu
@@ -68,18 +68,6 @@ tasks:
 
   setup:
     desc: Setup development env.
-    cmds:
-      - task: setup:repo
-      - task: setup:cmd
-      - task: testdata:unpack
-
-  setup:repo:
-    cmds:
-      - go mod tidy
-      - go mod download
-
-  setup:cmd:
-    dir: cmd/koios-rest
     cmds:
       - go mod tidy
       - go mod download
