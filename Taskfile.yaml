@@ -56,9 +56,6 @@ tasks:
   release:pkg:
     desc: |
       Run GoReleaser either in snapshot or release mode
-    dir: cmd/koios-rest
-    # deps:
-    #   - build
     vars:
       SNAPSHOT:
         sh: 'if [[ $(git describe --exact-match HEAD) != v* ]]; then echo "--snapshot"; fi'
