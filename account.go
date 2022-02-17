@@ -47,6 +47,7 @@ type (
 		Type           string   `json:"type"`
 	}
 
+	// AccountHistoryEntry history entry list item.
 	AccountHistoryEntry struct {
 		StakeAddress StakeAddress `json:"stake_address"`
 		PoolID       PoolID       `json:"pool_id"`
@@ -54,7 +55,7 @@ type (
 		ActiveStake  Lovelace     `json:"active_stake"`
 	}
 
-	// AccountAsset.
+	// AccountAsset asset list item when requesting account info.
 	AccountAsset struct {
 		// Name Asset Name (hex).
 		Name string `json:"asset_name"`
@@ -115,7 +116,7 @@ type (
 	}
 )
 
-// GetTip returns the tip info about the latest block seen by chain.
+// GetAccountList returns a list of all accounts.
 func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, err error) {
 	res = &AccountListResponse{}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/account_list", nil, nil, nil)

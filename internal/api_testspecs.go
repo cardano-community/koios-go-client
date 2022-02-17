@@ -21,18 +21,21 @@ import (
 	"net/url"
 )
 
+// APITestRequestSpec used to define requests for testdata.
 type APITestRequestSpec struct {
 	Method string     `json:"method"`
 	Query  url.Values `json:"query,omitempty"`
 	Body   []byte     `json:"body,omitempty"`
 }
 
+// APITestRequestSpec used to define responses for testdata.
 type APITestResponseSpec struct {
 	Code   int         `json:"code"`
 	Header http.Header `json:"headers"`
 	Body   interface{} `json:"body"`
 }
 
+// APITestSpec is testdata spec.
 type APITestSpec struct {
 	Filename string              `json:"filename"`
 	Endpoint string              `json:"path"`

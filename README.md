@@ -42,7 +42,7 @@ import (
 [![codecov](https://codecov.io/gh/cardano-community/koios-go-client/branch/main/graph/badge.svg?token=FA1KGG6ZQ5)](https://codecov.io/gh/cardano-community/koios-go-client)
 [![codeql](https://github.com/cardano-community/koios-go-client/workflows/codeql/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/codeql.yml)
 [![misspell](https://github.com/cardano-community/koios-go-client/workflows/misspell/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/misspell.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/cardano-community/koios-go-client)](https://goreportcard.com/report/github.com/cardano-community/koios-go-client)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cardano-community/koios-go-client?v=1)](https://goreportcard.com/report/github.com/cardano-community/koios-go-client)
 
 ---
 

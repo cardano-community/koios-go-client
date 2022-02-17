@@ -24,7 +24,7 @@ import (
 )
 
 type (
-	// Asset.
+	// Asset represents Cardano Asset.
 	Asset struct {
 		// Asset Name (hex).
 		Name string `json:"asset_name"`
@@ -39,7 +39,7 @@ type (
 		Quantity Lovelace `json:"quantity"`
 	}
 
-	// Asset metadata registered on the Cardano Token Registry.
+	// TokenRegistryMetadata metadata registered on the Cardano Token Registry.
 	TokenRegistryMetadata struct {
 		Decimals    int    `json:"decimals"`
 		Description string `json:"description"`
@@ -155,7 +155,7 @@ type (
 	}
 )
 
-// GetTip returns the list of all native assets (paginated).
+// GetAssetList returns the list of all native assets (paginated).
 func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err error) {
 	res = &AssetListResponse{}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_list", nil, nil, nil)

@@ -51,7 +51,7 @@ type (
 		Ticker *string `json:"ticker"`
 	}
 
-	// PoolMeta metadata list item.
+	// PoolMetadata metadata list item.
 	PoolMetadata struct {
 		// ID (bech32 format)
 		PoolID PoolID `json:"pool_id_bech32"`
@@ -281,13 +281,13 @@ type (
 		Data *PoolInfo `json:"response"`
 	}
 
-	// PoolInfoResponse represents response from `/pool_delegators` endpoint.
+	// PoolDelegatorsResponse represents response from `/pool_delegators` endpoint.
 	PoolDelegatorsResponse struct {
 		Response
 		Data []PoolDelegator `json:"response"`
 	}
 
-	// PoolInfoResponse represents response from `/pool_blocks` endpoint.
+	// PoolBlocksResponse represents response from `/pool_blocks` endpoint.
 	PoolBlocksResponse struct {
 		Response
 		Data []PoolBlockInfo `json:"response"`
@@ -350,8 +350,7 @@ func (c *Client) GetPoolInfo(ctx context.Context, pid PoolID) (res *PoolInfoResp
 	return
 }
 
-// GetTxsInfos returns current pool statuses and details
-// for a specified list of pool ids.
+// GetPoolInfos returns current pool statuses and details for a specified list of pool ids.
 func (c *Client) GetPoolInfos(ctx context.Context, pids []PoolID) (res *PoolInfosResponse, err error) {
 	res = &PoolInfosResponse{}
 	if len(pids) == 0 {

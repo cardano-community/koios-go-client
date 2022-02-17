@@ -38,7 +38,7 @@ type (
 		Outputs []TxOutput `json:"outputs"`
 	}
 
-	// TxMetalabels defines model for tx_metalabels.
+	// TxMetalabel defines model for tx_metalabels.
 	TxMetalabel struct {
 		// A distinct known metalabel
 		Metalabel uint64 `json:"metalabel"`
@@ -171,13 +171,13 @@ type (
 		Certificates []Certificate `json:"certificates"`
 	}
 
-	// TxsInfoResponse represents response from `/tx_info` endpoint.
+	// TxsInfosResponse represents response from `/tx_info` endpoint.
 	TxsInfosResponse struct {
 		Response
 		Data []TxInfo `json:"response"`
 	}
 
-	// TxsInfoResponse represents response from `/tx_info` endpoint.
+	// TxInfoResponse represents response from `/tx_info` endpoint.
 	// when requesting info about single transaction.
 	TxInfoResponse struct {
 		Response
@@ -325,7 +325,7 @@ func (c *Client) GetTxMetadata(ctx context.Context, tx TxHash) (res *TxMetadataR
 	return
 }
 
-// GetTxsInfos returns detailed information about transaction(s).
+// GetTxsMetadata returns metadata for requested transaction(s).
 func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMetadataResponse, err error) {
 	res = &TxsMetadataResponse{}
 	if len(txs) == 0 {
@@ -353,7 +353,7 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 	return res, nil
 }
 
-// GetTxMetadataLabels retruns a list of all transaction metalabels.
+// GetTxMetaLabels retruns a list of all transaction metalabels.
 func (c *Client) GetTxMetaLabels(ctx context.Context) (res *TxMetaLabelsResponse, err error) {
 	res = &TxMetaLabelsResponse{}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, nil, nil)
@@ -410,7 +410,7 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (res *Submi
 	return res, nil
 }
 
-// GetTxInfo returns detailed information about transaction.
+// GetTxStatus returns status of transaction.
 func (c *Client) GetTxStatus(ctx context.Context, tx TxHash) (res *TxStatusResponse, err error) {
 	res = &TxStatusResponse{}
 	rsp, err := c.GetTxsStatuses(ctx, []TxHash{tx})
@@ -421,7 +421,7 @@ func (c *Client) GetTxStatus(ctx context.Context, tx TxHash) (res *TxStatusRespo
 	return
 }
 
-// GetTxsInfos returns detailed information about transaction(s).
+// GetTxsStatuses returns status of transaction(s).
 func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (res *TxsStatusesResponse, err error) {
 	res = &TxsStatusesResponse{}
 	if len(txs) == 0 {

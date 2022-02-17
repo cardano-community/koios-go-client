@@ -99,7 +99,7 @@ type (
 	// Address defines type for _address.
 	Address string
 
-	// PaymentCredential.
+	// PaymentCredential type def.
 	PaymentCredential string
 
 	// AssetName defines type for _asset_name.
@@ -114,10 +114,10 @@ type (
 	// EpochNo defines type for _epoch_no.
 	EpochNo uint64
 
-	// PoolID.
+	// PoolID type def.
 	PoolID string
 
-	// PolicyID.
+	// PolicyID type def.
 	PolicyID string
 
 	// ScriptHash defines type for _script_hash.
