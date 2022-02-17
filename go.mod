@@ -1,4 +1,4 @@
-module github.com/howijd/koios-rest-go-client
+module github.com/cardano-community/koios-go-client
 
 go 1.18
 

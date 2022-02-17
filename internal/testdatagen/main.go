@@ -33,8 +33,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/howijd/koios-rest-go-client"
-	"github.com/howijd/koios-rest-go-client/internal"
+	"github.com/cardano-community/koios-go-client"
+	"github.com/cardano-community/koios-go-client/internal"
 	"github.com/urfave/cli/v2"
 )
 

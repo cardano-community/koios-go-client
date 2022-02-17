@@ -58,7 +58,7 @@ const (
 	DefaultSchema            = "https"
 	LibraryVersion           = "v0"
 	DefaultRateLimit  uint8  = 5
-	DefaultOrigin            = "https://github.com/howijd/koios-rest-go-client"
+	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client"
 )
 
 // Predefined errors used by the library.

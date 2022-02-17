@@ -24,7 +24,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/howijd/koios-rest-go-client"
+	"github.com/cardano-community/koios-go-client"
 )
 
 func TestNetworkTipEndpoint(t *testing.T) {

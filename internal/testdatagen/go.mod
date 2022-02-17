@@ -1,14 +1,14 @@
-module github.com/howijd/koios-rest-go-client/internal/testdatagen
+module github.com/cardano-community/koios-go-client/internal/testdatagen
 
 go 1.18
 
 replace (
-	github.com/howijd/koios-rest-go-client v0.0.0 => ../..
+	github.com/cardano-community/koios-go-client v0.0.0 => ../..
 	github.com/shopspring/decimal v1.3.1 => github.com/howijd/decimal v1.3.1
 )
 
 require (
-	github.com/howijd/koios-rest-go-client v0.0.0
+	github.com/cardano-community/koios-go-client v0.0.0
 	github.com/urfave/cli/v2 v2.3.0
 )
 

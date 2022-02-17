@@ -32,8 +32,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/howijd/koios-rest-go-client"
-	"github.com/howijd/koios-rest-go-client/internal"
+	"github.com/cardano-community/koios-go-client"
+	"github.com/cardano-community/koios-go-client/internal"
 )
 
 func TestNewDefaults(t *testing.T) {

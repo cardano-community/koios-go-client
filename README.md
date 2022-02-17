@@ -4,7 +4,7 @@
 
 - before v1 every `v0.x.x` MINOR semver update most likely has breaking change. 
 - before updating e.g. `go get -u` check for changes to prevent inconveniences. 
-- `v1.0.0` enhancements are tracked under following [issue](https://github.com/howijd/koios-rest-go-client/issues/1)
+- `v1.0.0` enhancements are tracked under following [issue](https://github.com/cardano-community/koios-go-client/issues/1)
 
 **[Koios API] is Elastic Cardano Query Layer!**
 
@@ -13,15 +13,15 @@
 
 **[Koios API] Client Library for Go**
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client)](https://pkg.go.dev/github.com/cardano-community/koios-go-client)
 
 ```
-go get github.com/howijd/koios-rest-go-client
+go get github.com/cardano-community/koios-go-client
 ```
 ```go
 ...
 import (
-  "github.com/howijd/koios-rest-go-client" // imports as package "koios"
+  "github.com/cardano-community/koios-go-client" // imports as package "koios"
 )
 ...
 ```
@@ -32,17 +32,17 @@ import (
 
 **Build Status**
 
-[![linux](https://github.com/howijd/koios-rest-go-client/workflows/linux/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/linux.yaml)
-[![macos](https://github.com/howijd/koios-rest-go-client/workflows/macos/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/macos.yaml)
-[![windows](https://github.com/howijd/koios-rest-go-client/workflows/windows/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/windows.yaml)
+[![linux](https://github.com/cardano-community/koios-go-client/workflows/linux/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/linux.yaml)
+[![macos](https://github.com/cardano-community/koios-go-client/workflows/macos/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/macos.yaml)
+[![windows](https://github.com/cardano-community/koios-go-client/workflows/windows/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/windows.yaml)
 
 **Development Status**
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/howijd/koios-rest-go-client)
 [![coverage](https://coveralls.io/repos/github/howijd/koios-rest-go-client/badge.svg?branch=main)](https://coveralls.io/github/howijd/koios-rest-go-client?branch=main)
-[![codeql](https://github.com/howijd/koios-rest-go-client/workflows/codeql/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/codeql.yaml)
-[![misspell](https://github.com/howijd/koios-rest-go-client/workflows/misspell/badge.svg)](https://github.com/howijd/koios-rest-go-client/actions/workflows/misspell.yaml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/howijd/koios-rest-go-client)](https://goreportcard.com/report/github.com/howijd/koios-rest-go-client)
+[![codeql](https://github.com/cardano-community/koios-go-client/workflows/codeql/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/codeql.yaml)
+[![misspell](https://github.com/cardano-community/koios-go-client/workflows/misspell/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/misspell.yaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cardano-community/koios-go-client)](https://goreportcard.com/report/github.com/cardano-community/koios-go-client)
 
 ---
 
@@ -83,7 +83,7 @@ import (
 
 ## Usage
 
-See Godoc [![PkgGoDev](https://pkg.go.dev/badge/github.com/howijd/koios-rest-go-client)](https://pkg.go.dev/github.com/howijd/koios-rest-go-client)
+See Godoc [![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client)](https://pkg.go.dev/github.com/cardano-community/koios-go-client)
 Additionally you can find all usecases by looking source of `koio-rest` Command-line application [source](./cmd/koios-rest) which utilizes entire API of this library.
 
 **NOTE**
@@ -101,7 +101,7 @@ import (
 	"fmt"
 	"log"
 
-	koios "github.com/howijd/koios-rest-go-client"
+	koios "github.com/cardano-community/koios-go-client"
 )
 
 func main() {
@@ -179,7 +179,7 @@ func main() {
 
 ## Lovelace (math on ada, assets and tokens).
 
-Library uses for most cases to represent lovelace using [`Lovelace`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Lovelace) data type.
+Library uses for most cases to represent lovelace using [`Lovelace`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Lovelace) data type.
 
 This library uses forked snapshot of [github.com/shopspring/decimal] package to provide  
 JSON and XML serialization/deserialization and make it ease to work with calculations  
@@ -199,57 +199,57 @@ issues which are not problems with upstream library.
 | **endpoint** | Go API | CLI command | API Doc |
 | --- | --- | --- | --- | 
 | **NETWORK** | | | |
-| `/tip` | [`*.GetTip(...) *TipResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTip) | `tip` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tip) |
-| `/genesis` | [`*.GetGenesis(...) *GenesisResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetGenesis) | `genesis` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/genesis) |
-| `/totals` | [`*.GetTotals(...) *TotalsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTotals) | `totals` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/totals) |
+| `/tip` | [`*.GetTip(...) *TipResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTip) | `tip` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tip) |
+| `/genesis` | [`*.GetGenesis(...) *GenesisResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetGenesis) | `genesis` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/genesis) |
+| `/totals` | [`*.GetTotals(...) *TotalsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTotals) | `totals` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/totals) |
 | **EPOCH** | | | |
-| `/epoch_info` | [`*.GetEpochInfo(...) *EpochInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetEpochInfo) | `epoch-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_info) |
-| `/epoch_params` | [`*.GetEpochParams(...) *EpochParamsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetEpochParams) | `epoch-params` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_params) |
+| `/epoch_info` | [`*.GetEpochInfo(...) *EpochInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetEpochInfo) | `epoch-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_info) |
+| `/epoch_params` | [`*.GetEpochParams(...) *EpochParamsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetEpochParams) | `epoch-params` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_params) |
 | **BLOCK** | | | |
-| `/blocks` | [`*.GetBlocks(...) *BlocksResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlocks) | `blocks` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/blocks) |
-| `/block_info` | [`*.GetBlockInfo(...) *BlockInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlockInfo) | `block-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_info) |
-| `/block_txs` | [`*.GetBlockTxs(...) *BlockTxsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetBlockTxs) | `block-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_txs) |
+| `/blocks` | [`*.GetBlocks(...) *BlocksResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetBlocks) | `blocks` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/blocks) |
+| `/block_info` | [`*.GetBlockInfo(...) *BlockInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetBlockInfo) | `block-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_info) |
+| `/block_txs` | [`*.GetBlockTxs(...) *BlockTxsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetBlockTxs) | `block-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_txs) |
 | **TRANSACTIONS** | | | |
-| `/tx_info` | [`*.GetTxsInfos(...) *TxsInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsInfos) | `txs-infos` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_info) |
-| | [`*.GetTxInfo(...) *TxInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxInfo) | `tx-info` | |
-| `/tx_utxos` | [`*.GetTxsUTxOs(...) *TxUTxOsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsUTxOs) | `tx-utxos` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_utxos) |
-| `/tx_metadata` | [`*.GetTxsMetadata(...) *TxsMetadataResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsMetadata) | `txs-metadata` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_metadata) |
-| | [`*.GetTxMetadata(...) *TxMetadataResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxMetadata) | `tx-metadata` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_metadata) |
-| `/tx_metalabels` | [`*.GetTxMetaLabels(...) *TxMetaLabelsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxMetaLabels) | `tx-metalabels` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_metalabels) |
-| `/submittx` | [`*.SubmitSignedTx(...) *SubmitSignedTxResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.SubmitSignedTx) | `tx-submit` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/submittx) |
-| `/tx_status` | [`*.GetTxsStatuses(...) *TxsStatusesResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxsStatuses) | `txs-statuses` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_status) |
-|  | [`*.GetTxStatus(...) *TxStatusResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetTxStatus) | `tx-status` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_status) |
+| `/tx_info` | [`*.GetTxsInfos(...) *TxsInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxsInfos) | `txs-infos` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_info) |
+| | [`*.GetTxInfo(...) *TxInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxInfo) | `tx-info` | |
+| `/tx_utxos` | [`*.GetTxsUTxOs(...) *TxUTxOsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxsUTxOs) | `tx-utxos` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_utxos) |
+| `/tx_metadata` | [`*.GetTxsMetadata(...) *TxsMetadataResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxsMetadata) | `txs-metadata` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_metadata) |
+| | [`*.GetTxMetadata(...) *TxMetadataResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxMetadata) | `tx-metadata` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_metadata) |
+| `/tx_metalabels` | [`*.GetTxMetaLabels(...) *TxMetaLabelsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxMetaLabels) | `tx-metalabels` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_metalabels) |
+| `/submittx` | [`*.SubmitSignedTx(...) *SubmitSignedTxResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.SubmitSignedTx) | `tx-submit` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/submittx) |
+| `/tx_status` | [`*.GetTxsStatuses(...) *TxsStatusesResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxsStatuses) | `txs-statuses` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_status) |
+|  | [`*.GetTxStatus(...) *TxStatusResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxStatus) | `tx-status` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_status) |
 | **ADDRESS** | | | |
-| `/address_info` | [`*.GetAddressInfo(...) *AddressInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAddressInfo) | `address-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_info) |
-| `/address_txs` | [`*.GetAddressTxs(...) *AddressTxsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAddressTxs) | `address-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_txs) |
-| `/address_assets` | [`*.GetAddressAssets(...) *AddressAssetsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAddressAssets) | `address-assets` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_assets) |
-| `/credential_txs` | [`*.GetCredentialTxs(...) *CredentialTxsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetCredentialTxs) | `credential-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/credential_txs) |
+| `/address_info` | [`*.GetAddressInfo(...) *AddressInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAddressInfo) | `address-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_info) |
+| `/address_txs` | [`*.GetAddressTxs(...) *AddressTxsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAddressTxs) | `address-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_txs) |
+| `/address_assets` | [`*.GetAddressAssets(...) *AddressAssetsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAddressAssets) | `address-assets` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/address_assets) |
+| `/credential_txs` | [`*.GetCredentialTxs(...) *CredentialTxsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetCredentialTxs) | `credential-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/credential_txs) |
 | **ACCOUNT** | | | |
-| `/account_list` | [`*.GetAccountList(...) *AccountListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountList) | `account-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_list) |
-| `/account_info` | [`*.GetAccountInfo(...) *AccountListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountInfo) | `account-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_info) |
-| `/account_rewards` | [`*.GetAccountRewards(...) *AccountRewardsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountRewards) | `account-rewards` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_info) |
-| `/account_updates` | [`*.GetAccountUpdates(...) *AccountUpdatesResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountUpdates) | `account-updates` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_updates) |
-| `/account_addresses` | [`*.GetAccountAddresses(...) *AccountAddressesResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountAddresses) | `account-addresses` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_addresses) |
-| `/account_assets` | [`*.GetAccountAssets(...) *AccountAssetsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountAssets) | `account-assets` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_assets) |
-| `/account_history` | [`*.GetAccountHistory(...) *AccountHistoryResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAccountHistory) | `account-history` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_history) |
+| `/account_list` | [`*.GetAccountList(...) *AccountListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAccountList) | `account-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_list) |
+| `/account_info` | [`*.GetAccountInfo(...) *AccountListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAccountInfo) | `account-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_info) |
+| `/account_rewards` | [`*.GetAccountRewards(...) *AccountRewardsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAccountRewards) | `account-rewards` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_info) |
+| `/account_updates` | [`*.GetAccountUpdates(...) *AccountUpdatesResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAccountUpdates) | `account-updates` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_updates) |
+| `/account_addresses` | [`*.GetAccountAddresses(...) *AccountAddressesResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAccountAddresses) | `account-addresses` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_addresses) |
+| `/account_assets` | [`*.GetAccountAssets(...) *AccountAssetsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAccountAssets) | `account-assets` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_assets) |
+| `/account_history` | [`*.GetAccountHistory(...) *AccountHistoryResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAccountHistory) | `account-history` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/account_history) |
 | **ASSET** | | | |
-| `/asset_list` | [`*.GetAssetList(...) *AssetAddressListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetList) | `asset-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_address_list) |
-| `/asset_address_list` | [`*.GetAssetAddressList(...) *AssetAddressListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetAddressList) | `asset-address-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_address_list) |
-| `/asset_info` | [`*.GetAssetInfo(...) *AssetInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetInfo) | `asset-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_info) |
-| `/asset_summary` | [`*.GetAssetSummary(...) *AssetSummaryResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetSummary) | `asset-summary` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_summary) |
-| `/asset_txs` | [`*.GetAssetTxs(...) *AssetTxsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetAssetTxs) | `asset-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_txs) |
+| `/asset_list` | [`*.GetAssetList(...) *AssetAddressListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAssetList) | `asset-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_address_list) |
+| `/asset_address_list` | [`*.GetAssetAddressList(...) *AssetAddressListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAssetAddressList) | `asset-address-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_address_list) |
+| `/asset_info` | [`*.GetAssetInfo(...) *AssetInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAssetInfo) | `asset-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_info) |
+| `/asset_summary` | [`*.GetAssetSummary(...) *AssetSummaryResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAssetSummary) | `asset-summary` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_summary) |
+| `/asset_txs` | [`*.GetAssetTxs(...) *AssetTxsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetAssetTxs) | `asset-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/asset_txs) |
 | **POOL** | | | |
-| `/pool_list` | [`*.GetPoolList(...) *PoolListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolList) | `pool-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_list) |
-| `/pool_info` | [`*.GetPoolInfos(...) *PoolInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolInfos) | `pool-infos` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_info) |
-| | [`*.GetPoolInfo(...) *PoolInfoResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolInfo) | `pool-info` | |
-| `/pool_delegators` | [`*.GetPoolDelegators(...) *PoolDelegatorsResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolDelegators) | `pool-delegators` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_delegators) |
-| `/pool_blocks` | [`*.GetPoolBlocks(...) *PoolBlocksResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolBlocks) | `pool-blocks` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_blocks) |
-| `/pool_updates` | [`*.GetPoolUpdates(...) *PoolUpdatesResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolUpdates) | `pool-updates` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_updates) |
-| `/pool_relays` | [`*.GetPoolRelays(...) *PoolRelaysResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolRelays) | `pool-relays` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_relays) |
-| `/pool_metadata` | [`*.GetPoolMetadata(...) *PoolMetadataResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetPoolMetadata) | `pool-metadata` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_metadata) |
+| `/pool_list` | [`*.GetPoolList(...) *PoolListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolList) | `pool-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_list) |
+| `/pool_info` | [`*.GetPoolInfos(...) *PoolInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolInfos) | `pool-infos` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_info) |
+| | [`*.GetPoolInfo(...) *PoolInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolInfo) | `pool-info` | |
+| `/pool_delegators` | [`*.GetPoolDelegators(...) *PoolDelegatorsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolDelegators) | `pool-delegators` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_delegators) |
+| `/pool_blocks` | [`*.GetPoolBlocks(...) *PoolBlocksResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolBlocks) | `pool-blocks` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_blocks) |
+| `/pool_updates` | [`*.GetPoolUpdates(...) *PoolUpdatesResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolUpdates) | `pool-updates` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_updates) |
+| `/pool_relays` | [`*.GetPoolRelays(...) *PoolRelaysResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolRelays) | `pool-relays` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_relays) |
+| `/pool_metadata` | [`*.GetPoolMetadata(...) *PoolMetadataResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolMetadata) | `pool-metadata` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_metadata) |
 | **SCRIPT** | | | |
-| `/script_list` | [`*.GetScriptList(...) *ScriptRedeemersResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetScriptList) | `script-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_list) |
-| `/script_redeemers` | [`*.GetScriptRedeemers(...) *ScriptListResponse`](https://pkg.go.dev/github.com/howijd/koios-rest-go-client#Client.GetScriptRedeemers) | `script-redeemers` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_redeemers) |
+| `/script_list` | [`*.GetScriptList(...) *ScriptRedeemersResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetScriptList) | `script-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_list) |
+| `/script_redeemers` | [`*.GetScriptRedeemers(...) *ScriptListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetScriptRedeemers) | `script-redeemers` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_redeemers) |
 
 ## CLI Application
 
@@ -338,7 +338,7 @@ GLOBAL OPTIONS:
    --host value            Set host (default: "api.koios.rest")
    --api-version value     Set API version (default: "v0")
    --schema value          Set URL schema (default: "https")
-   --origin value          Set Origin header for requests. (default: "https://github.com/howijd/koios-rest-go-client")
+   --origin value          Set Origin header for requests. (default: "https://github.com/cardano-community/koios-go-client")
    --rate-limit value      Set API Client rate limit for outgoing requests (default: 5)
    --no-format             prints response json strings directly without calling json pretty. (default: false)
    --enable-req-stats      Enable request stats. (default: false)
@@ -434,13 +434,13 @@ response
 
 ### Install
 
-It's highly recommended installing a latest version of koios-rest available on the [releases page](https://github.com/howijd/koios-rest-go-client/releases/latest).
+It's highly recommended installing a latest version of koios-rest available on the [releases page](https://github.com/cardano-community/koios-go-client/releases/latest).
 
 #### Install from Source
 
 Installing from source requires a working Go environment. [See the install instructions for Go](http://golang.org/doc/install.html).
 
-Since `koios-rest` cli application uses `replace` in [./cmd/koiso-rest/go.mod](https://github.com/howijd/koios-rest-go-client/blob/main/cmd/koios-rest/go.mod).
+Since `koios-rest` cli application uses `replace` in [./cmd/koiso-rest/go.mod](https://github.com/cardano-community/koios-go-client/blob/main/cmd/koios-rest/go.mod).
 Then `go install won't work`. To install it from source use following commands.
 
 1. `git clone git@github.com:howijd/koios-rest-go-client.git`
@@ -505,7 +505,7 @@ and help you to craft the change so that it is successfully accepted into the pr
 
 Before you submit an issue, please search the issue tracker, maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
 
-You can file new issues by filling out our [new issue form](https://github.com/howijd/koios-rest-go-client/issues/new).
+You can file new issues by filling out our [new issue form](https://github.com/cardano-community/koios-go-client/issues/new).
 
 ---
 
@@ -513,7 +513,7 @@ You can file new issues by filling out our [new issue form](https://github.com/h
 
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-1. Search [GitHub](https://github.com/howijd/koios-rest-go-client/pulls) for an open or closed PR that relates to your submission. You don't want to duplicate effort.
+1. Search [GitHub](https://github.com/cardano-community/koios-go-client/pulls) for an open or closed PR that relates to your submission. You don't want to duplicate effort.
 2. Fork the [howijd/koios-rest-go-client][github] repo.
 3. Setup you local repository
 
@@ -777,4 +777,4 @@ task build:snapshot
 [Koios API]: https://koios.rest "Koios API"
 [github.com/shopspring/decimal]: https://github.com/shopspring/decimal
 [coc]: https://github.com/howijd/.github/blob/main/CODE_OF_CONDUCT.md
-[github]: https://github.com/howijd/koios-rest-go-client
+[github]: https://github.com/cardano-community/koios-go-client
