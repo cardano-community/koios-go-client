@@ -273,7 +273,7 @@ VERSION:
    (devel)
 
 AUTHOR:
-   The Howijd.Network Authors
+   The Cardano Community Authors
 
 COMMANDS:
    help, h  Shows a list of commands or help for one command
