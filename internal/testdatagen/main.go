@@ -76,10 +76,12 @@ func main() {
 				Usage:     "unpack test data.",
 				ArgsUsage: "[testdata dir path]",
 				Action: func(ctx *cli.Context) error {
-					if ctx.NArg() != 1 {
+					if ctx.NArg() == 0 {
 						return errors.New("provide path to directory to output test data")
 					}
 					dirpath := ctx.Args().Get(0)
+					filename := ctx.Args().Get(1)
+
 					dir, err := os.Stat(dirpath)
 					handleErr(err)
 					if !dir.IsDir() {
@@ -89,7 +91,8 @@ func main() {
 
 					var wg sync.WaitGroup
 					for _, filestat := range filestats {
-						if filepath.Ext(filestat.Name()) == ".gz" {
+						if filepath.Ext(filestat.Name()) == ".gz" &&
+							(filename == "all" || filename+".gz" == filestat.Name()) {
 							wg.Add(1)
 							go func(filestat fs.FileInfo) {
 								log.Print("reading: ", filestat.Name())
@@ -129,10 +132,11 @@ func main() {
 				Usage:     "generate or update test data.",
 				ArgsUsage: "[testdata dir path]",
 				Action: func(ctx *cli.Context) error {
-					if ctx.NArg() != 1 {
+					if ctx.NArg() == 0 {
 						return errors.New("provide path to directory to output test data")
 					}
 					dirpath := ctx.Args().Get(0)
+					filename := ctx.Args().Get(1)
 
 					dir, err := os.Stat(dirpath)
 					handleErr(err)
@@ -143,8 +147,13 @@ func main() {
 					var wg sync.WaitGroup
 
 					for _, spec := range specs() {
+						if filename != "all" && filename != spec.Filename {
+							continue
+						}
+
 						wg.Add(1)
 						go func(spec internal.APITestSpec) {
+
 							defer wg.Done()
 							var (
 								res *http.Response
@@ -173,6 +182,8 @@ func main() {
 							handleErr(json.Unmarshal(body, &spec.Response.Body))
 
 							outfile := filepath.Join(dirpath, spec.Filename+".gz")
+							_ = os.Remove(filepath.Join(dirpath, spec.Filename))
+							_ = os.Remove(outfile)
 
 							var jsongz bytes.Buffer
 							z := gzip.NewWriter(&jsongz)
@@ -345,7 +356,7 @@ func specs() []internal.APITestSpec {
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 				Query: url.Values{
-					"_address": []string{"addr1q95g93vtzkuvghxq0s4drx95gtugpesceghuccp99ve2tww9uauw44k56c2vvnkggawgk00wf54cvyl6ruada624sy2ssdqv87"},
+					"_address": []string{"addr1q8d5kc3u4lcu84g08apa9ckj7df605lahzzpcfy0m5tpkyk9uauw44k56c2vvnkggawgk00wf54cvyl6ruada624sy2se0snsj"},
 				},
 			},
 		},
@@ -488,7 +499,7 @@ func specs() []internal.APITestSpec {
 			Endpoint: "/pool_info",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
-				Body:   []byte("{\"_pool_bech32_ids\": [\"pool100wj94uzf54vup2hdzk0afng4dhjaqggt7j434mtgm8v2gfvfgp\"]"),
+				Body:   []byte("{\"_pool_bech32_ids\": [\"pool100wj94uzf54vup2hdzk0afng4dhjaqggt7j434mtgm8v2gfvfgp\"]}"),
 			},
 		},
 		{

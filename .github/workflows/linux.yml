@@ -25,6 +25,9 @@ jobs:
           version: latest
       - name: Run tests
         run: |
-          go test -v -race -covermode atomic -coverprofile=covprofile ./...
-
-
+          go test -v -race -covermode atomic -coverprofile=covprofile.coverprofile ./...
+      # - name: Upload coverage
+      #   uses: codecov/codecov-action@v2
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     file: coverage.coverprofile

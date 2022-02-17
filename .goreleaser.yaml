@@ -1,0 +1,30 @@
+project_name: koios
+
+release:
+  draft: true
+  github:
+    owner: cardano-community
+    name: koios-go-client
+
+builds:
+- skip: true
+
+checksum:
+  name_template: '{{ .ProjectName }}-{{ .Version }}-checksums.txt'
+
+changelog:
+  sort: desc
+  filters:
+    exclude:
+    - '^.github:'
+    - '^test:'
+    - 'README'
+    - 'build\(deps\): bump .* in /docs \(#\d+\)'
+    - Merge pull request
+    - Merge branch
+    - Merge remote-tracking branch
+
+before:
+  hooks:
+    - go mod tidy
+

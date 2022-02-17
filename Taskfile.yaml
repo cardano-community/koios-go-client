@@ -7,13 +7,13 @@ dotenv: ['.env']
 tasks:
 
   build-snapshot:
-    dir: cmd/koios-rest
     desc: |
       Build snapshot binaries to ./cmd/koios-rest/dist.
     cmds:
       - goreleaser release --snapshot --rm-dist
 
   cover:
+    deps: [test]
     desc: Open the cover tool
     cmds:
       - go tool cover -html=coverage.txt
@@ -39,7 +39,6 @@ tasks:
 
   # https://github.com/caarlos0/svu
   release:tag:
-    dir: cmd/koios-rest
     vars:
       NEXT:
         sh: svu n
@@ -84,14 +83,14 @@ tasks:
       - go test {{.TEST_OPTIONS}} -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt {{.SOURCE_FILES}} -run {{.TEST_PATTERN}} -timeout=5m
 
   testdata:gen:
-    desc: Updates testdata in testdata directory.
+    desc: Updates testdata in testdata directory. call (task testdata:gen endpoint_id|all)
     dir: internal/testdatagen
     cmds:
-      - go run . generate ../../testdata
+      - go run . generate ../../testdata {{.CLI_ARGS}}
       - task: testdata:unpack
 
   testdata:unpack:
-    desc: Unpack testdata - useful if you want to inspect it.
+    desc: Unpack testdata - useful if you want to inspect it. (task testdata:unpack endpoint_id|all)
     dir: internal/testdatagen
     cmds:
-      - go run . unpack ../../testdata
+      - go run . unpack ../../testdata {{.CLI_ARGS}}
