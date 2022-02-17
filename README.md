@@ -66,6 +66,7 @@ import (
     - [Revert](#revert)
     - [Type](#type)
     - [Scope](#scope)
+- [| **markdown** | Markdown files |](#-markdown--markdown-files-)
     - [Subject](#subject)
     - [Body](#body)
     - [Footer](#footer)
@@ -244,7 +245,7 @@ Library uses for most cases to represent lovelace using [`Lovelace`](https://pkg
 
 We would love for you to contribute to [Koios API Client Library for Go][github] and help make it even better than it is today! As a contributor, here are the guidelines we would like you to follow:
 
- - [Code of Conduct](#coc)
+ - [Code of Conduct](#code-of-conduct)
  - [Question or Problem?](#got-a-question-or-problem)
  - [Found a Bug?](#issues-and-bugs)
  - [Missing a Feature?](#feature-requests)
@@ -268,14 +269,14 @@ Do not open issues for general support questions as we want to keep GitHub issue
 ### Issues and Bugs
 
 If you find a bug in the source code, you can help us by
-[submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
-[submit a Pull Request](#submit-pr) with a fix.
+[submitting an issue](#submitting-an-issue) to our [GitHub Repository][github]. Even better, you can
+[submit a Pull Request](#submitting-a-pull-request-pr) with a fix.
 
 ---
 
 ### Feature Requests
 
-You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub
+You can *request* a new feature by [submitting an issue](#submitting-an-issue) to our GitHub
 Repository. If you would like to *implement* a new feature, please submit an issue with
 a proposal for your work first, to be sure that we can use it.
 Please consider what kind of change it is:
@@ -283,7 +284,7 @@ Please consider what kind of change it is:
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be
 discussed. This will also allow us to better coordinate our efforts, prevent duplication of work,
 and help you to craft the change so that it is successfully accepted into the project.
-* **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
+* **Small Features** can be crafted and directly [submitted as a Pull Request](#submitting-a-pull-request-pr).
 
 ---
 
@@ -320,10 +321,10 @@ Before you submit your Pull Request (PR) consider the following guidelines:
     git checkout -b update-readme main
     ```
 5. Create your patch, **including appropriate test cases**.
-6. Follow our [Coding Rules](#rules).
-7. If changes are in source code except documentations then run the full test suite, as described in the [developer documentation](#dev-doc), and ensure that all tests pass.
+6. Follow our [Coding Rules](#coding-rules).
+7. If changes are in source code except documentations then run the full test suite, as described in the [developer documentation](#development-documentation), and ensure that all tests pass.
 8.  Commit your changes using a descriptive commit message that follows our
-  [commit message conventions](#commit). Adherence to these conventions
+  [commit message conventions](#commit-message-guidelines). Adherence to these conventions
   is necessary because release notes are automatically generated from these messages.
 
      ```shell
@@ -431,7 +432,7 @@ docs(markdown): update readme examples
 ```
 
 ```
-fix(cli): fix cli command get action
+fix(endpoint): update Tip endpoint to latest specs.
 
 description of your change.
 ```
@@ -477,13 +478,10 @@ The following is the list of supported scopes:
 
 | scope | description |
 | --- | --- |
-| **cli** | CLI app related changes |
 | **client** | API client related changes |
 | **endpoint** | Changes related to api endpoints |
 | **godoc** | Go documentation |
 | **markdown** | Markdown files |
-| **packaging** | Used for changes that change the release packages |
-
 ---
 
 #### Subject
@@ -552,8 +550,8 @@ task test
 task cover
 ```
 
-
 ## Credits
+
 [![GitHub contributors](https://img.shields.io/github/contributors/cardano-community/koios-go-client?style=flat-square)](https://github.com/cardano-community/koios-go-client/graphs/contributors)
 
 <sub>**Original author.**</sub>  
