@@ -214,12 +214,13 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 		return nil, err
 	}
 
+	res.applyRsp(rsp)
+
 	if rsp.StatusCode > http.StatusCreated {
 		res.applyError(nil, ErrResponse)
 		return rsp, nil
 	}
 
-	res.applyRsp(rsp)
 	return rsp, nil
 }
 

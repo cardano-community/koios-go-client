@@ -76,6 +76,14 @@ func Test404s(t *testing.T) {
 	assert.Nil(t, res.Data)
 	assert.Equal(t, res.Error.Message, fmt.Sprintf("%s: 404 page not found\n", koios.ErrResponseIsNotJSON))
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
+
+	// errors with stats should be same
+	koios.CollectRequestsStats(true)(api)
+	res2, err := api.GetGenesis(context.TODO())
+	assert.Error(t, err)
+	assert.Nil(t, res2.Data)
+	assert.Equal(t, res2.Error.Message, fmt.Sprintf("%s: 404 page not found\n", koios.ErrResponseIsNotJSON))
+	assert.Equal(t, http.StatusNotFound, res2.StatusCode)
 }
 
 func TestNetworkTotalsEndpoint(t *testing.T) {
