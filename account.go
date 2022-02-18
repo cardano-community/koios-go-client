@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 )
 
@@ -140,10 +139,6 @@ func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, 
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(accs) > 0 {
 		for _, a := range accs {
 			res.Data = append(res.Data, a.ID)
@@ -168,6 +163,7 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 	if err != nil {
 		return
 	}
+
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(nil, err)
@@ -181,10 +177,6 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
 	}
@@ -282,10 +274,6 @@ func (c *Client) GetAccountAddresses(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(addrs) > 0 {
 		for _, a := range addrs {
 			res.Data = append(res.Data, a.Addr)
@@ -320,10 +308,6 @@ func (c *Client) GetAccountAssets(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	res.ready()
 	return res, nil
 }
@@ -353,10 +337,6 @@ func (c *Client) GetAccountHistory(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	res.ready()
 	return res, nil
 }

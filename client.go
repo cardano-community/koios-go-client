@@ -144,6 +144,12 @@ func (c *Client) request(
 	if res != nil {
 		res.applyRsp(rsp)
 	}
+
+	if rsp.StatusCode > http.StatusCreated {
+		res.applyError(nil, ErrResponse)
+		return rsp, nil
+	}
+
 	return rsp, nil
 }
 
@@ -206,6 +212,11 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 	if err != nil {
 		res.applyError(nil, err)
 		return nil, err
+	}
+
+	if rsp.StatusCode > http.StatusCreated {
+		res.applyError(nil, ErrResponse)
+		return rsp, nil
 	}
 
 	res.applyRsp(rsp)

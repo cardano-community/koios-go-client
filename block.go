@@ -19,7 +19,6 @@ package koios
 import (
 	"context"
 	"encoding/json"
-	"net/http"
 	"net/url"
 )
 
@@ -131,10 +130,6 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(blockpl) == 1 {
 		res.Data = &blockpl[0]
 	}
@@ -170,10 +165,6 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(blockTxs) > 0 {
 		for _, tx := range blockTxs {
 			res.Data = append(res.Data, tx.Hash)

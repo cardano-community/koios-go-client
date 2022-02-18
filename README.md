@@ -7,8 +7,8 @@
 
 **[Koios API] is Elastic Cardano Query Layer!**
 
-> A consistent query layer for developers to build upon Cardano, with   
-> multiple, redundant endpoints that allow $$for easy scalability.
+> A consistent query layer for developers to build upon Cardano, 
+> with multiple, redundant endpoints that allow for easy scalability.
 
 **[Koios API] Client Library for Go**
 

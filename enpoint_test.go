@@ -19,6 +19,8 @@ package koios_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"strconv"
 	"testing"
 
@@ -61,6 +63,19 @@ func TestNetworkGenesiEndpoint(t *testing.T) {
 
 	assert.Len(t, expected, 1)
 	assert.Equal(t, &expected[0], res.Data)
+}
+
+func Test404s(t *testing.T) {
+	// test invalid path
+	tipspec := loadEndpointTestSpec(t, "endpoint_network_tip.json.gz", nil)
+	ts, api := setupTestServerAndClient(t, tipspec)
+	defer ts.Close()
+
+	res, err := api.GetGenesis(context.TODO())
+	assert.Error(t, err)
+	assert.Nil(t, res.Data)
+	assert.Equal(t, res.Error.Message, fmt.Sprintf("%s: 404 page not found\n", koios.ErrResponseIsNotJSON))
+	assert.Equal(t, http.StatusNotFound, res.StatusCode)
 }
 
 func TestNetworkTotalsEndpoint(t *testing.T) {

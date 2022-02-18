@@ -68,10 +68,11 @@ var (
 	ErrHTTPClientChange         = errors.New("http.Client can only be set as option to koios.New")
 	ErrOriginSet                = errors.New("origin can only be set as option to koios.New")
 	ErrRateLimitRange           = errors.New("rate limit must be between 1-255 requests per sec")
-	ErrResponseIsNotJSON        = errors.New("go non json response")
+	ErrResponseIsNotJSON        = errors.New("got non json response")
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoPoolID                 = errors.New("missing pool id")
+	ErrResponse                 = errors.New("got unexpected response")
 )
 
 type (
@@ -286,9 +287,8 @@ func New(opts ...Option) (*Client, error) {
 	// If HttpClient option was not provided
 	// use default http.Client
 	if c.client == nil {
-		if err := HTTPClient(nil)(c); err != nil {
-			return nil, err
-		}
+		// there is really no point to check that error
+		_ = HTTPClient(nil)(c)
 	}
 
 	return c, nil

@@ -19,7 +19,6 @@ package koios
 import (
 	"context"
 	"encoding/json"
-	"net/http"
 	"net/url"
 )
 
@@ -175,10 +174,6 @@ func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err 
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	return res, nil
 }
 
@@ -211,10 +206,6 @@ func (c *Client) GetAssetAddressList(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	return res, nil
 }
 
@@ -251,10 +242,6 @@ func (c *Client) GetAssetInfo(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(info) == 1 {
 		res.Data = &info[0]
 	}
@@ -296,10 +283,6 @@ func (c *Client) GetAssetSummary(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(summary) == 1 {
 		res.Data = &summary[0]
 	}
@@ -339,10 +322,6 @@ func (c *Client) GetAssetTxs(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(atxs) == 1 {
 		res.Data = &atxs[0]
 	}

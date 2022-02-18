@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"net/url"
 )
 
@@ -332,10 +331,6 @@ func (c *Client) GetPoolList(ctx context.Context) (res *PoolListResponse, err er
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	return res, nil
 }
 

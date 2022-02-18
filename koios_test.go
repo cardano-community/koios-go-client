@@ -79,6 +79,14 @@ func TestOptionErrs(t *testing.T) {
 		"should not unlimited requests p/s")
 	assert.Error(t, koios.Origin("localhost")(client),
 		"origin should be valid http origin")
+	_, err := koios.New(koios.Origin("localhost.localdomain"))
+	assert.Error(t, err, "koios.New should return err when option is invalid")
+}
+
+func TestHTTPClient(t *testing.T) {
+	client, err := koios.New(koios.HTTPClient(http.DefaultClient))
+	assert.Nil(t, client, "client should be nil if there was error")
+	assert.Error(t, err, "should not accept default http client")
 }
 
 // testHeaders universal header tester.

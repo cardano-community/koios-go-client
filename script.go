@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 )
 
@@ -106,10 +105,6 @@ func (c *Client) GetScriptList(ctx context.Context) (res *ScriptListResponse, er
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	return res, nil
 }
 
@@ -141,10 +136,6 @@ func (c *Client) GetScriptRedeemers(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(r) == 1 {
 		res.Data = &r[0]
 	}

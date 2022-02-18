@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"net/http"
 	"net/url"
 )
 
@@ -118,10 +117,6 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
 	}
@@ -173,10 +168,6 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(atxs) > 0 {
 		for _, tx := range atxs {
 			res.Data = append(res.Data, tx.Hash)
@@ -209,11 +200,6 @@ func (c *Client) GetAddressAssets(ctx context.Context, addr Address) (res *Addre
 	}
 
 	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if rsp.StatusCode != http.StatusOK {
 		res.applyError(body, err)
 		return
 	}
@@ -270,10 +256,6 @@ func (c *Client) GetCredentialTxs(
 		return
 	}
 
-	if rsp.StatusCode != http.StatusOK {
-		res.applyError(body, err)
-		return
-	}
 	if len(atxs) > 0 {
 		for _, tx := range atxs {
 			res.Data = append(res.Data, tx.Hash)
