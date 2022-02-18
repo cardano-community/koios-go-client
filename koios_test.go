@@ -54,6 +54,33 @@ func TestNewDefaults(t *testing.T) {
 	}
 }
 
+func TestOptions(t *testing.T) {
+	api, err := koios.New(
+		koios.Host("localhost"),
+		koios.APIVersion("v1"),
+		koios.Port(8080),
+		koios.Schema("http"),
+		koios.RateLimit(100),
+		koios.Origin("http://localhost.localdomain"),
+		koios.CollectRequestsStats(true),
+	)
+	assert.NoError(t, err)
+	if assert.NotNil(t, api) {
+		assert.Equal(t, uint64(0), api.TotalRequests(), "total requests should be 0 by default")
+		assert.Equal(t, "http://localhost:8080/api/v1/", api.BaseURL(), "invalid default base url")
+	}
+}
+
+func TestOptionErrs(t *testing.T) {
+	client, _ := koios.New()
+	assert.Error(t, koios.HTTPClient(http.DefaultClient)(client),
+		"should not allow changing http client.")
+	assert.Error(t, koios.RateLimit(0)(client),
+		"should not unlimited requests p/s")
+	assert.Error(t, koios.Origin("localhost")(client),
+		"origin should be valid http origin")
+}
+
 // testHeaders universal header tester.
 // Currently testing only headers we care about.
 func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
