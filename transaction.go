@@ -268,17 +268,9 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosRe
 	}
 
 	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_info", txHashesPL(txs), nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetTxsUTxOs returns UTxO set (inputs/outputs) of transactions.
@@ -291,17 +283,9 @@ func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (res *TxUTxOsRes
 	}
 
 	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetTxMetadata returns metadata information (if any) for given transaction.
@@ -325,34 +309,18 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 	}
 
 	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_metadata", txHashesPL(txs), nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetTxMetaLabels retruns a list of all transaction metalabels.
 func (c *Client) GetTxMetaLabels(ctx context.Context) (res *TxMetaLabelsResponse, err error) {
 	res = &TxMetaLabelsResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // SubmitSignedTx Submit an transaction to the network.
@@ -369,20 +337,9 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (res *Submi
 	h.Set("Content-Type", "application/cbor")
 	h.Set("Content-Length", fmt.Sprint(len(cborb)))
 	rsp, _ := c.request(ctx, &res.Response, "POST", "/submittx", bytes.NewBuffer(cborb), nil, h)
-	body, err := readResponseBody(rsp)
-
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
-
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetTxStatus returns status of transaction.
@@ -406,17 +363,9 @@ func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (res *TxsStat
 	}
 
 	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_status", txHashesPL(txs), nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 func txHashesPL(txs []TxHash) io.Reader {

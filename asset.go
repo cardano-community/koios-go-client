@@ -18,7 +18,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 )
 
@@ -158,18 +157,8 @@ type (
 func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err error) {
 	res = &AssetListResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_list", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	return res, nil
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
 }
 
 // GetAssetAddressList returns the list of all addresses holding a given asset.
@@ -185,18 +174,8 @@ func (c *Client) GetAssetAddressList(
 	params.Set("_asset_name", string(name))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	return res, nil
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
 }
 
 // GetAssetInfo returns the information of an asset including
@@ -215,24 +194,14 @@ func (c *Client) GetAssetInfo(
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_info", nil, params, nil)
 
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
 	info := []AssetInfo{}
-
-	if err = json.Unmarshal(body, &info); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &info)
 
 	if len(info) == 1 {
 		res.Data = &info[0]
 	}
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetAssetSummary returns the summary of an asset
@@ -252,24 +221,14 @@ func (c *Client) GetAssetSummary(
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, params, nil)
 
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
 	summary := []AssetSummary{}
-
-	if err = json.Unmarshal(body, &summary); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &summary)
 
 	if len(summary) == 1 {
 		res.Data = &summary[0]
 	}
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetAssetTxs returns the list of all asset transaction hashes (newest first).
@@ -286,22 +245,13 @@ func (c *Client) GetAssetTxs(
 	params.Set("_asset_name", string(name))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
 	atxs := []AssetTxs{}
-
-	if err = json.Unmarshal(body, &atxs); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
 	if len(atxs) == 1 {
 		res.Data = &atxs[0]
 	}
 	res.ready()
-	return res, nil
+	return
 }

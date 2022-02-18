@@ -18,7 +18,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/url"
 )
@@ -175,16 +174,7 @@ func (c *Client) GetEpochInfo(ctx context.Context, epoch *EpochNo) (res *EpochIn
 	}
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/epoch_info", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
 	return
 }
@@ -199,16 +189,7 @@ func (c *Client) GetEpochParams(ctx context.Context, epoch *EpochNo) (res *Epoch
 	}
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/epoch_params", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
 	return
 }

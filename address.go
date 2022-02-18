@@ -89,7 +89,7 @@ type (
 
 // GetAddressInfo returns address info - balance,
 // associated stake address (if any) and UTxO set.
-//nolint: dupl
+
 func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *AddressInfoResponse, err error) {
 	res = &AddressInfoResponse{}
 	if len(addr) == 0 {
@@ -101,24 +101,14 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 	params.Set("_address", string(addr))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/address_info", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
 
 	addrs := []AddressInfo{}
-
-	if err = json.Unmarshal(body, &addrs); err != nil {
-		res.applyError(body, err)
-		return
-	}
-
+	err = readAndUnmarshalResponse(rsp, &res.Response, &addrs)
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
 	}
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetAddressTxs returns the transaction hash list of input address array,
@@ -147,20 +137,12 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 	}()
 
 	rsp, _ := c.request(ctx, &res.Response, "POST", "/address_txs", rpipe, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
 
 	atxs := []struct {
 		Hash TxHash `json:"tx_hash"`
 	}{}
 
-	if err = json.Unmarshal(body, &atxs); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
 	if len(atxs) > 0 {
 		for _, tx := range atxs {
@@ -168,7 +150,7 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 		}
 	}
 	res.ready()
-	return res, nil
+	return res, err
 }
 
 // GetAddressAssets returns the list of all the assets (policy, name and quantity)
@@ -184,19 +166,10 @@ func (c *Client) GetAddressAssets(ctx context.Context, addr Address) (res *Addre
 	params.Set("_address", string(addr))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/address_assets", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
 
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
-
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetCredentialTxs returns the transaction hash list of input
@@ -229,20 +202,12 @@ func (c *Client) GetCredentialTxs(
 	}()
 
 	rsp, _ := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
 
 	atxs := []struct {
 		Hash TxHash `json:"tx_hash"`
 	}{}
 
-	if err = json.Unmarshal(body, &atxs); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
 	if len(atxs) > 0 {
 		for _, tx := range atxs {
@@ -250,5 +215,5 @@ func (c *Client) GetCredentialTxs(
 		}
 	}
 	res.ready()
-	return res, nil
+	return res, err
 }

@@ -18,7 +18,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/url"
 )
@@ -140,17 +139,9 @@ type (
 func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
 	res = &TipResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/tip", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
 	tips := []Tip{}
-	if err = json.Unmarshal(body, &tips); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &tips)
 	if len(tips) == 1 {
 		res.Data = &tips[0]
 	}
@@ -162,18 +153,9 @@ func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
 func (c *Client) GetGenesis(ctx context.Context) (res *GenesisResponse, err error) {
 	res = &GenesisResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/genesis", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
 	genesisres := []Genesis{}
-
-	if err = json.Unmarshal(body, &genesisres); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &genesisres)
 
 	if len(genesisres) == 1 {
 		res.Data = &genesisres[0]
@@ -191,17 +173,9 @@ func (c *Client) GetTotals(ctx context.Context, epoch *EpochNo) (res *TotalsResp
 	}
 	res = &TotalsResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/totals", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
 	totals := []Totals{}
-	if err = json.Unmarshal(body, &totals); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &totals)
 	if len(totals) > 0 {
 		res.Data = totals
 	}

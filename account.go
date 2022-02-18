@@ -18,7 +18,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/url"
 )
@@ -119,31 +118,23 @@ type (
 func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, err error) {
 	res = &AccountListResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_list", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
 	accs := []struct {
 		ID StakeAddress `json:"id"`
 	}{}
 
-	if err = json.Unmarshal(body, &accs); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &accs)
 
 	if len(accs) > 0 {
 		for _, a := range accs {
 			res.Data = append(res.Data, a.ID)
 		}
 	}
-	return res, nil
+	return
 }
 
 // GetAccountInfo returns the account info of any (payment or staking) address.
-//nolint: dupl
+
 func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *AccountInfoResponse, err error) {
 	res = &AccountInfoResponse{}
 	if len(addr) == 0 {
@@ -155,24 +146,15 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 	params.Set("_address", string(addr))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_info", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
 
 	addrs := []AccountInfo{}
-
-	if err = json.Unmarshal(body, &addrs); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &addrs)
 
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
 	}
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetAccountRewards retruns the full rewards history (including MIR)
@@ -188,19 +170,12 @@ func (c *Client) GetAccountRewards(
 	if epoch != nil {
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_rewards", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_rewards", nil, params, nil)
+
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetAccountUpdates (History) retruns the account updates
@@ -214,18 +189,10 @@ func (c *Client) GetAccountUpdates(
 	params.Set("_stake_address", string(addr))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_updates", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetAccountAddresses retruns all addresses associated with an account.
@@ -238,20 +205,12 @@ func (c *Client) GetAccountAddresses(
 	params.Set("_address", string(addr))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_addresses", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
 	addrs := []struct {
 		Addr Address `json:"address"`
 	}{}
 
-	if err = json.Unmarshal(body, &addrs); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &addrs)
 
 	if len(addrs) > 0 {
 		for _, a := range addrs {
@@ -259,7 +218,7 @@ func (c *Client) GetAccountAddresses(
 		}
 	}
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetAccountAssets retruns all the native asset balance of an account.
@@ -272,19 +231,10 @@ func (c *Client) GetAccountAssets(
 	params.Set("_address", string(addr))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_assets", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetAccountHistory retruns the staking history of an account.
@@ -297,17 +247,8 @@ func (c *Client) GetAccountHistory(
 	params.Set("_address", string(addr))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_history", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 
 	res.ready()
-	return res, nil
+	return
 }

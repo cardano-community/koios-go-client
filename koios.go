@@ -427,6 +427,19 @@ func readResponseBody(rsp *http.Response) ([]byte, error) {
 	return body, nil
 }
 
+func readAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{}) error {
+	body, err := readResponseBody(rsp)
+	if err != nil {
+		res.applyError(body, err)
+		return err
+	}
+	if err = json.Unmarshal(body, dest); err != nil {
+		res.applyError(body, err)
+		return err
+	}
+	return nil
+}
+
 func (r *Response) applyError(body []byte, err error) {
 	r.Error = &ResponseError{}
 	_ = json.Unmarshal(body, r.Error)

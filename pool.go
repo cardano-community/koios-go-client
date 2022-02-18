@@ -315,18 +315,8 @@ type (
 func (c *Client) GetPoolList(ctx context.Context) (res *PoolListResponse, err error) {
 	res = &PoolListResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_list", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	return res, nil
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
 }
 
 // GetPoolInfo returns current pool status and details for a specified pool.
@@ -350,17 +340,9 @@ func (c *Client) GetPoolInfos(ctx context.Context, pids []PoolID) (res *PoolInfo
 	}
 
 	rsp, _ := c.request(ctx, &res.Response, "POST", "/pool_info", poolIdsPL(pids), nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetPoolDelegators returns information about delegators
@@ -378,17 +360,9 @@ func (c *Client) GetPoolDelegators(
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_delegators", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetPoolBlocks returns information about blocks minted by a given pool
@@ -406,17 +380,9 @@ func (c *Client) GetPoolBlocks(
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_blocks", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetPoolUpdates returns all pool updates for all pools or
@@ -433,17 +399,9 @@ func (c *Client) GetPoolUpdates(
 	}
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_updates", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetPoolRelays returns a list of registered relays
@@ -452,17 +410,9 @@ func (c *Client) GetPoolRelays(ctx context.Context) (res *PoolRelaysResponse, er
 	res = &PoolRelaysResponse{}
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_relays", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetPoolMetadata returns Metadata(on & off-chain)
@@ -471,17 +421,9 @@ func (c *Client) GetPoolMetadata(ctx context.Context) (res *PoolMetadataResponse
 	res = &PoolMetadataResponse{}
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_metadata", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
-	return res, nil
+	return
 }
 
 func poolIdsPL(pids []PoolID) io.Reader {

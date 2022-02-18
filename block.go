@@ -18,7 +18,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 )
 
@@ -89,15 +88,7 @@ type (
 func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error) {
 	res = &BlocksResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/blocks", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
 	return
 }
@@ -109,24 +100,15 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 	params.Set("_block_hash", string(hash))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/block_info", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
 
 	blockpl := []Block{}
-
-	if err = json.Unmarshal(body, &blockpl); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &blockpl)
 
 	if len(blockpl) == 1 {
 		res.Data = &blockpl[0]
 	}
 	res.ready()
-	return res, nil
+	return
 }
 
 // GetBlockTxHashes returns a list of all transactions hashes
@@ -137,20 +119,11 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 	params.Set("_block_hash", string(hash))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/block_txs", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
 
 	blockTxs := []struct {
 		Hash TxHash `json:"tx_hash"`
 	}{}
-
-	if err = json.Unmarshal(body, &blockTxs); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &blockTxs)
 
 	if len(blockTxs) > 0 {
 		for _, tx := range blockTxs {
@@ -158,5 +131,5 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 		}
 	}
 	res.ready()
-	return res, nil
+	return
 }
