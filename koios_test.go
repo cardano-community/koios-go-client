@@ -14,39 +14,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package koios_test
+package koios
 
 import (
-	"compress/gzip"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
-	"os"
-	"path/filepath"
-	"strconv"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/cardano-community/koios-go-client"
-	"github.com/cardano-community/koios-go-client/internal"
 )
 
 func TestNewDefaults(t *testing.T) {
-	api, err := koios.New()
+	api, err := New()
 	assert.NoError(t, err)
 	if assert.NotNil(t, api) {
 		assert.Equal(t, uint64(0), api.TotalRequests(), "total requests should be 0 by default")
 
 		raw := fmt.Sprintf(
 			"%s://%s/api/%s/",
-			koios.DefaultSchema,
-			koios.MainnetHost,
-			koios.DefaultAPIVersion,
+			DefaultSchema,
+			MainnetHost,
+			DefaultAPIVersion,
 		)
 		u, err := url.ParseRequestURI(raw)
 		assert.NoError(t, err, "default url can not be constructed")
@@ -55,14 +44,14 @@ func TestNewDefaults(t *testing.T) {
 }
 
 func TestOptions(t *testing.T) {
-	api, err := koios.New(
-		koios.Host("localhost"),
-		koios.APIVersion("v1"),
-		koios.Port(8080),
-		koios.Schema("http"),
-		koios.RateLimit(100),
-		koios.Origin("http://localhost.localdomain"),
-		koios.CollectRequestsStats(true),
+	api, err := New(
+		Host("localhost"),
+		APIVersion("v1"),
+		Port(8080),
+		Schema("http"),
+		RateLimit(100),
+		Origin("http://localhost.localdomain"),
+		CollectRequestsStats(true),
 	)
 	assert.NoError(t, err)
 	if assert.NotNil(t, api) {
@@ -72,105 +61,26 @@ func TestOptions(t *testing.T) {
 }
 
 func TestOptionErrs(t *testing.T) {
-	client, _ := koios.New()
-	assert.Error(t, koios.HTTPClient(http.DefaultClient)(client),
+	client, _ := New()
+	assert.Error(t, HTTPClient(http.DefaultClient)(client),
 		"should not allow changing http client.")
-	assert.Error(t, koios.RateLimit(0)(client),
+	assert.Error(t, RateLimit(0)(client),
 		"should not unlimited requests p/s")
-	assert.Error(t, koios.Origin("localhost")(client),
+	assert.Error(t, Origin("localhost")(client),
 		"origin should be valid http origin")
-	_, err := koios.New(koios.Origin("localhost.localdomain"))
-	assert.Error(t, err, "koios.New should return err when option is invalid")
+	_, err := New(Origin("localhost.localdomain"))
+	assert.Error(t, err, "New should return err when option is invalid")
 }
 
 func TestHTTPClient(t *testing.T) {
-	client, err := koios.New(koios.HTTPClient(http.DefaultClient))
+	client, err := New(HTTPClient(http.DefaultClient))
 	assert.Nil(t, client, "client should be nil if there was error")
 	assert.Error(t, err, "should not accept default http client")
 }
 
-// testHeaders universal header tester.
-// Currently testing only headers we care about.
-func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
-	assert.Equalf(t, spec.Request.Method, res.RequestMethod, "%s: invalid request method", spec.Request.Method)
-	assert.Equalf(t, spec.Response.Code, res.StatusCode, "%s: invalid response code", spec.Request.Method)
-	assert.Equalf(
-		t,
-		res.ContentRange,
-		spec.Response.Header.Get("content-range"),
-		"%s: has invalid content-range header", spec.Request.Method,
-	)
-	assert.Equalf(
-		t,
-		res.ContentLocation,
-		spec.Response.Header.Get("content-location"),
-		"%s: has invalid content-location header",
-		spec.Request.Method,
-	)
-}
-
-// loadEndpointTestSpec load specs for endpoint.
-func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *internal.APITestSpec {
-	spec := &internal.APITestSpec{}
-	spec.Response.Body = exp
-	gzfile, err := os.Open(filepath.Join("testdata", filename))
-	assert.NoErrorf(t, err, "failed to open test compressed spec: %s", filename)
-	defer gzfile.Close()
-
-	gzr, err := gzip.NewReader(gzfile)
-	assert.NoErrorf(t, err, "failed create reader for test spec: %s", filename)
-
-	specb, err := io.ReadAll(gzr)
-	assert.NoErrorf(t, err, "failed to read test spec: %s", filename)
-	gzr.Close()
-
-	assert.NoErrorf(t, json.Unmarshal(specb, &spec), "failed to Unmarshal test spec: %s", filename)
-	return spec
-}
-
-// setupTestServerAndClient httptest server and api client based on specs.
-func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httptest.Server, *koios.Client) {
-	mux := http.NewServeMux()
-	endpoint := fmt.Sprintf("/api/%s%s", koios.DefaultAPIVersion, spec.Endpoint)
-	mux.HandleFunc(endpoint, func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != spec.Request.Method && r.Method != "HEAD" {
-			http.Error(w, "Method Not Allowed.", http.StatusMethodNotAllowed)
-			return
-		}
-
-		// Add response headers
-		for header, values := range spec.Response.Header {
-			for _, value := range values {
-				w.Header().Add(header, value)
-			}
-		}
-		w.WriteHeader(spec.Response.Code)
-
-		// Add response payload
-		res, err := json.Marshal(spec.Response.Body)
-		if err != nil {
-			http.Error(w, "failed to marshal response", http.StatusInternalServerError)
-			return
-		}
-		w.Write(res)
-	})
-
-	ts := httptest.NewUnstartedServer(mux)
-	ts.EnableHTTP2 = true
-	ts.StartTLS()
-
-	u, err := url.Parse(ts.URL)
-	assert.NoErrorf(t, err, "failed to parse test server url: %s", ts.URL)
-	port, err := strconv.ParseUint(u.Port(), 0, 16)
-	assert.NoError(t, err, "failed to parse port from server url %s", ts.URL)
-
-	client := ts.Client()
-	client.Timeout = time.Second * 10
-	c, err := koios.New(
-		koios.HTTPClient(client),
-		koios.Port(uint16(port)),
-		koios.Host(u.Hostname()),
-	)
-	assert.NoError(t, err, "failed to create api client")
-	return ts, c
+func TestReadResponseBody(t *testing.T) {
+	// enure that readResponseBody behaves consistently
+	nil1, nil2 := readResponseBody(nil)
+	assert.Nil(t, nil1)
+	assert.Nil(t, nil2)
 }

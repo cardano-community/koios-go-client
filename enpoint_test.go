@@ -17,16 +17,24 @@
 package koios_test
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
+	"path/filepath"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/cardano-community/koios-go-client"
+	"github.com/cardano-community/koios-go-client/internal"
 )
 
 func TestNetworkTipEndpoint(t *testing.T) {
@@ -894,4 +902,93 @@ func TestGetTxSubmit(t *testing.T) {
 
 	assert.Error(t, err, "submited tx should return error")
 	testHeaders(t, spec, res2.Response)
+}
+
+// loadEndpointTestSpec load specs for endpoint.
+func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *internal.APITestSpec {
+	spec := &internal.APITestSpec{}
+	spec.Response.Body = exp
+	gzfile, err := os.Open(filepath.Join("testdata", filename))
+	assert.NoErrorf(t, err, "failed to open test compressed spec: %s", filename)
+	defer gzfile.Close()
+
+	gzr, err := gzip.NewReader(gzfile)
+	assert.NoErrorf(t, err, "failed create reader for test spec: %s", filename)
+
+	specb, err := io.ReadAll(gzr)
+	assert.NoErrorf(t, err, "failed to read test spec: %s", filename)
+	gzr.Close()
+
+	assert.NoErrorf(t, json.Unmarshal(specb, &spec), "failed to Unmarshal test spec: %s", filename)
+	return spec
+}
+
+// INTENAL TEST UTILS
+
+// setupTestServerAndClient httptest server and api client based on specs.
+func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httptest.Server, *koios.Client) {
+	mux := http.NewServeMux()
+	endpoint := fmt.Sprintf("/api/%s%s", koios.DefaultAPIVersion, spec.Endpoint)
+	mux.HandleFunc(endpoint, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != spec.Request.Method && r.Method != "HEAD" {
+			http.Error(w, "Method Not Allowed.", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Add response headers
+		for header, values := range spec.Response.Header {
+			for _, value := range values {
+				w.Header().Add(header, value)
+			}
+		}
+		w.WriteHeader(spec.Response.Code)
+
+		// Add response payload
+		res, err := json.Marshal(spec.Response.Body)
+		if err != nil {
+			http.Error(w, "failed to marshal response", http.StatusInternalServerError)
+			return
+		}
+		w.Write(res)
+	})
+
+	ts := httptest.NewUnstartedServer(mux)
+	ts.EnableHTTP2 = true
+	ts.StartTLS()
+
+	u, err := url.Parse(ts.URL)
+	assert.NoErrorf(t, err, "failed to parse test server url: %s", ts.URL)
+	port, err := strconv.ParseUint(u.Port(), 0, 16)
+	assert.NoError(t, err, "failed to parse port from server url %s", ts.URL)
+
+	client := ts.Client()
+	client.Timeout = time.Second * 10
+	c, err := koios.New(
+		koios.HTTPClient(client),
+		koios.Port(uint16(port)),
+		koios.Host(u.Hostname()),
+		koios.CollectRequestsStats(true),
+	)
+	assert.NoError(t, err, "failed to create api client")
+	return ts, c
+}
+
+// testHeaders universal header tester.
+// Currently testing only headers we care about.
+func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
+	assert.Equalf(t, spec.Request.Method, res.RequestMethod, "%s: invalid request method", spec.Request.Method)
+	assert.Equalf(t, spec.Response.Code, res.StatusCode, "%s: invalid response code", spec.Request.Method)
+	assert.Equalf(
+		t,
+		res.ContentRange,
+		spec.Response.Header.Get("content-range"),
+		"%s: has invalid content-range header", spec.Request.Method,
+	)
+	assert.Equalf(
+		t,
+		res.ContentLocation,
+		spec.Response.Header.Get("content-location"),
+		"%s: has invalid content-location header",
+		spec.Request.Method,
+	)
 }
