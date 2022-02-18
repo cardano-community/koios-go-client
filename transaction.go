@@ -328,15 +328,18 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (res *Submi
 	var cborb []byte
 	res = &SubmitSignedTxResponse{}
 
+	var method = "POST"
 	cborb, err = hex.DecodeString(stx.CborHex)
 	if err != nil {
+		res.RequestMethod = method
+		res.StatusCode = 400
 		return
 	}
 
 	h := http.Header{}
 	h.Set("Content-Type", "application/cbor")
 	h.Set("Content-Length", fmt.Sprint(len(cborb)))
-	rsp, _ := c.request(ctx, &res.Response, "POST", "/submittx", bytes.NewBuffer(cborb), nil, h)
+	rsp, _ := c.request(ctx, &res.Response, method, "/submittx", bytes.NewBuffer(cborb), nil, h)
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	res.ready()
 	return

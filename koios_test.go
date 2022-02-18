@@ -92,8 +92,8 @@ func TestHTTPClient(t *testing.T) {
 // testHeaders universal header tester.
 // Currently testing only headers we care about.
 func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
-	assert.Equalf(t, res.RequestMethod, spec.Request.Method, "%s: invalid request method", spec.Request.Method)
-	assert.Equalf(t, res.StatusCode, spec.Response.Code, "%s: invalid response code", spec.Request.Method)
+	assert.Equalf(t, spec.Request.Method, res.RequestMethod, "%s: invalid request method", spec.Request.Method)
+	assert.Equalf(t, spec.Response.Code, res.StatusCode, "%s: invalid response code", spec.Request.Method)
 	assert.Equalf(
 		t,
 		res.ContentRange,

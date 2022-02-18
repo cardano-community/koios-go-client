@@ -887,6 +887,11 @@ func TestGetTxSubmit(t *testing.T) {
 
 	res, err := api.SubmitSignedTx(context.TODO(), payload)
 
-	assert.Error(t, err, "subited tx should return error")
+	assert.Error(t, err, "submited tx should return error")
 	testHeaders(t, spec, res.Response)
+
+	res2, err := api.SubmitSignedTx(context.TODO(), koios.TxBodyJSON{CborHex: "x"})
+
+	assert.Error(t, err, "submited tx should return error")
+	testHeaders(t, spec, res2.Response)
 }
