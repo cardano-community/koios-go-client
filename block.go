@@ -88,12 +88,7 @@ type (
 // GetBlocks returns summarised details about all blocks (paginated - latest first).
 func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error) {
 	res = &BlocksResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/blocks", nil, nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/blocks", nil, nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -113,10 +108,7 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/block_info", nil, params, nil)
-	if err != nil {
-		return
-	}
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/block_info", nil, params, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(nil, err)
@@ -144,12 +136,7 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/block_txs", nil, params, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return nil, err
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/block_txs", nil, params, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)

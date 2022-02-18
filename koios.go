@@ -27,7 +27,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"runtime"
@@ -413,7 +413,10 @@ func CollectRequestsStats(enabled bool) Option {
 }
 
 func readResponseBody(rsp *http.Response) ([]byte, error) {
-	body, err := ioutil.ReadAll(rsp.Body)
+	if rsp == nil {
+		return nil, nil
+	}
+	body, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err

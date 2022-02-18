@@ -157,12 +157,7 @@ type (
 // GetAssetList returns the list of all native assets (paginated).
 func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err error) {
 	res = &AssetListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_list", nil, nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_list", nil, nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -189,12 +184,7 @@ func (c *Client) GetAssetAddressList(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, params, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, params, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -211,7 +201,7 @@ func (c *Client) GetAssetAddressList(
 
 // GetAssetInfo returns the information of an asset including
 // first minting & token registry metadata.
-//nolint: dupl
+
 func (c *Client) GetAssetInfo(
 	ctx context.Context,
 	policy PolicyID,
@@ -223,11 +213,7 @@ func (c *Client) GetAssetInfo(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_info", nil, params, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_info", nil, params, nil)
 
 	body, err := readResponseBody(rsp)
 	if err != nil {
@@ -252,7 +238,7 @@ func (c *Client) GetAssetInfo(
 // GetAssetSummary returns the summary of an asset
 // (total transactions exclude minting/total wallets
 // include only wallets with asset balance).
-//nolint: dupl
+
 func (c *Client) GetAssetSummary(
 	ctx context.Context,
 	policy PolicyID,
@@ -264,11 +250,7 @@ func (c *Client) GetAssetSummary(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, params, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, params, nil)
 
 	body, err := readResponseBody(rsp)
 	if err != nil {
@@ -291,7 +273,7 @@ func (c *Client) GetAssetSummary(
 }
 
 // GetAssetTxs returns the list of all asset transaction hashes (newest first).
-//nolint: dupl
+
 func (c *Client) GetAssetTxs(
 	ctx context.Context,
 	policy PolicyID,
@@ -303,12 +285,7 @@ func (c *Client) GetAssetTxs(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, params, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, params, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)

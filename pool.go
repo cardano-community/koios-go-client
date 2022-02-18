@@ -314,12 +314,7 @@ type (
 // GetPoolList returns the list of all currently registered/retiring (not retired) pools.
 func (c *Client) GetPoolList(ctx context.Context) (res *PoolListResponse, err error) {
 	res = &PoolListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_list", nil, nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_list", nil, nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -354,12 +349,7 @@ func (c *Client) GetPoolInfos(ctx context.Context, pids []PoolID) (res *PoolInfo
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/pool_info", poolIdsPL(pids), nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "POST", "/pool_info", poolIdsPL(pids), nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -387,12 +377,7 @@ func (c *Client) GetPoolDelegators(
 	if epoch != nil {
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_delegators", nil, params, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_delegators", nil, params, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -420,12 +405,7 @@ func (c *Client) GetPoolBlocks(
 	if epoch != nil {
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_blocks", nil, params, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_blocks", nil, params, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -452,12 +432,7 @@ func (c *Client) GetPoolUpdates(
 		params.Set("_pool_bech32", fmt.Sprint(*pid))
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_updates", nil, params, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_updates", nil, params, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -476,12 +451,7 @@ func (c *Client) GetPoolUpdates(
 func (c *Client) GetPoolRelays(ctx context.Context) (res *PoolRelaysResponse, err error) {
 	res = &PoolRelaysResponse{}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_relays", nil, nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_relays", nil, nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -500,12 +470,7 @@ func (c *Client) GetPoolRelays(ctx context.Context) (res *PoolRelaysResponse, er
 func (c *Client) GetPoolMetadata(ctx context.Context) (res *PoolMetadataResponse, err error) {
 	res = &PoolMetadataResponse{}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_metadata", nil, nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/pool_metadata", nil, nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)

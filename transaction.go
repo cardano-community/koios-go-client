@@ -267,12 +267,7 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosRe
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_info", txHashesPL(txs), nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_info", txHashesPL(txs), nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -295,12 +290,7 @@ func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (res *TxUTxOsRes
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -334,12 +324,7 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_metadata", txHashesPL(txs), nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_metadata", txHashesPL(txs), nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -356,12 +341,7 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMeta
 // GetTxMetaLabels retruns a list of all transaction metalabels.
 func (c *Client) GetTxMetaLabels(ctx context.Context) (res *TxMetaLabelsResponse, err error) {
 	res = &TxMetaLabelsResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
@@ -388,12 +368,7 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (res *Submi
 	h := http.Header{}
 	h.Set("Content-Type", "application/cbor")
 	h.Set("Content-Length", fmt.Sprint(len(cborb)))
-	rsp, err := c.request(ctx, &res.Response, "POST", "/submittx", bytes.NewBuffer(cborb), nil, h)
-
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
+	rsp, _ := c.request(ctx, &res.Response, "POST", "/submittx", bytes.NewBuffer(cborb), nil, h)
 	body, err := readResponseBody(rsp)
 
 	if err != nil {
@@ -430,12 +405,7 @@ func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (res *TxsStat
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_status", txHashesPL(txs), nil, nil)
-	if err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
+	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_status", txHashesPL(txs), nil, nil)
 	body, err := readResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)

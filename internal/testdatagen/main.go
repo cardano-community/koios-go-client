@@ -23,7 +23,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -87,7 +86,7 @@ func main() {
 					if !dir.IsDir() {
 						return errors.New("path is not a directory")
 					}
-					filestats, err := ioutil.ReadDir(dirpath)
+					filestats, err := io.ReadDir(dirpath)
 
 					var wg sync.WaitGroup
 					for _, filestat := range filestats {
@@ -105,7 +104,7 @@ func main() {
 								handleErr(err)
 								gzr, err := gzip.NewReader(gzfile)
 								handleErr(err)
-								specb, err := ioutil.ReadAll(gzr)
+								specb, err := io.ReadAll(gzr)
 								gzr.Close()
 
 								spec := &internal.APITestSpec{}
@@ -175,7 +174,7 @@ func main() {
 							}
 
 							defer res.Body.Close()
-							body, err := ioutil.ReadAll(res.Body)
+							body, err := io.ReadAll(res.Body)
 							handleErr(err)
 							spec.Response.Header = res.Header
 							spec.Response.Code = res.StatusCode

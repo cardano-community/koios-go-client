@@ -20,7 +20,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -120,7 +120,7 @@ func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *inter
 	gzr, err := gzip.NewReader(gzfile)
 	assert.NoErrorf(t, err, "failed create reader for test spec: %s", filename)
 
-	specb, err := ioutil.ReadAll(gzr)
+	specb, err := io.ReadAll(gzr)
 	assert.NoErrorf(t, err, "failed to read test spec: %s", filename)
 	gzr.Close()
 
