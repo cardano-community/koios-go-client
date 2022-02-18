@@ -22,7 +22,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -86,7 +88,7 @@ func main() {
 					if !dir.IsDir() {
 						return errors.New("path is not a directory")
 					}
-					filestats, err := io.ReadDir(dirpath)
+					filestats, err := ioutil.ReadDir(dirpath)
 
 					var wg sync.WaitGroup
 					for _, filestat := range filestats {
@@ -162,13 +164,13 @@ func main() {
 							log.Println("requesting: ", spec.Endpoint)
 							switch spec.Request.Method {
 							case "GET":
-								res, err = api.GET(callctx, spec.Endpoint, spec.Request.Query, nil)
+								res, err = api.GET(callctx, spec.Endpoint, spec.Request.Query, spec.Request.Header)
 								handleErr(err)
 							case "HEAD":
-								res, err = api.HEAD(callctx, spec.Endpoint, spec.Request.Query, nil)
+								res, err = api.HEAD(callctx, spec.Endpoint, spec.Request.Query, spec.Request.Header)
 								handleErr(err)
 							case "POST":
-								res, err = api.POST(callctx, spec.Endpoint, bytes.NewReader(spec.Request.Body), spec.Request.Query, nil)
+								res, err = api.POST(callctx, spec.Endpoint, bytes.NewReader(spec.Request.Body), spec.Request.Query, spec.Request.Header)
 								handleErr(err)
 
 							}
@@ -329,6 +331,18 @@ func specs() []internal.APITestSpec {
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
 				Body:   []byte("{\"_tx_hashes\": [\"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e\"]}"),
+			},
+		},
+		{
+			Filename: "endpoint_tx_submit.json",
+			Endpoint: "/submittx",
+			Request: internal.APITestRequestSpec{
+				Header: http.Header{
+					"Content-Type":   []string{"application/cbor"},
+					"Content-Length": []string{"585"},
+				},
+				Method: "POST",
+				Body:   []byte("{\"type\":\"Tx AlonzoEra\",\"description\":\"\",\"cborHex\":\"84a60081825820bf9b23cdd9bff2b1a802da7b527a0c6dd0378efa73c0800e8875f9c37930f7ef010d800182825839011f56a82c4c006289171fced204a37a2806e15c88a98872ef9626d3ddc5e778ead6d4d614c64ec8475c8b3dee4d2b8613fa1f3adee95581151a001e848082581d61e1eabc77c631f9dffa24b4c938bf09458d384764ede698d13bb3957f1a00563386021a0002acfd031a0322b0aa0e80a10081825820112bb18afb7f33b90ad1be59accfc7bcc4784c47fde6a5a10d2c932119df16bb584033642286d7805776288655000e2cebbac069def2e1735b91fa53fc5e6650b5921d54c5c5492dc97d8dce9e3539691ca4e45ae9ed4573f6d691adac8aae345001f5f6\"}"),
 			},
 		},
 		{

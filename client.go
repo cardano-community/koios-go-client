@@ -127,6 +127,7 @@ func (c *Client) request(
 		}
 		return nil, err
 	}
+
 	c.applyReqHeaders(req, headers)
 
 	if res != nil && c.reqStatsEnabled {
@@ -146,7 +147,9 @@ func (c *Client) request(
 	}
 
 	if rsp.StatusCode > http.StatusCreated {
-		res.applyError(nil, ErrResponse)
+		if res != nil {
+			res.applyError(nil, ErrResponse)
+		}
 		return rsp, nil
 	}
 

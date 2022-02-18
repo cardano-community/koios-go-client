@@ -23,9 +23,10 @@ import (
 
 // APITestRequestSpec used to define requests for testdata.
 type APITestRequestSpec struct {
-	Method string     `json:"method"`
-	Query  url.Values `json:"query,omitempty"`
-	Body   []byte     `json:"body,omitempty"`
+	Method string      `json:"method"`
+	Query  url.Values  `json:"query,omitempty"`
+	Body   []byte      `json:"body,omitempty"`
+	Header http.Header `json:"header,omitempty"`
 }
 
 // APITestRequestSpec used to define responses for testdata.

@@ -874,3 +874,19 @@ func TestGetTxsUTxOsEndpoint(t *testing.T) {
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing transaxtion hash(es)")
 }
+
+func TestGetTxSubmit(t *testing.T) {
+	spec := loadEndpointTestSpec(t, "endpoint_tx_submit.json.gz", nil)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+	payload := koios.TxBodyJSON{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.SubmitSignedTx(context.TODO(), payload)
+
+	assert.Error(t, err, "subited tx should return error")
+	testHeaders(t, spec, res.Response)
+}
