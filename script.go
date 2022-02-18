@@ -18,7 +18,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/url"
 )
@@ -89,18 +88,8 @@ type (
 func (c *Client) GetScriptList(ctx context.Context) (res *ScriptListResponse, err error) {
 	res = &ScriptListResponse{}
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/script_list", nil, nil, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	if err = json.Unmarshal(body, &res.Data); err != nil {
-		res.applyError(body, err)
-		return
-	}
-
-	return res, nil
+	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
 }
 
 // GetScriptRedeemers returns a list of all redeemers for a given script hash.
@@ -114,21 +103,13 @@ func (c *Client) GetScriptRedeemers(
 	params.Set("_script_hash", fmt.Sprint(sh))
 
 	rsp, _ := c.request(ctx, &res.Response, "GET", "/script_redeemers", nil, params, nil)
-	body, err := readResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
-		return
-	}
-	r := []ScriptRedeemers{}
 
-	if err = json.Unmarshal(body, &r); err != nil {
-		res.applyError(body, err)
-		return
-	}
+	r := []ScriptRedeemers{}
+	err = readAndUnmarshalResponse(rsp, &res.Response, &r)
 
 	if len(r) == 1 {
 		res.Data = &r[0]
 	}
 	res.ready()
-	return res, nil
+	return
 }
