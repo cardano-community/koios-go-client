@@ -194,6 +194,11 @@ func TestAccountInfoEndpoint(t *testing.T) {
 
 	assert.Len(t, expected, 1)
 	assert.Equal(t, &expected[0], res.Data)
+
+	res2, err := api.GetAccountInfo(context.TODO(), koios.Address(""))
+	assert.ErrorIs(t, err, koios.ErrNoAddress)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing address")
 }
 
 func TestAccountRewardsEndpoint(t *testing.T) {
@@ -304,6 +309,11 @@ func TestGetAddressInfoEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	res2, err := api.GetAddressInfo(context.TODO(), koios.Address(""))
+	assert.ErrorIs(t, err, koios.ErrNoAddress)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing address")
 }
 
 func TestGetAddressTxsEndpoint(t *testing.T) {
@@ -332,6 +342,11 @@ func TestGetAddressTxsEndpoint(t *testing.T) {
 	for _, e := range expected {
 		assert.Contains(t, res.Data, e.TxHash)
 	}
+
+	res2, err := api.GetAddressTxs(context.TODO(), []koios.Address{}, 0)
+	assert.ErrorIs(t, err, koios.ErrNoAddress)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing address")
 }
 
 func TestGetAddressAssetsEndpoint(t *testing.T) {
@@ -349,6 +364,11 @@ func TestGetAddressAssetsEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	res2, err := api.GetAddressAssets(context.TODO(), koios.Address(""))
+	assert.ErrorIs(t, err, koios.ErrNoAddress)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing address")
 }
 
 func TestGetCredentialTxsEndpoint(t *testing.T) {
@@ -377,6 +397,11 @@ func TestGetCredentialTxsEndpoint(t *testing.T) {
 	for _, e := range expected {
 		assert.Contains(t, res.Data, e.TxHash)
 	}
+
+	res2, err := api.GetCredentialTxs(context.TODO(), []koios.PaymentCredential{}, 0)
+	assert.ErrorIs(t, err, koios.ErrNoAddress)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing address")
 }
 
 func TestAssetListEndpoint(t *testing.T) {
@@ -607,6 +632,11 @@ func TestGetPoolInfoEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	res2, err := api.GetPoolInfos(context.TODO(), []koios.PoolID{})
+	assert.ErrorIs(t, err, koios.ErrNoPoolID)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing pool id")
 }
 
 func TestGetPoolListEndpoint(t *testing.T) {
@@ -765,6 +795,11 @@ func TestGetTxMetadataEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	res2, err := api.GetTxsMetadata(context.TODO(), []koios.TxHash{})
+	assert.ErrorIs(t, err, koios.ErrNoTxHash)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing transaxtion hash(es)")
 }
 
 func TestGetTxMetaLabelsEndpoint(t *testing.T) {
@@ -805,6 +840,11 @@ func TestGetTxStatusEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	res2, err := api.GetTxsStatuses(context.TODO(), []koios.TxHash{})
+	assert.ErrorIs(t, err, koios.ErrNoTxHash)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing transaxtion hash(es)")
 }
 
 func TestGetTxsUTxOsEndpoint(t *testing.T) {
@@ -828,4 +868,9 @@ func TestGetTxsUTxOsEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	res2, err := api.GetTxsUTxOs(context.TODO(), []koios.TxHash{})
+	assert.ErrorIs(t, err, koios.ErrNoTxHash)
+	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
+	assert.Equal(t, res2.Error.Message, "missing transaxtion hash(es)")
 }
