@@ -806,6 +806,7 @@ func TestGetTxStatusEndpoint(t *testing.T) {
 
 	assert.Equal(t, &expected[0], res.Data)
 }
+
 func TestGetTxsUTxOsEndpoint(t *testing.T) {
 	expected := []koios.UTxO{}
 

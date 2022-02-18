@@ -106,7 +106,7 @@ func (c *Client) request(
 	c.mux.RUnlock()
 
 	// optain lock to update last ts and total
-	// request count. Lock will block is another request is already queued.
+	// request count. Lock will block if another request is already queued.
 	// e.g. in other go routine.
 	c.mux.Lock()
 
