@@ -66,7 +66,6 @@ import (
     - [Revert](#revert)
     - [Type](#type)
     - [Scope](#scope)
-- [| **markdown** | Markdown files |](#-markdown--markdown-files-)
     - [Subject](#subject)
     - [Body](#body)
     - [Footer](#footer)
@@ -429,6 +428,7 @@ Samples:
 
 ```
 docs(markdown): update readme examples
+
 ```
 
 ```
@@ -482,6 +482,7 @@ The following is the list of supported scopes:
 | **endpoint** | Changes related to api endpoints |
 | **godoc** | Go documentation |
 | **markdown** | Markdown files |
+
 ---
 
 #### Subject
