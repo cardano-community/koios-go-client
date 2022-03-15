@@ -38,6 +38,7 @@ import (
 	"github.com/shopspring/decimal"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"golang.org/x/time/rate"
 )
 
 // MainnetHost       : is primay and default api host.
@@ -57,7 +58,7 @@ const (
 	DefaultPort       uint16 = 443
 	DefaultSchema            = "https"
 	LibraryVersion           = "v0"
-	DefaultRateLimit  uint8  = 5
+	DefaultRateLimit  int    = 5
 	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client"
 )
 
@@ -78,17 +79,17 @@ var (
 type (
 	// Client is api client instance.
 	Client struct {
-		mux             sync.RWMutex
-		host            string
-		version         string
-		port            uint16
-		schema          string
-		origin          string
-		url             *url.URL
-		client          *http.Client
-		commonHeaders   http.Header
-		reqInterval     time.Duration
-		lastRequest     time.Time
+		r             *rate.Limiter
+		mux           sync.RWMutex
+		host          string
+		version       string
+		port          uint16
+		schema        string
+		origin        string
+		url           *url.URL
+		client        *http.Client
+		commonHeaders http.Header
+
 		totalReq        uint64
 		reqStatsEnabled bool
 	}
@@ -281,6 +282,12 @@ func New(opts ...Option) (*Client, error) {
 		}
 	}
 
+	if c.r == nil {
+		if err := RateLimit(DefaultRateLimit)(c); err != nil {
+			return nil, err
+		}
+	}
+
 	// Sets default origin if option was not provided.
 	_ = Origin(DefaultOrigin)(c)
 
@@ -366,14 +373,12 @@ func HTTPClient(client *http.Client) Option {
 // RateLimit sets requests per second this client is allowed to create
 // and effectievely rate limits outgoing requests.
 // Let's respect usage of the community provided resources.
-func RateLimit(reqps uint8) Option {
+func RateLimit(reqps int) Option {
 	return func(c *Client) error {
 		if reqps == 0 {
 			return ErrRateLimitRange
 		}
-		c.mux.Lock()
-		defer c.mux.Unlock()
-		c.reqInterval = time.Second / time.Duration(reqps)
+		c.r = rate.NewLimiter(rate.Every(time.Second), reqps)
 		return nil
 	}
 }

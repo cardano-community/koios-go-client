@@ -105,20 +105,12 @@ func (c *Client) request(
 
 	c.mux.RUnlock()
 
-	// optain lock to update last ts and total
-	// request count. Lock will block if another request is already queued.
-	// e.g. in other go routine.
-	c.mux.Lock()
-
 	// handle rate limit
-	for !c.lastRequest.IsZero() && time.Since(c.lastRequest) < c.reqInterval {
+	if err := c.r.Wait(ctx); err != nil {
+		return nil, err
 	}
 
-	c.lastRequest = time.Now()
 	c.totalReq++
-
-	// Release client so that other requests can use it.
-	c.mux.Unlock()
 
 	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), requrl, body)
 	if err != nil {
