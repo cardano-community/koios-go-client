@@ -32,12 +32,12 @@ import (
 	"net/url"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/shopspring/decimal"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"golang.org/x/time/rate"
 )
 
 // MainnetHost       : is primay and default api host.
@@ -55,9 +55,9 @@ const (
 	TestnetHost              = "testnet.koios.rest"
 	DefaultAPIVersion        = "v0"
 	DefaultPort       uint16 = 443
-	DefaultSchema            = "https"
+	DefaultScheme            = "https"
 	LibraryVersion           = "v0"
-	DefaultRateLimit  uint8  = 5
+	DefaultRateLimit  int    = 5
 	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client"
 )
 
@@ -73,29 +73,24 @@ var (
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoPoolID                 = errors.New("missing pool id")
 	ErrResponse                 = errors.New("got unexpected response")
+	ErrScheme                   = errors.New("scheme must be http or https")
 )
 
 type (
 	// Client is api client instance.
 	Client struct {
-		mux             sync.RWMutex
-		host            string
-		version         string
-		port            uint16
-		schema          string
-		origin          string
+		r               *rate.Limiter
+		reqStatsEnabled bool
 		url             *url.URL
 		client          *http.Client
 		commonHeaders   http.Header
-		reqInterval     time.Duration
-		lastRequest     time.Time
-		totalReq        uint64
-		reqStatsEnabled bool
 	}
 
-	// Option is callback function which can be implemented
-	// to change configurations options of API Client.
-	Option func(*Client) error
+	// Option is callback function to apply
+	// configurations options of API Client.
+	Option struct {
+		apply func(*Client) error
+	}
 
 	// Address defines type for _address.
 	Address string
@@ -248,16 +243,13 @@ type (
 // ).
 func New(opts ...Option) (*Client, error) {
 	c := &Client{
-		host:          MainnetHost,
-		version:       DefaultAPIVersion,
-		port:          DefaultPort,
-		schema:        DefaultSchema,
 		commonHeaders: make(http.Header),
 	}
 	// set default base url
-	_ = c.updateBaseURL()
+	_ = c.setBaseURL(DefaultScheme, MainnetHost, DefaultAPIVersion, DefaultPort)
+
 	// set default rate limit for outgoing requests.
-	_ = RateLimit(DefaultRateLimit)(c)
+	_ = RateLimit(DefaultRateLimit).apply(c)
 
 	// set default common headers
 	c.commonHeaders.Set("Accept", "application/json")
@@ -275,20 +267,26 @@ func New(opts ...Option) (*Client, error) {
 	)
 
 	// Apply provided options
-	for _, setOpt := range opts {
-		if err := setOpt(c); err != nil {
+	for _, opt := range opts {
+		if err := opt.apply(c); err != nil {
+			return nil, err
+		}
+	}
+
+	if c.r == nil {
+		if err := RateLimit(DefaultRateLimit).apply(c); err != nil {
 			return nil, err
 		}
 	}
 
 	// Sets default origin if option was not provided.
-	_ = Origin(DefaultOrigin)(c)
+	_ = Origin(DefaultOrigin).apply(c)
 
 	// If HttpClient option was not provided
 	// use default http.Client
 	if c.client == nil {
 		// there is really no point to check that error
-		_ = HTTPClient(nil)(c)
+		_ = HTTPClient(nil).apply(c)
 	}
 
 	return c, nil
@@ -297,84 +295,94 @@ func New(opts ...Option) (*Client, error) {
 // Host returns option apply func which can be used to change the
 // baseurl hostname https://<host>/api/v0/
 func Host(host string) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		c.host = host
-		c.mux.Unlock()
-		return c.updateBaseURL()
+	return Option{
+		apply: func(c *Client) error {
+			if c.url.Port() == "" || c.url.Port() == "80" || c.url.Port() == "443" {
+				c.url.Host = host
+			} else {
+				c.url.Host = fmt.Sprint(host, ":", c.url.Port())
+			}
+			return nil
+		},
 	}
 }
 
-// APIVersion returns option apply func which can be used to change the
+// APIVersion returns option to apply change of the
 // baseurl api version https://api.koios.rest/api/<version>/
 func APIVersion(version string) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		c.version = version
-		c.mux.Unlock()
-		return c.updateBaseURL()
+	return Option{
+		apply: func(c *Client) error {
+			url, err := c.url.Parse("/api/" + version + "/")
+			if err != nil {
+				return err
+			}
+			c.url = url
+			return nil
+		},
 	}
 }
 
 // Port returns option apply func which can be used to change the
 // baseurl port https://api.koios.rest:<port>/api/v0/
 func Port(port uint16) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		c.port = port
-		c.mux.Unlock()
-		return c.updateBaseURL()
+	return Option{
+		apply: func(c *Client) error {
+			c.url.Host = fmt.Sprint(c.url.Hostname(), ":", port)
+			return nil
+		},
 	}
 }
 
-// Schema returns option apply func which can be used to change the
-// baseurl schema <schema>://api.koios.rest/api/v0/.
-func Schema(schema string) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		c.schema = schema
-		c.mux.Unlock()
-		return c.updateBaseURL()
+// Scheme returns option apply func which can be used to change the
+// baseurl scheme <scheme>://api.koios.rest/api/v0/.
+func Scheme(scheme string) Option {
+	return Option{
+		apply: func(c *Client) error {
+			c.url.Scheme = scheme
+			if scheme != "http" && scheme != "https" {
+				return ErrScheme
+			}
+			return nil
+		},
 	}
 }
 
 // HTTPClient enables to set htt.Client to be used for requests.
-// http.Client can only be set once.
 func HTTPClient(client *http.Client) Option {
-	return func(c *Client) error {
-		if c.client != nil {
-			return ErrHTTPClientChange
-		}
-		c.mux.Lock()
-		defer c.mux.Unlock()
-		if client == nil {
-			client = &http.Client{
-				Timeout: time.Second * 60,
+	return Option{
+		apply: func(c *Client) error {
+			if c.client != nil {
+				return ErrHTTPClientChange
 			}
-		}
-		if client.Timeout == 0 {
-			return ErrHTTPClientTimeoutSetting
-		}
-		c.client = client
-		if c.client.Transport == nil {
-			c.client.Transport = http.DefaultTransport
-		}
-		return nil
+			if client == nil {
+				client = &http.Client{
+					Timeout: time.Second * 60,
+				}
+			}
+			if client.Timeout == 0 {
+				return ErrHTTPClientTimeoutSetting
+			}
+			c.client = client
+			if c.client.Transport == nil {
+				c.client.Transport = http.DefaultTransport
+			}
+			return nil
+		},
 	}
 }
 
 // RateLimit sets requests per second this client is allowed to create
 // and effectievely rate limits outgoing requests.
 // Let's respect usage of the community provided resources.
-func RateLimit(reqps uint8) Option {
-	return func(c *Client) error {
-		if reqps == 0 {
-			return ErrRateLimitRange
-		}
-		c.mux.Lock()
-		defer c.mux.Unlock()
-		c.reqInterval = time.Second / time.Duration(reqps)
-		return nil
+func RateLimit(reqps int) Option {
+	return Option{
+		apply: func(c *Client) error {
+			if reqps == 0 {
+				return ErrRateLimitRange
+			}
+			c.r = rate.NewLimiter(rate.Every(time.Second), reqps)
+			return nil
+		},
 	}
 }
 
@@ -388,27 +396,26 @@ func RateLimit(reqps uint8) Option {
 // It's not required, but considered as good practice so that Cardano Community
 // can provide HA services for Cardano ecosystem.
 func Origin(origin string) Option {
-	return func(c *Client) error {
-		u, err := url.ParseRequestURI(origin)
-		if err != nil {
-			return err
-		}
-
-		c.mux.Lock()
-		defer c.mux.Unlock()
-		c.origin = u.String()
-		return nil
+	return Option{
+		apply: func(c *Client) error {
+			o, err := url.ParseRequestURI(origin)
+			if err != nil {
+				return err
+			}
+			c.commonHeaders.Set("Origin", o.String())
+			return nil
+		},
 	}
 }
 
 // CollectRequestsStats when enabled uses httptrace is used
 // to collect detailed timing information about the request.
 func CollectRequestsStats(enabled bool) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		defer c.mux.Unlock()
-		c.reqStatsEnabled = enabled
-		return nil
+	return Option{
+		apply: func(c *Client) error {
+			c.reqStatsEnabled = enabled
+			return nil
+		},
 	}
 }
 
@@ -433,6 +440,11 @@ func readAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{
 		res.applyError(body, err)
 		return err
 	}
+	if len(body) == 0 {
+		return nil
+	}
+
+	defer res.ready()
 	if err = json.Unmarshal(body, dest); err != nil {
 		res.applyError(body, err)
 		return err
@@ -442,11 +454,20 @@ func readAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{
 
 func (r *Response) applyError(body []byte, err error) {
 	r.Error = &ResponseError{}
-	_ = json.Unmarshal(body, r.Error)
-	if err != nil && len(r.Error.Message) == 0 {
-		r.Error.Message = err.Error()
+	if len(body) != 0 {
+		_ = json.Unmarshal(body, r.Error)
 	}
-	r.ready()
+	defer r.ready()
+
+	if err == nil {
+		return
+	}
+
+	if len(r.Error.Message) == 0 {
+		r.Error.Message = err.Error()
+	} else {
+		r.Error.Message = fmt.Sprintf("%s: %s", err.Error(), r.Error.Message)
+	}
 }
 
 func (r *Response) ready() {

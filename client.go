@@ -28,6 +28,28 @@ import (
 	"time"
 )
 
+// WithOptions returns new light clone of client with modified options applied.
+func (c *Client) WithOptions(opts ...Option) (*Client, error) {
+	nc := &Client{
+		r:               c.r,
+		reqStatsEnabled: c.reqStatsEnabled,
+		url:             c.url,
+		commonHeaders:   c.commonHeaders.Clone(),
+	}
+	// Apply provided options
+	for _, opt := range opts {
+		if err := opt.apply(c); err != nil {
+			return nil, err
+		}
+	}
+
+	if nc.client == nil {
+		nc.client = c.client
+	}
+
+	return nc, nil
+}
+
 // HEAD sends api http HEAD request to provided relative path with query params
 // and returns an HTTP response.
 func (c *Client) HEAD(
@@ -68,16 +90,7 @@ func (c *Client) GET(
 
 // BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0
 func (c *Client) BaseURL() string {
-	c.mux.RLock()
-	defer c.mux.RUnlock()
 	return c.url.String()
-}
-
-// TotalRequests retruns number of total requests made by API client.
-func (c *Client) TotalRequests() uint64 {
-	c.mux.RLock()
-	defer c.mux.RUnlock()
-	return c.totalReq
 }
 
 func (c *Client) request(
@@ -93,32 +106,21 @@ func (c *Client) request(
 	)
 
 	path = strings.TrimLeft(path, "/")
-	c.mux.RLock()
+
 	if query == nil {
 		requrl = c.url.ResolveReference(&url.URL{Path: path}).String()
 	} else {
 		requrl = c.url.ResolveReference(&url.URL{Path: path, RawQuery: query.Encode()}).String()
 	}
+
 	if res != nil {
 		res.RequestURL = requrl
 	}
 
-	c.mux.RUnlock()
-
-	// optain lock to update last ts and total
-	// request count. Lock will block if another request is already queued.
-	// e.g. in other go routine.
-	c.mux.Lock()
-
 	// handle rate limit
-	for !c.lastRequest.IsZero() && time.Since(c.lastRequest) < c.reqInterval {
+	if err := c.r.Wait(ctx); err != nil {
+		return nil, err
 	}
-
-	c.lastRequest = time.Now()
-	c.totalReq++
-
-	// Release client so that other requests can use it.
-	c.mux.Unlock()
 
 	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), requrl, body)
 	if err != nil {
@@ -227,14 +229,12 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 	return rsp, nil
 }
 
-func (c *Client) updateBaseURL() error {
-	c.mux.Lock()
-	defer c.mux.Unlock()
-	raw := fmt.Sprintf("%s://%s", c.schema, c.host)
-	if c.port != 80 && c.port != 443 {
-		raw = fmt.Sprintf("%s:%d", raw, c.port)
+func (c *Client) setBaseURL(schema, host, version string, port uint16) error {
+	raw := fmt.Sprintf("%s://%s", schema, host)
+	if port != 80 && port != 443 {
+		raw = fmt.Sprintf("%s:%d", raw, port)
 	}
-	raw += "/api/" + c.version + "/"
+	raw += "/api/" + version + "/"
 	u, err := url.ParseRequestURI(raw)
 	if err != nil {
 		return err

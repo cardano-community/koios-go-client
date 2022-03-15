@@ -117,7 +117,11 @@ type (
 // GetAccountList returns a list of all accounts.
 func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, err error) {
 	res = &AccountListResponse{}
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_list", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_list", nil, nil, nil)
+
+	if err != nil {
+		return
+	}
 
 	accs := []struct {
 		ID StakeAddress `json:"id"`
@@ -145,7 +149,10 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_info", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_info", nil, params, nil)
+	if err != nil {
+		return
+	}
 
 	addrs := []AccountInfo{}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &addrs)
@@ -153,7 +160,6 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
 	}
-	res.ready()
 	return
 }
 
@@ -171,10 +177,11 @@ func (c *Client) GetAccountRewards(
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_rewards", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_rewards", nil, params, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
 	return
 }
 
@@ -188,10 +195,11 @@ func (c *Client) GetAccountUpdates(
 	params := url.Values{}
 	params.Set("_stake_address", string(addr))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_updates", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_updates", nil, params, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
 	return
 }
 
@@ -204,8 +212,10 @@ func (c *Client) GetAccountAddresses(
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_addresses", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_addresses", nil, params, nil)
+	if err != nil {
+		return
+	}
 	addrs := []struct {
 		Addr Address `json:"address"`
 	}{}
@@ -217,7 +227,6 @@ func (c *Client) GetAccountAddresses(
 			res.Data = append(res.Data, a.Addr)
 		}
 	}
-	res.ready()
 	return
 }
 
@@ -230,10 +239,11 @@ func (c *Client) GetAccountAssets(
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_assets", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_assets", nil, params, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-
-	res.ready()
 	return
 }
 
@@ -246,9 +256,10 @@ func (c *Client) GetAccountHistory(
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/account_history", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_history", nil, params, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-
-	res.ready()
 	return
 }

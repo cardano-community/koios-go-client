@@ -173,9 +173,11 @@ func (c *Client) GetEpochInfo(ctx context.Context, epoch *EpochNo) (res *EpochIn
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/epoch_info", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/epoch_info", nil, params, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
 	return
 }
 
@@ -188,8 +190,10 @@ func (c *Client) GetEpochParams(ctx context.Context, epoch *EpochNo) (res *Epoch
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/epoch_params", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/epoch_params", nil, params, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
 	return
 }

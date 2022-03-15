@@ -156,7 +156,10 @@ type (
 // GetAssetList returns the list of all native assets (paginated).
 func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err error) {
 	res = &AssetListResponse{}
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_list", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_list", nil, nil, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
@@ -173,8 +176,12 @@ func (c *Client) GetAssetAddressList(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, params, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
 	return
 }
 
@@ -192,15 +199,16 @@ func (c *Client) GetAssetInfo(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_info", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_info", nil, params, nil)
+	if err != nil {
+		return
+	}
 	info := []AssetInfo{}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &info)
 
 	if len(info) == 1 {
 		res.Data = &info[0]
 	}
-	res.ready()
 	return
 }
 
@@ -219,15 +227,16 @@ func (c *Client) GetAssetSummary(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, params, nil)
+	if err != nil {
+		return
+	}
 	summary := []AssetSummary{}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &summary)
 
 	if len(summary) == 1 {
 		res.Data = &summary[0]
 	}
-	res.ready()
 	return
 }
 
@@ -244,14 +253,15 @@ func (c *Client) GetAssetTxs(
 	params.Set("_asset_policy", string(policy))
 	params.Set("_asset_name", string(name))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, params, nil)
+	if err != nil {
+		return
+	}
 	atxs := []AssetTxs{}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
 	if len(atxs) == 1 {
 		res.Data = &atxs[0]
 	}
-	res.ready()
 	return
 }

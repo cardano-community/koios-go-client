@@ -29,11 +29,9 @@ func TestNewDefaults(t *testing.T) {
 	api, err := New()
 	assert.NoError(t, err)
 	if assert.NotNil(t, api) {
-		assert.Equal(t, uint64(0), api.TotalRequests(), "total requests should be 0 by default")
-
 		raw := fmt.Sprintf(
 			"%s://%s/api/%s/",
-			DefaultSchema,
+			DefaultScheme,
 			MainnetHost,
 			DefaultAPIVersion,
 		)
@@ -48,25 +46,24 @@ func TestOptions(t *testing.T) {
 		Host("localhost"),
 		APIVersion("v1"),
 		Port(8080),
-		Schema("http"),
+		Scheme("http"),
 		RateLimit(100),
 		Origin("http://localhost.localdomain"),
 		CollectRequestsStats(true),
 	)
 	assert.NoError(t, err)
 	if assert.NotNil(t, api) {
-		assert.Equal(t, uint64(0), api.TotalRequests(), "total requests should be 0 by default")
 		assert.Equal(t, "http://localhost:8080/api/v1/", api.BaseURL(), "invalid default base url")
 	}
 }
 
 func TestOptionErrs(t *testing.T) {
 	client, _ := New()
-	assert.Error(t, HTTPClient(http.DefaultClient)(client),
+	assert.Error(t, HTTPClient(http.DefaultClient).apply(client),
 		"should not allow changing http client.")
-	assert.Error(t, RateLimit(0)(client),
+	assert.Error(t, RateLimit(0).apply(client),
 		"should not unlimited requests p/s")
-	assert.Error(t, Origin("localhost")(client),
+	assert.Error(t, Origin("localhost").apply(client),
 		"origin should be valid http origin")
 	_, err := New(Origin("localhost.localdomain"))
 	assert.Error(t, err, "New should return err when option is invalid")
