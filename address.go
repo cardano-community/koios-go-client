@@ -100,26 +100,27 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/address_info", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/address_info", nil, params, nil)
+	if err != nil {
+		return
+	}
 	addrs := []AddressInfo{}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &addrs)
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
 	}
-	res.ready()
 	return
 }
 
 // GetAddressTxs returns the transaction hash list of input address array,
 // optionally filtering after specified block height (inclusive).
-//nolint: dupl
-func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (res *AddressTxsResponse, err error) {
-	res = &AddressTxsResponse{}
+
+func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (*AddressTxsResponse, error) {
+	res := &AddressTxsResponse{}
 	if len(addrs) == 0 {
-		err = ErrNoAddress
+		err := ErrNoAddress
 		res.applyError(nil, err)
-		return
+		return res, err
 	}
 
 	var payload = struct {
@@ -136,8 +137,10 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 		defer w.Close()
 	}()
 
-	rsp, _ := c.request(ctx, &res.Response, "POST", "/address_txs", rpipe, nil, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "POST", "/address_txs", rpipe, nil, nil)
+	if err != nil {
+		return res, err
+	}
 	atxs := []struct {
 		Hash TxHash `json:"tx_hash"`
 	}{}
@@ -149,7 +152,6 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 			res.Data = append(res.Data, tx.Hash)
 		}
 	}
-	res.ready()
 	return res, err
 }
 
@@ -165,16 +167,17 @@ func (c *Client) GetAddressAssets(ctx context.Context, addr Address) (res *Addre
 	params := url.Values{}
 	params.Set("_address", string(addr))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/address_assets", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/address_assets", nil, params, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
 	return
 }
 
 // GetCredentialTxs returns the transaction hash list of input
 // payment credential array, optionally filtering after specified block height (inclusive).
-//nolint: dupl
+
 func (c *Client) GetCredentialTxs(
 	ctx context.Context,
 	creds []PaymentCredential,
@@ -201,8 +204,10 @@ func (c *Client) GetCredentialTxs(
 		defer w.Close()
 	}()
 
-	rsp, _ := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, nil, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, nil, nil)
+	if err != nil {
+		return
+	}
 	atxs := []struct {
 		Hash TxHash `json:"tx_hash"`
 	}{}
@@ -214,6 +219,5 @@ func (c *Client) GetCredentialTxs(
 			res.Data = append(res.Data, tx.Hash)
 		}
 	}
-	res.ready()
 	return res, err
 }

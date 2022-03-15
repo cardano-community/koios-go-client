@@ -34,7 +34,6 @@ func (c *Client) WithOptions(opts ...Option) (*Client, error) {
 		r:               c.r,
 		reqStatsEnabled: c.reqStatsEnabled,
 		url:             c.url,
-		client:          c.client,
 		commonHeaders:   c.commonHeaders.Clone(),
 	}
 	// Apply provided options
@@ -43,6 +42,11 @@ func (c *Client) WithOptions(opts ...Option) (*Client, error) {
 			return nil, err
 		}
 	}
+
+	if nc.client == nil {
+		nc.client = c.client
+	}
+
 	return nc, nil
 }
 

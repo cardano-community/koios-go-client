@@ -87,9 +87,11 @@ type (
 // GetBlocks returns summarised details about all blocks (paginated - latest first).
 func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error) {
 	res = &BlocksResponse{}
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/blocks", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/blocks", nil, nil, nil)
+	if err != nil {
+		return
+	}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
 	return
 }
 
@@ -99,15 +101,16 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/block_info", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/block_info", nil, params, nil)
+	if err != nil {
+		return
+	}
 	blockpl := []Block{}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &blockpl)
 
 	if len(blockpl) == 1 {
 		res.Data = &blockpl[0]
 	}
-	res.ready()
 	return
 }
 
@@ -118,8 +121,10 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 	params := url.Values{}
 	params.Set("_block_hash", string(hash))
 
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/block_txs", nil, params, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/block_txs", nil, params, nil)
+	if err != nil {
+		return
+	}
 	blockTxs := []struct {
 		Hash TxHash `json:"tx_hash"`
 	}{}
@@ -130,6 +135,5 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 			res.Data = append(res.Data, tx.Hash)
 		}
 	}
-	res.ready()
 	return
 }
