@@ -31,7 +31,7 @@ func TestNewDefaults(t *testing.T) {
 	if assert.NotNil(t, api) {
 		raw := fmt.Sprintf(
 			"%s://%s/api/%s/",
-			DefaultSchema,
+			DefaultScheme,
 			MainnetHost,
 			DefaultAPIVersion,
 		)
@@ -46,7 +46,7 @@ func TestOptions(t *testing.T) {
 		Host("localhost"),
 		APIVersion("v1"),
 		Port(8080),
-		Schema("http"),
+		Scheme("http"),
 		RateLimit(100),
 		Origin("http://localhost.localdomain"),
 		CollectRequestsStats(true),

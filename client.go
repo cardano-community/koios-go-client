@@ -90,6 +90,7 @@ func (c *Client) request(
 	} else {
 		requrl = c.url.ResolveReference(&url.URL{Path: path, RawQuery: query.Encode()}).String()
 	}
+
 	if res != nil {
 		res.RequestURL = requrl
 	}
@@ -206,12 +207,12 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 	return rsp, nil
 }
 
-func (c *Client) updateBaseURL() error {
-	raw := fmt.Sprintf("%s://%s", c.schema, c.host)
-	if c.port != 80 && c.port != 443 {
-		raw = fmt.Sprintf("%s:%d", raw, c.port)
+func (c *Client) setBaseURL(schema, host, version string, port uint16) error {
+	raw := fmt.Sprintf("%s://%s", schema, host)
+	if port != 80 && port != 443 {
+		raw = fmt.Sprintf("%s:%d", raw, port)
 	}
-	raw += "/api/" + c.version + "/"
+	raw += "/api/" + version + "/"
 	u, err := url.ParseRequestURI(raw)
 	if err != nil {
 		return err

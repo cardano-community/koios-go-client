@@ -55,7 +55,7 @@ const (
 	TestnetHost              = "testnet.koios.rest"
 	DefaultAPIVersion        = "v0"
 	DefaultPort       uint16 = 443
-	DefaultSchema            = "https"
+	DefaultScheme            = "https"
 	LibraryVersion           = "v0"
 	DefaultRateLimit  int    = 5
 	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client"
@@ -73,6 +73,7 @@ var (
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoPoolID                 = errors.New("missing pool id")
 	ErrResponse                 = errors.New("got unexpected response")
+	ErrScheme                   = errors.New("scheme must be http or https")
 )
 
 type (
@@ -80,14 +81,10 @@ type (
 	Client struct {
 		r               *rate.Limiter
 		reqStatsEnabled bool
+		url             *url.URL
+		client          *http.Client
 
-		host          string
-		version       string
-		port          uint16
-		schema        string
 		origin        string
-		url           *url.URL
-		client        *http.Client
 		commonHeaders http.Header
 	}
 
@@ -248,14 +245,11 @@ type (
 // ).
 func New(opts ...Option) (*Client, error) {
 	c := &Client{
-		host:          MainnetHost,
-		version:       DefaultAPIVersion,
-		port:          DefaultPort,
-		schema:        DefaultSchema,
 		commonHeaders: make(http.Header),
 	}
 	// set default base url
-	_ = c.updateBaseURL()
+	_ = c.setBaseURL(DefaultScheme, MainnetHost, DefaultAPIVersion, DefaultPort)
+
 	// set default rate limit for outgoing requests.
 	_ = RateLimit(DefaultRateLimit).apply(c)
 
@@ -305,8 +299,8 @@ func New(opts ...Option) (*Client, error) {
 func Host(host string) Option {
 	return Option{
 		apply: func(c *Client) error {
-			c.host = host
-			return c.updateBaseURL()
+			c.url.Host = fmt.Sprint(host, ":", c.url.Port())
+			return nil
 		},
 	}
 }
@@ -316,8 +310,12 @@ func Host(host string) Option {
 func APIVersion(version string) Option {
 	return Option{
 		apply: func(c *Client) error {
-			c.version = version
-			return c.updateBaseURL()
+			url, err := c.url.Parse("/api/" + version + "/")
+			if err != nil {
+				return err
+			}
+			c.url = url
+			return nil
 		},
 	}
 }
@@ -327,19 +325,22 @@ func APIVersion(version string) Option {
 func Port(port uint16) Option {
 	return Option{
 		apply: func(c *Client) error {
-			c.port = port
-			return c.updateBaseURL()
+			c.url.Host = fmt.Sprint(c.url.Hostname(), ":", port)
+			return nil
 		},
 	}
 }
 
-// Schema returns option apply func which can be used to change the
-// baseurl schema <schema>://api.koios.rest/api/v0/.
-func Schema(schema string) Option {
+// Scheme returns option apply func which can be used to change the
+// baseurl scheme <scheme>://api.koios.rest/api/v0/.
+func Scheme(scheme string) Option {
 	return Option{
 		apply: func(c *Client) error {
-			c.schema = schema
-			return c.updateBaseURL()
+			c.url.Scheme = scheme
+			if scheme != "http" && scheme != "https" {
+				return ErrScheme
+			}
+			return nil
 		},
 	}
 }
