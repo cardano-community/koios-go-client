@@ -79,7 +79,9 @@ var (
 type (
 	// Client is api client instance.
 	Client struct {
-		r             *rate.Limiter
+		r               *rate.Limiter
+		reqStatsEnabled bool
+
 		mux           sync.RWMutex
 		host          string
 		version       string
@@ -89,9 +91,6 @@ type (
 		url           *url.URL
 		client        *http.Client
 		commonHeaders http.Header
-
-		totalReq        uint64
-		reqStatsEnabled bool
 	}
 
 	// Option is callback function which can be implemented

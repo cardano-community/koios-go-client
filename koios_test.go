@@ -29,8 +29,6 @@ func TestNewDefaults(t *testing.T) {
 	api, err := New()
 	assert.NoError(t, err)
 	if assert.NotNil(t, api) {
-		assert.Equal(t, uint64(0), api.TotalRequests(), "total requests should be 0 by default")
-
 		raw := fmt.Sprintf(
 			"%s://%s/api/%s/",
 			DefaultSchema,
@@ -55,7 +53,6 @@ func TestOptions(t *testing.T) {
 	)
 	assert.NoError(t, err)
 	if assert.NotNil(t, api) {
-		assert.Equal(t, uint64(0), api.TotalRequests(), "total requests should be 0 by default")
 		assert.Equal(t, "http://localhost:8080/api/v1/", api.BaseURL(), "invalid default base url")
 	}
 }

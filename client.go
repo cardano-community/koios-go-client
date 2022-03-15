@@ -73,13 +73,6 @@ func (c *Client) BaseURL() string {
 	return c.url.String()
 }
 
-// TotalRequests retruns number of total requests made by API client.
-func (c *Client) TotalRequests() uint64 {
-	c.mux.RLock()
-	defer c.mux.RUnlock()
-	return c.totalReq
-}
-
 func (c *Client) request(
 	ctx context.Context,
 	res *Response,
@@ -109,8 +102,6 @@ func (c *Client) request(
 	if err := c.r.Wait(ctx); err != nil {
 		return nil, err
 	}
-
-	c.totalReq++
 
 	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), requrl, body)
 	if err != nil {
