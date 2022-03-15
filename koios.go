@@ -83,9 +83,7 @@ type (
 		reqStatsEnabled bool
 		url             *url.URL
 		client          *http.Client
-
-		origin        string
-		commonHeaders http.Header
+		commonHeaders   http.Header
 	}
 
 	// Option is callback function to apply
@@ -396,11 +394,11 @@ func RateLimit(reqps int) Option {
 func Origin(origin string) Option {
 	return Option{
 		apply: func(c *Client) error {
-			u, err := url.ParseRequestURI(origin)
+			o, err := url.ParseRequestURI(origin)
 			if err != nil {
 				return err
 			}
-			c.origin = u.String()
+			c.commonHeaders.Set("Origin", o.String())
 			return nil
 		},
 	}
