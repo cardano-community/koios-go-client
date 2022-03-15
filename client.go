@@ -68,8 +68,6 @@ func (c *Client) GET(
 
 // BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0
 func (c *Client) BaseURL() string {
-	c.mux.RLock()
-	defer c.mux.RUnlock()
 	return c.url.String()
 }
 
@@ -86,7 +84,7 @@ func (c *Client) request(
 	)
 
 	path = strings.TrimLeft(path, "/")
-	c.mux.RLock()
+
 	if query == nil {
 		requrl = c.url.ResolveReference(&url.URL{Path: path}).String()
 	} else {
@@ -95,8 +93,6 @@ func (c *Client) request(
 	if res != nil {
 		res.RequestURL = requrl
 	}
-
-	c.mux.RUnlock()
 
 	// handle rate limit
 	if err := c.r.Wait(ctx); err != nil {
@@ -211,8 +207,6 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 }
 
 func (c *Client) updateBaseURL() error {
-	c.mux.Lock()
-	defer c.mux.Unlock()
 	raw := fmt.Sprintf("%s://%s", c.schema, c.host)
 	if c.port != 80 && c.port != 443 {
 		raw = fmt.Sprintf("%s:%d", raw, c.port)

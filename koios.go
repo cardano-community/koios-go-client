@@ -32,7 +32,6 @@ import (
 	"net/url"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -82,7 +81,6 @@ type (
 		r               *rate.Limiter
 		reqStatsEnabled bool
 
-		mux           sync.RWMutex
 		host          string
 		version       string
 		port          uint16
