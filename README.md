@@ -157,9 +157,10 @@ func main() {
     wg.Add(1)
     go func(ctx context.Context, host string) {
       defer wg.Done()
-      // switching host. all options changes are safe to call from goroutines.
-      koios.Host(host)(api)
-      res, _ := api.GET(ctx, "/tip", nil, nil)
+      // switching host by creating light clone of client
+      // with new options
+      client, err := api.WithOptions(koios.Host(host))
+      res, _ := client.GET(ctx, "/tip", nil, nil)
       defer res.Body.Close()
       body, _ := ioutil.ReadAll(res.Body)
       fmt.Println("Host: ", host)
@@ -168,7 +169,6 @@ func main() {
   }
 
   wg.Wait()
-  fmt.Println("requests done: ", api.TotalRequests())
 }
 ```
 
