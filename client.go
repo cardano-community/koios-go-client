@@ -28,6 +28,24 @@ import (
 	"time"
 )
 
+// WithOptions returns new light clone of client with modified options applied.
+func (c *Client) WithOptions(opts ...Option) (*Client, error) {
+	nc := &Client{
+		r:               c.r,
+		reqStatsEnabled: c.reqStatsEnabled,
+		url:             c.url,
+		client:          c.client,
+		commonHeaders:   c.commonHeaders.Clone(),
+	}
+	// Apply provided options
+	for _, opt := range opts {
+		if err := opt.apply(c); err != nil {
+			return nil, err
+		}
+	}
+	return nc, nil
+}
+
 // HEAD sends api http HEAD request to provided relative path with query params
 // and returns an HTTP response.
 func (c *Client) HEAD(

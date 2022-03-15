@@ -297,7 +297,11 @@ func New(opts ...Option) (*Client, error) {
 func Host(host string) Option {
 	return Option{
 		apply: func(c *Client) error {
-			c.url.Host = fmt.Sprint(host, ":", c.url.Port())
+			if c.url.Port() == "" || c.url.Port() == "80" || c.url.Port() == "443" {
+				c.url.Host = host
+			} else {
+				c.url.Host = fmt.Sprint(host, ":", c.url.Port())
+			}
 			return nil
 		},
 	}
@@ -436,6 +440,11 @@ func readAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{
 		res.applyError(body, err)
 		return err
 	}
+	if len(body) == 0 {
+		return nil
+	}
+
+	defer res.ready()
 	if err = json.Unmarshal(body, dest); err != nil {
 		res.applyError(body, err)
 		return err
@@ -445,11 +454,20 @@ func readAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{
 
 func (r *Response) applyError(body []byte, err error) {
 	r.Error = &ResponseError{}
-	_ = json.Unmarshal(body, r.Error)
-	if err != nil && len(r.Error.Message) == 0 {
-		r.Error.Message = err.Error()
+	if len(body) != 0 {
+		_ = json.Unmarshal(body, r.Error)
 	}
-	r.ready()
+	defer r.ready()
+
+	if err == nil {
+		return
+	}
+
+	if len(r.Error.Message) == 0 {
+		r.Error.Message = err.Error()
+	} else {
+		r.Error.Message = fmt.Sprintf("%s: %s", err.Error(), r.Error.Message)
+	}
 }
 
 func (r *Response) ready() {

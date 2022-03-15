@@ -259,33 +259,36 @@ func (c *Client) GetTxInfo(ctx context.Context, tx TxHash) (res *TxInfoResponse,
 }
 
 // GetTxsInfos returns detailed information about transaction(s).
-func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (res *TxsInfosResponse, err error) {
-	res = &TxsInfosResponse{}
+func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (*TxsInfosResponse, error) {
+	res := &TxsInfosResponse{}
 	if len(txs) == 0 || len(txs[0]) == 0 {
-		err = ErrNoTxHash
+		err := ErrNoTxHash
 		res.applyError(nil, err)
-		return
+		return res, err
 	}
 
-	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_info", txHashesPL(txs), nil, nil)
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
-	return
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_info", txHashesPL(txs), nil, nil)
+	if err != nil {
+		return res, err
+	}
+	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxsUTxOs returns UTxO set (inputs/outputs) of transactions.
-func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (res *TxUTxOsResponse, err error) {
-	res = &TxUTxOsResponse{}
+func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (*TxUTxOsResponse, error) {
+	res := &TxUTxOsResponse{}
 	if len(txs) == 0 || len(txs[0]) == 0 {
-		err = ErrNoTxHash
+		err := ErrNoTxHash
 		res.applyError(nil, err)
-		return
+		return res, err
 	}
 
-	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), nil, nil)
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
-	return
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), nil, nil)
+	if err != nil {
+		return res, err
+	}
+
+	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxMetadata returns metadata information (if any) for given transaction.
@@ -300,49 +303,53 @@ func (c *Client) GetTxMetadata(ctx context.Context, tx TxHash) (res *TxMetadataR
 }
 
 // GetTxsMetadata returns metadata for requested transaction(s).
-func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (res *TxsMetadataResponse, err error) {
-	res = &TxsMetadataResponse{}
+func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (*TxsMetadataResponse, error) {
+	res := &TxsMetadataResponse{}
 	if len(txs) == 0 {
-		err = ErrNoTxHash
+		err := ErrNoTxHash
 		res.applyError(nil, err)
-		return
+		return res, err
 	}
 
-	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_metadata", txHashesPL(txs), nil, nil)
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
-	return
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_metadata", txHashesPL(txs), nil, nil)
+	if err != nil {
+		return res, err
+	}
+
+	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxMetaLabels retruns a list of all transaction metalabels.
-func (c *Client) GetTxMetaLabels(ctx context.Context) (res *TxMetaLabelsResponse, err error) {
-	res = &TxMetaLabelsResponse{}
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, nil, nil)
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
-	return
+func (c *Client) GetTxMetaLabels(ctx context.Context) (*TxMetaLabelsResponse, error) {
+	res := &TxMetaLabelsResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, nil, nil)
+	if err != nil {
+		return res, err
+	}
+	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // SubmitSignedTx Submit an transaction to the network.
-func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (res *SubmitSignedTxResponse, err error) {
-	var cborb []byte
-	res = &SubmitSignedTxResponse{}
+func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (*SubmitSignedTxResponse, error) {
+	res := &SubmitSignedTxResponse{}
 
 	var method = "POST"
-	cborb, err = hex.DecodeString(stx.CborHex)
+	cborb, err := hex.DecodeString(stx.CborHex)
 	if err != nil {
 		res.RequestMethod = method
 		res.StatusCode = 400
-		return
+		res.applyError(nil, err)
+		return res, err
 	}
 
 	h := http.Header{}
 	h.Set("Content-Type", "application/cbor")
 	h.Set("Content-Length", fmt.Sprint(len(cborb)))
-	rsp, _ := c.request(ctx, &res.Response, method, "/submittx", bytes.NewBuffer(cborb), nil, h)
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
-	return
+	rsp, err := c.request(ctx, &res.Response, method, "/submittx", bytes.NewBuffer(cborb), nil, h)
+	if err != nil {
+		return res, err
+	}
+	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxStatus returns status of transaction.
@@ -357,18 +364,19 @@ func (c *Client) GetTxStatus(ctx context.Context, tx TxHash) (res *TxStatusRespo
 }
 
 // GetTxsStatuses returns status of transaction(s).
-func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (res *TxsStatusesResponse, err error) {
-	res = &TxsStatusesResponse{}
+func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (*TxsStatusesResponse, error) {
+	res := &TxsStatusesResponse{}
 	if len(txs) == 0 {
-		err = ErrNoTxHash
+		err := ErrNoTxHash
 		res.applyError(nil, err)
-		return
+		return res, err
 	}
 
-	rsp, _ := c.request(ctx, &res.Response, "POST", "/tx_status", txHashesPL(txs), nil, nil)
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	res.ready()
-	return
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_status", txHashesPL(txs), nil, nil)
+	if err != nil {
+		return res, err
+	}
+	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 func txHashesPL(txs []TxHash) io.Reader {

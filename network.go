@@ -138,47 +138,44 @@ type (
 // GetTip returns the tip info about the latest block seen by chain.
 func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
 	res = &TipResponse{}
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/tip", nil, nil, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/tip", nil, nil, nil)
+	if err != nil {
+		return res, err
+	}
 	tips := []Tip{}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &tips)
 	if len(tips) == 1 {
 		res.Data = &tips[0]
 	}
-	res.ready()
-	return
+	return res, err
 }
 
 // GetGenesis returns the Genesis parameters used to start specific era on chain.
-func (c *Client) GetGenesis(ctx context.Context) (res *GenesisResponse, err error) {
-	res = &GenesisResponse{}
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/genesis", nil, nil, nil)
-
+func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
+	res := &GenesisResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/genesis", nil, nil, nil)
+	if err != nil {
+		return res, err
+	}
 	genesisres := []Genesis{}
 	err = readAndUnmarshalResponse(rsp, &res.Response, &genesisres)
-
 	if len(genesisres) == 1 {
 		res.Data = &genesisres[0]
 	}
-	res.ready()
-	return
+	return res, err
 }
 
 // GetTotals returns the circulating utxo, treasury, rewards, supply and
 // reserves in lovelace for specified epoch, all epochs if empty.
-func (c *Client) GetTotals(ctx context.Context, epoch *EpochNo) (res *TotalsResponse, err error) {
+func (c *Client) GetTotals(ctx context.Context, epoch *EpochNo) (*TotalsResponse, error) {
 	params := url.Values{}
 	if epoch != nil {
 		params.Set("_epoch_no", fmt.Sprint(*epoch))
 	}
-	res = &TotalsResponse{}
-	rsp, _ := c.request(ctx, &res.Response, "GET", "/totals", nil, params, nil)
-
-	totals := []Totals{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &totals)
-	if len(totals) > 0 {
-		res.Data = totals
+	res := &TotalsResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/totals", nil, params, nil)
+	if err != nil {
+		return res, err
 	}
-	res.ready()
-	return
+	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
