@@ -53,6 +53,11 @@ func TestNetworkTipEndpoint(t *testing.T) {
 
 	assert.Len(t, expected, 1)
 	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetTip(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestNetworkGenesiEndpoint(t *testing.T) {
@@ -71,6 +76,11 @@ func TestNetworkGenesiEndpoint(t *testing.T) {
 
 	assert.Len(t, expected, 1)
 	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetGenesis(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func Test404s(t *testing.T) {
@@ -118,6 +128,11 @@ func TestNetworkTotalsEndpoint(t *testing.T) {
 	testHeaders(t, spec, res2.Response)
 	assert.Len(t, expected, 1)
 	assert.Equal(t, expected[0], res2.Data[0])
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetTotals(context.TODO(), nil)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestEpochInfoEndpoint(t *testing.T) {
@@ -140,6 +155,11 @@ func TestEpochInfoEndpoint(t *testing.T) {
 
 	assert.Len(t, expected, 1)
 	assert.Equal(t, expected[0], res.Data[0])
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetEpochInfo(context.TODO(), &epoch)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestEpochParamsEndpoint(t *testing.T) {
@@ -162,6 +182,11 @@ func TestEpochParamsEndpoint(t *testing.T) {
 
 	assert.Len(t, expected, 1)
 	assert.Equal(t, expected[0], res.Data[0])
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetEpochParams(context.TODO(), &epoch)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestAccountListEndpoint(t *testing.T) {
@@ -183,6 +208,11 @@ func TestAccountListEndpoint(t *testing.T) {
 	for _, e := range expected {
 		assert.Contains(t, res.Data, e.StakeAddress)
 	}
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAccountList(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestAccountInfoEndpoint(t *testing.T) {
@@ -206,6 +236,11 @@ func TestAccountInfoEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoAddress)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing address")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAccountInfo(context.TODO(), koios.Address(spec.Request.Query.Get("_address")))
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestAccountRewardsEndpoint(t *testing.T) {
@@ -228,6 +263,11 @@ func TestAccountRewardsEndpoint(t *testing.T) {
 
 	assert.Len(t, expected, 1)
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAccountRewards(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")), &epoch)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestAccountUpdatesEndpoint(t *testing.T) {
@@ -245,6 +285,11 @@ func TestAccountUpdatesEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAccountUpdates(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")))
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestAccountAddressesEndpoint(t *testing.T) {
@@ -266,6 +311,11 @@ func TestAccountAddressesEndpoint(t *testing.T) {
 	for _, e := range expected {
 		assert.Contains(t, res.Data, e.Address)
 	}
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAccountAddresses(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")))
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 func TestAccountAssetsEndpoint(t *testing.T) {
 	expected := []koios.AccountAsset{}
@@ -282,6 +332,11 @@ func TestAccountAssetsEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAccountAssets(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")))
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestAccountHistoryEndpoint(t *testing.T) {
@@ -299,6 +354,11 @@ func TestAccountHistoryEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAccountHistory(context.TODO(), koios.StakeAddress(spec.Request.Query.Get("_address")))
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetAddressInfoEndpoint(t *testing.T) {
@@ -321,6 +381,11 @@ func TestGetAddressInfoEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoAddress)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing address")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAddressInfo(context.TODO(), koios.Address(spec.Request.Query.Get("_address")))
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetAddressTxsEndpoint(t *testing.T) {
@@ -354,6 +419,11 @@ func TestGetAddressTxsEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoAddress)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing address")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAddressTxs(context.TODO(), []koios.Address{koios.Address(spec.Request.Query.Get("_address"))}, 0)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetAddressAssetsEndpoint(t *testing.T) {
@@ -376,6 +446,11 @@ func TestGetAddressAssetsEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoAddress)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing address")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAddressAssets(context.TODO(), koios.Address(spec.Request.Query.Get("_address")))
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetCredentialTxsEndpoint(t *testing.T) {
@@ -409,6 +484,11 @@ func TestGetCredentialTxsEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoAddress)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing address")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetCredentialTxs(context.TODO(), payload.Credentials, payload.AfterBlockHeight)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestAssetListEndpoint(t *testing.T) {
@@ -426,6 +506,11 @@ func TestAssetListEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAssetList(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetAssetAddressListEndpoint(t *testing.T) {
@@ -447,6 +532,15 @@ func TestGetAssetAddressListEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAssetAddressList(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetAssetInfoEndpoint(t *testing.T) {
@@ -468,6 +562,15 @@ func TestGetAssetInfoEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAssetInfo(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetAssetSummaryEndpoint(t *testing.T) {
@@ -489,6 +592,15 @@ func TestGetAssetSummaryEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAssetSummary(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetAssetTxsEndpoint(t *testing.T) {
@@ -510,6 +622,15 @@ func TestGetAssetTxsEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAssetTxs(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetBlockInfoEndpoint(t *testing.T) {
@@ -530,6 +651,14 @@ func TestGetBlockInfoEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetBlockInfo(
+		context.TODO(),
+		koios.BlockHash(spec.Request.Query.Get("_block_hash")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetBlockTxsEndpoint(t *testing.T) {
@@ -554,6 +683,14 @@ func TestGetBlockTxsEndpoint(t *testing.T) {
 	for _, e := range expected {
 		assert.Contains(t, res.Data, e.TxHash)
 	}
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetBlockTxHashes(
+		context.TODO(),
+		koios.BlockHash(spec.Request.Query.Get("_block_hash")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetBlocksEndpoint(t *testing.T) {
@@ -571,6 +708,11 @@ func TestGetBlocksEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetBlocks(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetPoolBlocksEndpoint(t *testing.T) {
@@ -596,6 +738,15 @@ func TestGetPoolBlocksEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPoolBlocks(
+		context.TODO(),
+		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+		&epoch,
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetPoolDelegatorsEndpoint(t *testing.T) {
@@ -621,6 +772,15 @@ func TestGetPoolDelegatorsEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPoolDelegators(
+		context.TODO(),
+		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+		&epoch,
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetPoolInfoEndpoint(t *testing.T) {
@@ -644,6 +804,14 @@ func TestGetPoolInfoEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoPoolID)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing pool id")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPoolInfo(
+		context.TODO(),
+		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetPoolListEndpoint(t *testing.T) {
@@ -661,6 +829,11 @@ func TestGetPoolListEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPoolList(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetPoolMetadataEndpoint(t *testing.T) {
@@ -678,6 +851,11 @@ func TestGetPoolMetadataEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPoolMetadata(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetPoolRelaysEndpoint(t *testing.T) {
@@ -695,6 +873,11 @@ func TestGetPoolRelaysEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPoolRelays(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetPoolUpdatesEndpoint(t *testing.T) {
@@ -714,6 +897,14 @@ func TestGetPoolUpdatesEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPoolUpdates(
+		context.TODO(),
+		&poolID,
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetScriptListEndpoint(t *testing.T) {
@@ -731,6 +922,11 @@ func TestGetScriptListEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetScriptList(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetScriptRedeemersEndpoint(t *testing.T) {
@@ -749,6 +945,14 @@ func TestGetScriptRedeemersEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetScriptRedeemers(
+		context.TODO(),
+		koios.ScriptHash(spec.Request.Query.Get("_script_hash")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetTxInfoEndpoint(t *testing.T) {
@@ -779,6 +983,11 @@ func TestGetTxInfoEndpoint(t *testing.T) {
 	if assert.NotNil(t, res2.Error) {
 		assert.Equal(t, koios.ErrNoTxHash.Error(), res2.Error.Message)
 	}
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetTxInfo(context.TODO(), payload.TxHashes[0])
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetTxMetadataEndpoint(t *testing.T) {
@@ -807,6 +1016,11 @@ func TestGetTxMetadataEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoTxHash)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing transaxtion hash(es)")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetTxMetadata(context.TODO(), payload.TxHashes[0])
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetTxMetaLabelsEndpoint(t *testing.T) {
@@ -824,6 +1038,11 @@ func TestGetTxMetaLabelsEndpoint(t *testing.T) {
 	testHeaders(t, spec, res.Response)
 
 	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetTxMetaLabels(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetTxStatusEndpoint(t *testing.T) {
@@ -852,6 +1071,11 @@ func TestGetTxStatusEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoTxHash)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing transaxtion hash(es)")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetTxStatus(context.TODO(), payload.TxHashes[0])
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetTxsUTxOsEndpoint(t *testing.T) {
@@ -880,6 +1104,11 @@ func TestGetTxsUTxOsEndpoint(t *testing.T) {
 	assert.ErrorIs(t, err, koios.ErrNoTxHash)
 	assert.Nil(t, res2.Data, "response data should be nil if arg is invalid")
 	assert.Equal(t, res2.Error.Message, "missing transaxtion hash(es)")
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetTxsUTxOs(context.TODO(), payload.TxHashes)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 func TestGetTxSubmit(t *testing.T) {
@@ -901,6 +1130,11 @@ func TestGetTxSubmit(t *testing.T) {
 
 	assert.Error(t, err, "submited tx should return error")
 	testHeaders(t, spec, res2.Response)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.SubmitSignedTx(context.TODO(), payload)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
 // loadEndpointTestSpec load specs for endpoint.
