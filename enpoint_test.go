@@ -86,7 +86,6 @@ func Test404s(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
 
 	// errors with stats should be same
-	koios.CollectRequestsStats(true)(api)
 	res2, err := api.GetGenesis(context.TODO())
 	assert.Error(t, err)
 	assert.Nil(t, res2.Data)

@@ -93,9 +93,11 @@ type (
 		commonHeaders http.Header
 	}
 
-	// Option is callback function which can be implemented
-	// to change configurations options of API Client.
-	Option func(*Client) error
+	// Option is callback function to apply
+	// configurations options of API Client.
+	Option struct {
+		apply func(*Client) error
+	}
 
 	// Address defines type for _address.
 	Address string
@@ -257,7 +259,7 @@ func New(opts ...Option) (*Client, error) {
 	// set default base url
 	_ = c.updateBaseURL()
 	// set default rate limit for outgoing requests.
-	_ = RateLimit(DefaultRateLimit)(c)
+	_ = RateLimit(DefaultRateLimit).apply(c)
 
 	// set default common headers
 	c.commonHeaders.Set("Accept", "application/json")
@@ -275,26 +277,26 @@ func New(opts ...Option) (*Client, error) {
 	)
 
 	// Apply provided options
-	for _, setOpt := range opts {
-		if err := setOpt(c); err != nil {
+	for _, opt := range opts {
+		if err := opt.apply(c); err != nil {
 			return nil, err
 		}
 	}
 
 	if c.r == nil {
-		if err := RateLimit(DefaultRateLimit)(c); err != nil {
+		if err := RateLimit(DefaultRateLimit).apply(c); err != nil {
 			return nil, err
 		}
 	}
 
 	// Sets default origin if option was not provided.
-	_ = Origin(DefaultOrigin)(c)
+	_ = Origin(DefaultOrigin).apply(c)
 
 	// If HttpClient option was not provided
 	// use default http.Client
 	if c.client == nil {
 		// there is really no point to check that error
-		_ = HTTPClient(nil)(c)
+		_ = HTTPClient(nil).apply(c)
 	}
 
 	return c, nil
@@ -303,69 +305,68 @@ func New(opts ...Option) (*Client, error) {
 // Host returns option apply func which can be used to change the
 // baseurl hostname https://<host>/api/v0/
 func Host(host string) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		c.host = host
-		c.mux.Unlock()
-		return c.updateBaseURL()
+	return Option{
+		apply: func(c *Client) error {
+			c.host = host
+			return c.updateBaseURL()
+		},
 	}
 }
 
-// APIVersion returns option apply func which can be used to change the
+// APIVersion returns option to apply change of the
 // baseurl api version https://api.koios.rest/api/<version>/
 func APIVersion(version string) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		c.version = version
-		c.mux.Unlock()
-		return c.updateBaseURL()
+	return Option{
+		apply: func(c *Client) error {
+			c.version = version
+			return c.updateBaseURL()
+		},
 	}
 }
 
 // Port returns option apply func which can be used to change the
 // baseurl port https://api.koios.rest:<port>/api/v0/
 func Port(port uint16) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		c.port = port
-		c.mux.Unlock()
-		return c.updateBaseURL()
+	return Option{
+		apply: func(c *Client) error {
+			c.port = port
+			return c.updateBaseURL()
+		},
 	}
 }
 
 // Schema returns option apply func which can be used to change the
 // baseurl schema <schema>://api.koios.rest/api/v0/.
 func Schema(schema string) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		c.schema = schema
-		c.mux.Unlock()
-		return c.updateBaseURL()
+	return Option{
+		apply: func(c *Client) error {
+			c.schema = schema
+			return c.updateBaseURL()
+		},
 	}
 }
 
 // HTTPClient enables to set htt.Client to be used for requests.
-// http.Client can only be set once.
 func HTTPClient(client *http.Client) Option {
-	return func(c *Client) error {
-		if c.client != nil {
-			return ErrHTTPClientChange
-		}
-		c.mux.Lock()
-		defer c.mux.Unlock()
-		if client == nil {
-			client = &http.Client{
-				Timeout: time.Second * 60,
+	return Option{
+		apply: func(c *Client) error {
+			if c.client != nil {
+				return ErrHTTPClientChange
 			}
-		}
-		if client.Timeout == 0 {
-			return ErrHTTPClientTimeoutSetting
-		}
-		c.client = client
-		if c.client.Transport == nil {
-			c.client.Transport = http.DefaultTransport
-		}
-		return nil
+			if client == nil {
+				client = &http.Client{
+					Timeout: time.Second * 60,
+				}
+			}
+			if client.Timeout == 0 {
+				return ErrHTTPClientTimeoutSetting
+			}
+			c.client = client
+			if c.client.Transport == nil {
+				c.client.Transport = http.DefaultTransport
+			}
+			return nil
+		},
 	}
 }
 
@@ -373,12 +374,14 @@ func HTTPClient(client *http.Client) Option {
 // and effectievely rate limits outgoing requests.
 // Let's respect usage of the community provided resources.
 func RateLimit(reqps int) Option {
-	return func(c *Client) error {
-		if reqps == 0 {
-			return ErrRateLimitRange
-		}
-		c.r = rate.NewLimiter(rate.Every(time.Second), reqps)
-		return nil
+	return Option{
+		apply: func(c *Client) error {
+			if reqps == 0 {
+				return ErrRateLimitRange
+			}
+			c.r = rate.NewLimiter(rate.Every(time.Second), reqps)
+			return nil
+		},
 	}
 }
 
@@ -392,27 +395,26 @@ func RateLimit(reqps int) Option {
 // It's not required, but considered as good practice so that Cardano Community
 // can provide HA services for Cardano ecosystem.
 func Origin(origin string) Option {
-	return func(c *Client) error {
-		u, err := url.ParseRequestURI(origin)
-		if err != nil {
-			return err
-		}
-
-		c.mux.Lock()
-		defer c.mux.Unlock()
-		c.origin = u.String()
-		return nil
+	return Option{
+		apply: func(c *Client) error {
+			u, err := url.ParseRequestURI(origin)
+			if err != nil {
+				return err
+			}
+			c.origin = u.String()
+			return nil
+		},
 	}
 }
 
 // CollectRequestsStats when enabled uses httptrace is used
 // to collect detailed timing information about the request.
 func CollectRequestsStats(enabled bool) Option {
-	return func(c *Client) error {
-		c.mux.Lock()
-		defer c.mux.Unlock()
-		c.reqStatsEnabled = enabled
-		return nil
+	return Option{
+		apply: func(c *Client) error {
+			c.reqStatsEnabled = enabled
+			return nil
+		},
 	}
 }
 

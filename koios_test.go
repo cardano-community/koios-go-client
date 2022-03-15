@@ -59,11 +59,11 @@ func TestOptions(t *testing.T) {
 
 func TestOptionErrs(t *testing.T) {
 	client, _ := New()
-	assert.Error(t, HTTPClient(http.DefaultClient)(client),
+	assert.Error(t, HTTPClient(http.DefaultClient).apply(client),
 		"should not allow changing http client.")
-	assert.Error(t, RateLimit(0)(client),
+	assert.Error(t, RateLimit(0).apply(client),
 		"should not unlimited requests p/s")
-	assert.Error(t, Origin("localhost")(client),
+	assert.Error(t, Origin("localhost").apply(client),
 		"origin should be valid http origin")
 	_, err := New(Origin("localhost.localdomain"))
 	assert.Error(t, err, "New should return err when option is invalid")
