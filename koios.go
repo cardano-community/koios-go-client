@@ -73,7 +73,7 @@ var (
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoPoolID                 = errors.New("missing pool id")
 	ErrResponse                 = errors.New("got unexpected response")
-	ErrScheme                   = errors.New("scheme must be http or https")
+	ErrSchema                   = errors.New("scheme must be http or https")
 )
 
 type (
@@ -271,9 +271,8 @@ func New(opts ...Option) (*Client, error) {
 	}
 
 	if c.r == nil {
-		if err := RateLimit(DefaultRateLimit).apply(c); err != nil {
-			return nil, err
-		}
+		// set default rate limit for outgoing requests if not configured.
+		_ = RateLimit(DefaultRateLimit).apply(c)
 	}
 
 	// Sets default origin if option was not provided.
@@ -334,7 +333,7 @@ func Scheme(scheme string) Option {
 		apply: func(c *Client) error {
 			c.url.Scheme = scheme
 			if scheme != "http" && scheme != "https" {
-				return ErrScheme
+				return ErrSchema
 			}
 			return nil
 		},
@@ -413,19 +412,16 @@ func CollectRequestsStats(enabled bool) Option {
 	}
 }
 
-func readResponseBody(rsp *http.Response) ([]byte, error) {
+func readResponseBody(rsp *http.Response) (body []byte, err error) {
 	if rsp == nil {
 		return nil, nil
 	}
-	body, err := io.ReadAll(rsp.Body)
+	body, err = io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
 	if !strings.Contains(rsp.Header.Get("Content-Type"), "json") {
 		return nil, fmt.Errorf("%w: %s", ErrResponseIsNotJSON, string(body))
 	}
-	return body, nil
+	return body, err
 }
 
 func readAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{}) error {
