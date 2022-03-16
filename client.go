@@ -145,9 +145,6 @@ func (c *Client) request(
 	}
 
 	if ctx.Err() != nil {
-		if res != nil {
-			res.applyError(nil, ctx.Err())
-		}
 		return nil, ctx.Err()
 	}
 	if eqerr != nil {
@@ -197,45 +194,37 @@ func (c *Client) applyReqHeaders(req *http.Request, headers http.Header) {
 func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Response, error) {
 	res.Stats = &RequestStats{}
 	var dns, tlshs, connect time.Time
-
-	var terr error
-	trace := &httptrace.ClientTrace{
-		DNSStart: func(dsi httptrace.DNSStartInfo) {
-			dns = time.Now().UTC()
-		},
-		DNSDone: func(ddi httptrace.DNSDoneInfo) {
-			res.Stats.DNSLookupDur = time.Since(dns)
-		},
-		TLSHandshakeStart: func() {
-			tlshs = time.Now().UTC()
-		},
-		TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
-			if err != nil {
-				terr = err
-			}
-			res.Stats.TLSHSDur = time.Since(tlshs)
-		},
-		ConnectStart: func(network, addr string) {
-			connect = time.Now().UTC()
-		},
-		ConnectDone: func(network, addr string, err error) {
-			if err != nil {
-				terr = err
-			}
-			res.Stats.ESTCXNDur = time.Since(connect)
-		},
-		GotFirstResponseByte: func() {
-			res.Stats.TTFB = time.Since(res.Stats.ReqStartedAt)
-		},
-	}
-	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-
+	req = req.WithContext(
+		httptrace.WithClientTrace(
+			req.Context(),
+			&httptrace.ClientTrace{
+				DNSStart: func(dsi httptrace.DNSStartInfo) {
+					dns = time.Now().UTC()
+				},
+				DNSDone: func(ddi httptrace.DNSDoneInfo) {
+					res.Stats.DNSLookupDur = time.Since(dns)
+				},
+				TLSHandshakeStart: func() {
+					tlshs = time.Now().UTC()
+				},
+				TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
+					res.Stats.TLSHSDur = time.Since(tlshs)
+				},
+				ConnectStart: func(network, addr string) {
+					connect = time.Now().UTC()
+				},
+				ConnectDone: func(network, addr string, err error) {
+					res.Stats.ESTCXNDur = time.Since(connect)
+				},
+				GotFirstResponseByte: func() {
+					res.Stats.TTFB = time.Since(res.Stats.ReqStartedAt)
+				},
+			},
+		),
+	)
 	res.Stats.ReqStartedAt = time.Now().UTC()
 	rsp, err := c.client.Transport.RoundTrip(req)
-	if terr != nil {
-		res.applyError(nil, terr)
-		return nil, err
-	}
+
 	if err != nil {
 		res.applyError(nil, err)
 		return nil, err
