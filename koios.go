@@ -435,23 +435,21 @@ func readAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{
 	}
 
 	defer res.ready()
-	if err = json.Unmarshal(body, dest); err != nil {
-		res.applyError(body, err)
-		return err
-	}
-	return nil
+	err = json.Unmarshal(body, dest)
+	res.applyError(body, err)
+	return err
 }
 
 func (r *Response) applyError(body []byte, err error) {
+	if err == nil {
+		return
+	}
+
 	r.Error = &ResponseError{}
 	if len(body) != 0 {
 		_ = json.Unmarshal(body, r.Error)
 	}
 	defer r.ready()
-
-	if err == nil {
-		return
-	}
 
 	if len(r.Error.Message) == 0 {
 		r.Error.Message = err.Error()

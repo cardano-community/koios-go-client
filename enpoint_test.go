@@ -1137,6 +1137,42 @@ func TestGetTxSubmit(t *testing.T) {
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
+func TestHTTP(t *testing.T) {
+	expected := []koios.Tip{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_network_tip.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	// GET
+	res, err := api.GET(context.TODO(), "/tip", spec.Request.Query, spec.Request.Header)
+	assert.NoError(t, err)
+
+	body, err := io.ReadAll(res.Body)
+	defer func() { _ = res.Body.Close() }()
+	assert.NoError(t, err)
+
+	data := []koios.Tip{}
+	err = json.Unmarshal(body, &data)
+	assert.NoError(t, err)
+
+	assert.Len(t, expected, 1)
+	assert.Equal(t, expected, data)
+
+	// HEAD
+	res2, err2 := api.HEAD(context.TODO(), "/tip", spec.Request.Query, spec.Request.Header)
+
+	body2, err3 := io.ReadAll(res.Body)
+	defer func() { _ = res2.Body.Close() }()
+	assert.NoError(t, err3)
+	assert.Empty(t, body2)
+
+	assert.NoError(t, err2)
+	assert.Equal(t, "application/json; charset=utf-8", res2.Header.Get("Content-Type"))
+}
+
 // loadEndpointTestSpec load specs for endpoint.
 func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *internal.APITestSpec {
 	spec := &internal.APITestSpec{}
