@@ -248,9 +248,6 @@ func New(opts ...Option) (*Client, error) {
 	// set default base url
 	_ = c.setBaseURL(DefaultScheme, MainnetHost, DefaultAPIVersion, DefaultPort)
 
-	// set default rate limit for outgoing requests.
-	_ = RateLimit(DefaultRateLimit).apply(c)
-
 	// set default common headers
 	c.commonHeaders.Set("Accept", "application/json")
 	c.commonHeaders.Set("Accept-Encoding", "gzip, deflate")
@@ -313,11 +310,8 @@ func APIVersion(version string) Option {
 	return Option{
 		apply: func(c *Client) error {
 			url, err := c.url.Parse("/api/" + version + "/")
-			if err != nil {
-				return err
-			}
 			c.url = url
-			return nil
+			return err
 		},
 	}
 }

@@ -55,6 +55,10 @@ func TestOptions(t *testing.T) {
 	if assert.NotNil(t, api) {
 		assert.Equal(t, "http://localhost:8080/api/v1/", api.BaseURL(), "invalid default base url")
 	}
+
+	api2, err2 := New(Scheme("ws"))
+	assert.EqualError(t, err2, "scheme must be http or https")
+	assert.Nil(t, api2)
 }
 
 func TestOptionErrs(t *testing.T) {
@@ -80,4 +84,18 @@ func TestReadResponseBody(t *testing.T) {
 	nil1, nil2 := readResponseBody(nil)
 	assert.Nil(t, nil1)
 	assert.Nil(t, nil2)
+}
+
+func TestNewClients(t *testing.T) {
+	c1, err := New()
+	assert.NoError(t, err)
+	assert.NotNil(t, c1)
+
+	c2, err := New(HTTPClient(http.DefaultClient))
+	assert.Error(t, err)
+	assert.Nil(t, c2)
+
+	c3, err := c1.WithOptions(HTTPClient(http.DefaultClient))
+	assert.Error(t, err)
+	assert.Nil(t, c3)
 }
