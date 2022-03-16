@@ -177,7 +177,7 @@ func (c *Client) GetEpochInfo(ctx context.Context, epoch *EpochNo) (res *EpochIn
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -194,6 +194,6 @@ func (c *Client) GetEpochParams(ctx context.Context, epoch *EpochNo) (res *Epoch
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }

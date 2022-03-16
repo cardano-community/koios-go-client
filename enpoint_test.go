@@ -1163,11 +1163,9 @@ func TestHTTP(t *testing.T) {
 
 	// HEAD
 	res2, err2 := api.HEAD(context.TODO(), "/tip", spec.Request.Query, spec.Request.Header)
-
-	body2, err3 := io.ReadAll(res.Body)
 	defer func() { _ = res2.Body.Close() }()
-	assert.NoError(t, err3)
-	assert.Empty(t, body2)
+	data2 := []koios.Tip{}
+	assert.NoError(t, koios.ReadAndUnmarshalResponse(res2, &koios.Response{}, &data2))
 
 	assert.NoError(t, err2)
 	assert.Equal(t, "application/json; charset=utf-8", res2.Header.Get("Content-Type"))

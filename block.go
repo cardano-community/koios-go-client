@@ -91,7 +91,7 @@ func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error)
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -106,7 +106,7 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 		return
 	}
 	blockpl := []Block{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &blockpl)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &blockpl)
 
 	if len(blockpl) == 1 {
 		res.Data = &blockpl[0]
@@ -128,7 +128,7 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 	blockTxs := []struct {
 		Hash TxHash `json:"tx_hash"`
 	}{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &blockTxs)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &blockTxs)
 
 	if len(blockTxs) > 0 {
 		for _, tx := range blockTxs {

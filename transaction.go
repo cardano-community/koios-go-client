@@ -271,7 +271,7 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (*TxsInfosRespon
 	if err != nil {
 		return res, err
 	}
-	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxsUTxOs returns UTxO set (inputs/outputs) of transactions.
@@ -288,7 +288,7 @@ func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (*TxUTxOsRespons
 		return res, err
 	}
 
-	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxMetadata returns metadata information (if any) for given transaction.
@@ -316,7 +316,7 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (*TxsMetadata
 		return res, err
 	}
 
-	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxMetaLabels retruns a list of all transaction metalabels.
@@ -326,7 +326,7 @@ func (c *Client) GetTxMetaLabels(ctx context.Context) (*TxMetaLabelsResponse, er
 	if err != nil {
 		return res, err
 	}
-	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // SubmitSignedTx Submit an transaction to the network.
@@ -349,7 +349,7 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (*SubmitSig
 	if err != nil {
 		return res, err
 	}
-	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxStatus returns status of transaction.
@@ -376,7 +376,7 @@ func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (*TxsStatuses
 	if err != nil {
 		return res, err
 	}
-	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 func txHashesPL(txs []TxHash) io.Reader {

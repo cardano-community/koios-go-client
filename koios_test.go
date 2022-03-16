@@ -81,7 +81,7 @@ func TestHTTPClient(t *testing.T) {
 
 func TestReadResponseBody(t *testing.T) {
 	// enure that readResponseBody behaves consistently
-	nil1, nil2 := readResponseBody(nil)
+	nil1, nil2 := ReadResponseBody(nil)
 	assert.Nil(t, nil1)
 	assert.Nil(t, nil2)
 }

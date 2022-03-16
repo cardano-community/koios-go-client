@@ -143,7 +143,7 @@ func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
 		return res, err
 	}
 	tips := []Tip{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &tips)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &tips)
 	if len(tips) == 1 {
 		res.Data = &tips[0]
 	}
@@ -158,7 +158,7 @@ func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
 		return res, err
 	}
 	genesisres := []Genesis{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &genesisres)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &genesisres)
 	if len(genesisres) == 1 {
 		res.Data = &genesisres[0]
 	}
@@ -177,5 +177,5 @@ func (c *Client) GetTotals(ctx context.Context, epoch *EpochNo) (*TotalsResponse
 	if err != nil {
 		return res, err
 	}
-	return res, readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }

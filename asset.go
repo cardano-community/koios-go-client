@@ -160,7 +160,7 @@ func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err 
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -180,7 +180,7 @@ func (c *Client) GetAssetAddressList(
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 
 	return
 }
@@ -204,7 +204,7 @@ func (c *Client) GetAssetInfo(
 		return
 	}
 	info := []AssetInfo{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &info)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info)
 
 	if len(info) == 1 {
 		res.Data = &info[0]
@@ -232,7 +232,7 @@ func (c *Client) GetAssetSummary(
 		return
 	}
 	summary := []AssetSummary{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &summary)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &summary)
 
 	if len(summary) == 1 {
 		res.Data = &summary[0]
@@ -258,7 +258,7 @@ func (c *Client) GetAssetTxs(
 		return
 	}
 	atxs := []AssetTxs{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &atxs)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
 	if len(atxs) == 1 {
 		res.Data = &atxs[0]

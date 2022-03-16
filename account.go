@@ -127,7 +127,7 @@ func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, 
 		ID StakeAddress `json:"id"`
 	}{}
 
-	err = readAndUnmarshalResponse(rsp, &res.Response, &accs)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &accs)
 
 	if len(accs) > 0 {
 		for _, a := range accs {
@@ -155,7 +155,7 @@ func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *Account
 	}
 
 	addrs := []AccountInfo{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &addrs)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &addrs)
 
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
@@ -181,7 +181,7 @@ func (c *Client) GetAccountRewards(
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -199,7 +199,7 @@ func (c *Client) GetAccountUpdates(
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -220,7 +220,7 @@ func (c *Client) GetAccountAddresses(
 		Addr Address `json:"address"`
 	}{}
 
-	err = readAndUnmarshalResponse(rsp, &res.Response, &addrs)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &addrs)
 
 	if len(addrs) > 0 {
 		for _, a := range addrs {
@@ -243,7 +243,7 @@ func (c *Client) GetAccountAssets(
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -260,6 +260,6 @@ func (c *Client) GetAccountHistory(
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }

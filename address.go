@@ -105,7 +105,7 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 		return
 	}
 	addrs := []AddressInfo{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &addrs)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &addrs)
 	if len(addrs) == 1 {
 		res.Data = &addrs[0]
 	}
@@ -145,7 +145,7 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 		Hash TxHash `json:"tx_hash"`
 	}{}
 
-	err = readAndUnmarshalResponse(rsp, &res.Response, &atxs)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
 	if len(atxs) > 0 {
 		for _, tx := range atxs {
@@ -171,7 +171,7 @@ func (c *Client) GetAddressAssets(ctx context.Context, addr Address) (res *Addre
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -212,7 +212,7 @@ func (c *Client) GetCredentialTxs(
 		Hash TxHash `json:"tx_hash"`
 	}{}
 
-	err = readAndUnmarshalResponse(rsp, &res.Response, &atxs)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
 	if len(atxs) > 0 {
 		for _, tx := range atxs {

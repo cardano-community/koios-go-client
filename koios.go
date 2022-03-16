@@ -412,7 +412,8 @@ func CollectRequestsStats(enabled bool) Option {
 	}
 }
 
-func readResponseBody(rsp *http.Response) (body []byte, err error) {
+// ReadResponseBody is reading http.Response aand closing it after read.
+func ReadResponseBody(rsp *http.Response) (body []byte, err error) {
 	if rsp == nil {
 		return nil, nil
 	}
@@ -424,8 +425,9 @@ func readResponseBody(rsp *http.Response) (body []byte, err error) {
 	return body, err
 }
 
-func readAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{}) error {
-	body, err := readResponseBody(rsp)
+// ReadAndUnmarshalResponse is helper to unmarchal json responses.
+func ReadAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{}) error {
+	body, err := ReadResponseBody(rsp)
 	if err != nil {
 		res.applyError(body, err)
 		return err

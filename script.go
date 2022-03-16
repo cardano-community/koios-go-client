@@ -91,7 +91,7 @@ func (c *Client) GetScriptList(ctx context.Context) (res *ScriptListResponse, er
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -110,7 +110,7 @@ func (c *Client) GetScriptRedeemers(
 		return
 	}
 	r := []ScriptRedeemers{}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &r)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &r)
 
 	if len(r) == 1 {
 		res.Data = &r[0]

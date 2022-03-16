@@ -318,7 +318,7 @@ func (c *Client) GetPoolList(ctx context.Context) (res *PoolListResponse, err er
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -346,7 +346,7 @@ func (c *Client) GetPoolInfos(ctx context.Context, pids []PoolID) (res *PoolInfo
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -368,7 +368,7 @@ func (c *Client) GetPoolDelegators(
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 
 	return
 }
@@ -391,7 +391,7 @@ func (c *Client) GetPoolBlocks(
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -412,7 +412,7 @@ func (c *Client) GetPoolUpdates(
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -425,7 +425,7 @@ func (c *Client) GetPoolRelays(ctx context.Context) (res *PoolRelaysResponse, er
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -438,7 +438,7 @@ func (c *Client) GetPoolMetadata(ctx context.Context) (res *PoolMetadataResponse
 	if err != nil {
 		return
 	}
-	err = readAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
