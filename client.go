@@ -119,16 +119,16 @@ func (c *Client) request(
 		res.RequestURL = requrl
 	}
 
-	// handle rate limit
-	if err := c.r.Wait(ctx); err != nil {
-		return nil, err
-	}
-
 	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), requrl, body)
 	if err != nil {
 		if res != nil {
 			res.applyError(nil, err)
 		}
+		return nil, err
+	}
+
+	// handle rate limit
+	if err := c.r.Wait(ctx); err != nil {
 		return nil, err
 	}
 

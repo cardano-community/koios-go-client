@@ -428,12 +428,9 @@ func ReadResponseBody(rsp *http.Response) (body []byte, err error) {
 // ReadAndUnmarshalResponse is helper to unmarchal json responses.
 func ReadAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{}) error {
 	body, err := ReadResponseBody(rsp)
-	if err != nil {
-		res.applyError(body, err)
+	res.applyError(body, err)
+	if len(body) == 0 || err != nil {
 		return err
-	}
-	if len(body) == 0 {
-		return nil
 	}
 
 	defer res.ready()

@@ -69,25 +69,29 @@ func TestRequestContext(t *testing.T) {
 
 	defer ts.Close()
 
+	res, err := api.GetTip(nil) //nolint: staticcheck
+	assert.EqualError(t, err, "net/http: nil Context")
+	assert.Equal(t, "net/http: nil Context", res.Error.Message)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(0))
 	defer cancel()
 
-	res, err := api.GetTip(ctx)
+	res2, err := api.GetTip(ctx)
 
 	assert.EqualError(t, err, "context deadline exceeded")
-	assert.Nil(t, res.Data)
+	assert.Nil(t, res2.Data)
 
 	ctx2, cancel2 := context.WithTimeout(context.Background(), time.Microsecond*201)
 	defer cancel2()
 
-	res2, err2 := api.GetTip(ctx2)
+	res3, err3 := api.GetTip(ctx2)
 
 	var edgeerr bool
-	if err2.Error() == "context deadline exceeded" || strings.Contains(err2.Error(), "i/o timeout") {
+	if err3.Error() == "context deadline exceeded" || strings.Contains(err3.Error(), "i/o timeout") {
 		edgeerr = true
 	}
 	assert.True(t, edgeerr, "expected: context deadline exceeded or i/o timeout")
-	assert.Nil(t, res2.Data)
+	assert.Nil(t, res3.Data)
 }
 
 func TestNetworkGenesiEndpoint(t *testing.T) {
