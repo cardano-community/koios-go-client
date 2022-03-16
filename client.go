@@ -169,10 +169,13 @@ func (c *Client) applyReqHeaders(req *http.Request, headers http.Header) {
 		return
 	}
 	// only apply if originally there were no headers defined.
-	switch req.Method {
-	case "POST":
-	case "PATCH":
-	case "PUT":
+	// switch req.Method {
+	// case "POST":
+	// 	case "PATCH":
+	// 	case "PUT":
+	// 	req.Header.Set("Content-Type", "application/json")
+	// }
+	if req.Method == "POST" {
 		req.Header.Set("Content-Type", "application/json")
 	}
 }

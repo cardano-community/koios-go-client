@@ -121,3 +121,17 @@ func TestApplyError(t *testing.T) {
 	assert.Equal(t, "101", res.Error.Code)
 	assert.Equal(t, "the-details", res.Error.Details)
 }
+
+func TestBaseURL(t *testing.T) {
+	api, _ := New()
+	err := api.setBaseURL("http", "localhost", "v2", 9000)
+	assert.NoError(t, err)
+	assert.Equal(t, "http://localhost:9000/api/v2/", api.url.String())
+
+	err2 := api.setBaseURL("http", "localhost\\invalid", "v2", 9000)
+	assert.EqualError(
+		t,
+		err2,
+		"parse \"http://localhost\\\\invalid:9000/api/v2/\": invalid character \"\\\\\" in host name",
+	)
+}
