@@ -144,6 +144,12 @@ func (c *Client) request(
 		rsp, eqerr = c.client.Do(req)
 	}
 
+	if ctx.Err() != nil {
+		if res != nil {
+			res.applyError(nil, ctx.Err())
+		}
+		return nil, ctx.Err()
+	}
 	if eqerr != nil {
 		if res != nil {
 			res.applyError(nil, eqerr)
@@ -192,6 +198,7 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 	res.Stats = &RequestStats{}
 	var dns, tlshs, connect time.Time
 
+	var terr error
 	trace := &httptrace.ClientTrace{
 		DNSStart: func(dsi httptrace.DNSStartInfo) {
 			dns = time.Now().UTC()
@@ -204,7 +211,7 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 		},
 		TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
 			if err != nil {
-				res.applyError(nil, err)
+				terr = err
 			}
 			res.Stats.TLSHSDur = time.Since(tlshs)
 		},
@@ -213,7 +220,7 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 		},
 		ConnectDone: func(network, addr string, err error) {
 			if err != nil {
-				res.applyError(nil, err)
+				terr = err
 			}
 			res.Stats.ESTCXNDur = time.Since(connect)
 		},
@@ -225,6 +232,10 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 
 	res.Stats.ReqStartedAt = time.Now().UTC()
 	rsp, err := c.client.Transport.RoundTrip(req)
+	if terr != nil {
+		res.applyError(nil, terr)
+		return nil, err
+	}
 	if err != nil {
 		res.applyError(nil, err)
 		return nil, err

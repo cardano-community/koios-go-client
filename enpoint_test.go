@@ -28,6 +28,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -58,6 +59,35 @@ func TestNetworkTipEndpoint(t *testing.T) {
 	assert.NoError(t, err)
 	_, err = c.GetTip(context.TODO())
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
+}
+
+func TestRequestContext(t *testing.T) {
+	expected := []koios.Tip{}
+	spec := loadEndpointTestSpec(t, "endpoint_network_tip.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(0))
+	defer cancel()
+
+	res, err := api.GetTip(ctx)
+
+	assert.EqualError(t, err, "context deadline exceeded")
+	assert.Nil(t, res.Data)
+
+	ctx2, cancel2 := context.WithTimeout(context.Background(), time.Microsecond*201)
+	defer cancel2()
+
+	res2, err2 := api.GetTip(ctx2)
+
+	var edgeerr bool
+	if err2.Error() == "context deadline exceeded" || strings.Contains(err2.Error(), "i/o timeout") {
+		edgeerr = true
+	}
+	assert.True(t, edgeerr, "expected: context deadline exceeded or i/o timeout")
+	assert.Nil(t, res2.Data)
 }
 
 func TestNetworkGenesiEndpoint(t *testing.T) {
