@@ -151,6 +151,18 @@ type (
 		Response
 		Data *AssetTxs `json:"response"`
 	}
+
+	// AssetPolicyInfo is response body for `/asset_policy_info` endpoint.
+	AssetPolicyInfo struct {
+		PolicyID PolicyID    `json:"policy_id"`
+		Assets   []AssetInfo `json:"assets"`
+	}
+
+	// AssetPolicyInfoResponse represents response from `/asset_policy_info` endpoint.
+	AssetPolicyInfoResponse struct {
+		Response
+		Data *AssetPolicyInfo `json:"response"`
+	}
 )
 
 // GetAssetList returns the list of all native assets (paginated).
@@ -187,7 +199,6 @@ func (c *Client) GetAssetAddressList(
 
 // GetAssetInfo returns the information of an asset including
 // first minting & token registry metadata.
-
 func (c *Client) GetAssetInfo(
 	ctx context.Context,
 	policy PolicyID,
@@ -241,7 +252,6 @@ func (c *Client) GetAssetSummary(
 }
 
 // GetAssetTxs returns the list of all asset transaction hashes (newest first).
-
 func (c *Client) GetAssetTxs(
 	ctx context.Context,
 	policy PolicyID,
@@ -262,6 +272,29 @@ func (c *Client) GetAssetTxs(
 
 	if len(atxs) == 1 {
 		res.Data = &atxs[0]
+	}
+	return
+}
+
+// GetAssetPolicyInfo returns information for all assets under the same policy.
+func (c *Client) GetAssetPolicyInfo(
+	ctx context.Context,
+	policy PolicyID,
+) (res *AssetPolicyInfoResponse, err error) {
+	res = &AssetPolicyInfoResponse{}
+
+	params := url.Values{}
+	params.Set("_asset_policy", string(policy))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_policy_info", nil, params, nil)
+	if err != nil {
+		return
+	}
+	info := []AssetPolicyInfo{}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info)
+
+	if len(info) == 1 {
+		res.Data = &info[0]
 	}
 	return
 }

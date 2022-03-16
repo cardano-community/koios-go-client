@@ -578,5 +578,15 @@ func specs() []internal.APITestSpec {
 				},
 			},
 		},
+		{
+			Filename: "endpoint_asset_policy_info.json",
+			Endpoint: "/asset_policy_info",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+				Query: url.Values{
+					"_asset_policy": []string{"a8102151506a8a81dc1763ee05cdd01d787f50dfeb6f843071e1c6a0"},
+				},
+			},
+		},
 	}
 }

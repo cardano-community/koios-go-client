@@ -607,6 +607,34 @@ func TestGetAssetInfoEndpoint(t *testing.T) {
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
+func TestGetAssetPolicyInfoEndpoint(t *testing.T) {
+	expected := []koios.AssetPolicyInfo{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_asset_policy_info.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAssetPolicyInfo(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAssetPolicyInfo(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
+}
+
 func TestGetAssetSummaryEndpoint(t *testing.T) {
 	expected := []koios.AssetSummary{}
 
