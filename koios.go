@@ -449,7 +449,10 @@ func (r *Response) applyError(body []byte, err error) {
 
 	r.Error = &ResponseError{}
 	if len(body) != 0 {
-		_ = json.Unmarshal(body, r.Error)
+		berr := json.Unmarshal(body, r.Error)
+		if berr != nil {
+			r.Error.Message = berr.Error()
+		}
 	}
 	defer r.ready()
 

@@ -17,6 +17,7 @@
 package koios
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -98,4 +99,25 @@ func TestNewClients(t *testing.T) {
 	c3, err := c1.WithOptions(HTTPClient(http.DefaultClient))
 	assert.Error(t, err)
 	assert.Nil(t, c3)
+}
+
+var errApply = errors.New("apply error")
+
+func TestApplyError(t *testing.T) {
+	res := &Response{}
+
+	res.applyError([]byte(
+		"{hint:\"the-hint\",details:\"the-details\",code:101,message:\"the-message\"}"),
+		errApply,
+	)
+	assert.Equal(t, "apply error: invalid character 'h' looking for beginning of object key string", res.Error.Message)
+
+	res.applyError(
+		[]byte("{\"hint\":\"the-hint\",\"details\":\"the-details\",\"code\":\"101\",\"message\":\"the-message\"}"),
+		errApply,
+	)
+	assert.Equal(t, "the-hint", res.Error.Hint)
+	assert.Equal(t, "apply error: the-message", res.Error.Message)
+	assert.Equal(t, "101", res.Error.Code)
+	assert.Equal(t, "the-details", res.Error.Details)
 }
