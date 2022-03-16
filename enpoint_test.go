@@ -812,6 +812,27 @@ func TestGetPoolInfoEndpoint(t *testing.T) {
 		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
 	)
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
+
+	var payload = struct {
+		PIDS []koios.PoolID `json:"_pool_bech32_ids"`
+	}{
+		PIDS: []koios.PoolID{
+			koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+		},
+	}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp3, err3 := api.POST(context.TODO(), "/pool_info", rpipe, spec.Request.Query, spec.Request.Header)
+	assert.NoError(t, err3)
+
+	defer func() { _ = rsp3.Body.Close() }()
+	res3 := &koios.PoolInfosResponse{}
+	assert.NoError(t, koios.ReadAndUnmarshalResponse(rsp3, &res3.Response, &res3.Data))
+	assert.Equal(t, expected[0], res3.Data[0])
 }
 
 func TestGetPoolListEndpoint(t *testing.T) {

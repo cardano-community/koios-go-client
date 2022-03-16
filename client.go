@@ -33,12 +33,14 @@ func (c *Client) WithOptions(opts ...Option) (*Client, error) {
 	nc := &Client{
 		r:               c.r,
 		reqStatsEnabled: c.reqStatsEnabled,
-		url:             c.url,
 		commonHeaders:   c.commonHeaders.Clone(),
 	}
+	u, uerr := url.Parse(c.url.String())
+	nc.url = u
+
 	// Apply provided options
 	for _, opt := range opts {
-		if err := opt.apply(c); err != nil {
+		if err := opt.apply(nc); err != nil {
 			return nil, err
 		}
 	}
@@ -47,7 +49,7 @@ func (c *Client) WithOptions(opts ...Option) (*Client, error) {
 		nc.client = c.client
 	}
 
-	return nc, nil
+	return nc, uerr
 }
 
 // HEAD sends api http HEAD request to provided relative path with query params
