@@ -349,7 +349,9 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (*SubmitSig
 	if err != nil {
 		return res, err
 	}
-	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	body, err := ReadResponseBody(rsp)
+	res.Data = TxHash(body)
+	return res, err
 }
 
 // GetTxStatus returns status of transaction.

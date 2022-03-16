@@ -417,17 +417,19 @@ func ReadResponseBody(rsp *http.Response) (body []byte, err error) {
 	if rsp == nil {
 		return nil, nil
 	}
-	body, err = io.ReadAll(rsp.Body)
+
 	defer func() { _ = rsp.Body.Close() }()
-	if !strings.Contains(rsp.Header.Get("Content-Type"), "json") {
-		return nil, fmt.Errorf("%w: %s", ErrResponseIsNotJSON, string(body))
-	}
-	return body, err
+
+	return io.ReadAll(rsp.Body)
 }
 
 // ReadAndUnmarshalResponse is helper to unmarchal json responses.
 func ReadAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{}) error {
 	body, err := ReadResponseBody(rsp)
+	if !strings.Contains(rsp.Header.Get("Content-Type"), "json") {
+		return fmt.Errorf("%w: %s", ErrResponseIsNotJSON, string(body))
+	}
+
 	res.applyError(body, err)
 	if len(body) == 0 || err != nil {
 		return err

@@ -1166,7 +1166,7 @@ func TestGetTxsUTxOsEndpoint(t *testing.T) {
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
-func TestGetTxSubmit(t *testing.T) {
+func TestTxSubmit(t *testing.T) {
 	spec := loadEndpointTestSpec(t, "endpoint_tx_submit.json.gz", nil)
 
 	ts, api := setupTestServerAndClient(t, spec)
@@ -1178,13 +1178,16 @@ func TestGetTxSubmit(t *testing.T) {
 
 	res, err := api.SubmitSignedTx(context.TODO(), payload)
 
-	assert.Error(t, err, "submited tx should return error")
+	assert.NoError(t, err)
+	assert.Equal(t, spec.Response.Code, 202)
+	assert.Equal(t, res.StatusCode, 202)
+	assert.Equal(t, res.Status, "202 Accepted")
 	testHeaders(t, spec, res.Response)
 
 	res2, err := api.SubmitSignedTx(context.TODO(), koios.TxBodyJSON{CborHex: "x"})
 
 	assert.Error(t, err, "submited tx should return error")
-	testHeaders(t, spec, res2.Response)
+	assert.Equal(t, res2.StatusCode, 400)
 
 	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
 	assert.NoError(t, err)
@@ -1229,7 +1232,7 @@ func TestHTTP(t *testing.T) {
 	res3, err3 := api.HEAD(context.TODO(), "/404", spec.Request.Query, spec.Request.Header)
 	defer func() { _ = res3.Body.Close() }()
 	body3, err := koios.ReadResponseBody(res3)
-	assert.EqualError(t, err, "got non json response: ")
+	assert.NoError(t, err)
 	assert.EqualError(t, err3, "got unexpected response: Not Found")
 	assert.Empty(t, body3)
 }

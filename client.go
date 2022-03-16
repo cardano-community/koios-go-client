@@ -158,7 +158,7 @@ func (c *Client) request(
 		res.applyRsp(rsp)
 	}
 
-	if rsp.StatusCode > http.StatusCreated {
+	if rsp.StatusCode > http.StatusAccepted {
 		rerr := fmt.Errorf("%w: %s", ErrResponse, http.StatusText(rsp.StatusCode))
 		if res != nil {
 			res.applyError(nil, rerr)
