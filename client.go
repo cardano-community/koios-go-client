@@ -134,16 +134,21 @@ func (c *Client) request(
 
 	c.applyReqHeaders(req, headers)
 
+	var (
+		eqerr error
+		rsp   *http.Response
+	)
 	if res != nil && c.reqStatsEnabled {
-		return c.requestWithStats(req, res)
+		rsp, eqerr = c.requestWithStats(req, res)
+	} else {
+		rsp, eqerr = c.client.Do(req)
 	}
 
-	rsp, err := c.client.Do(req)
-	if err != nil {
+	if eqerr != nil {
 		if res != nil {
-			res.applyError(nil, err)
+			res.applyError(nil, eqerr)
 		}
-		return nil, err
+		return nil, eqerr
 	}
 
 	if res != nil {
@@ -151,10 +156,11 @@ func (c *Client) request(
 	}
 
 	if rsp.StatusCode > http.StatusCreated {
+		rerr := fmt.Errorf("%w: %s", ErrResponse, http.StatusText(rsp.StatusCode))
 		if res != nil {
-			res.applyError(nil, ErrResponse)
+			res.applyError(nil, rerr)
 		}
-		return rsp, nil
+		return rsp, rerr
 	}
 
 	return rsp, nil
@@ -225,12 +231,6 @@ func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Respo
 	}
 
 	res.applyRsp(rsp)
-
-	if rsp.StatusCode > http.StatusCreated {
-		res.applyError(nil, ErrResponse)
-		return rsp, nil
-	}
-
 	return rsp, nil
 }
 
