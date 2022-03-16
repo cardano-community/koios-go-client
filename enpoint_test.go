@@ -1169,6 +1169,14 @@ func TestHTTP(t *testing.T) {
 
 	assert.NoError(t, err2)
 	assert.Equal(t, "application/json; charset=utf-8", res2.Header.Get("Content-Type"))
+
+	// 404
+	res3, err3 := api.HEAD(context.TODO(), "/404", spec.Request.Query, spec.Request.Header)
+	defer func() { _ = res3.Body.Close() }()
+	body3, err := koios.ReadResponseBody(res3)
+	assert.EqualError(t, err, "got non json response: ")
+	assert.NoError(t, err3)
+	assert.Empty(t, body3)
 }
 
 // loadEndpointTestSpec load specs for endpoint.
