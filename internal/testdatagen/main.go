@@ -580,6 +580,13 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
+			Filename: "endpoint_plutus_script_list.json",
+			Endpoint: "/plutus_script_list",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+			},
+		},
+		{
 			Filename: "endpoint_script_redeemers.json",
 			Endpoint: "/script_redeemers",
 			Request: internal.APITestRequestSpec{

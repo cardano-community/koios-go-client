@@ -81,6 +81,21 @@ type (
 		Data []NativeScriptListItem `json:"response"`
 	}
 
+	// PlutusScriptListItem item of plutus script list.
+	PlutusScriptListItem struct {
+		// Hash of the script creation transaction
+		CreationTxHash TxHash `json:"creation_tx_hash"`
+
+		// Hash of a script
+		ScriptHash string `json:"script_hash"`
+	}
+
+	// PlutusScriptListResponse represents response from `/plutus_script_list` endpoint.
+	PlutusScriptListResponse struct {
+		Response
+		Data []PlutusScriptListItem `json:"response"`
+	}
+
 	// ScriptRedeemersResponse represents response from `/script_redeemers` endpoint.
 	ScriptRedeemersResponse struct {
 		Response
@@ -93,6 +108,18 @@ type (
 func (c *Client) GetNativeScriptList(ctx context.Context) (res *NativeScriptListResponse, err error) {
 	res = &NativeScriptListResponse{}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/native_script_list", nil, nil, nil)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetPlutusScriptList returns all existing Plutus script
+// hashes along with their creation transaction hashes.
+func (c *Client) GetPlutusScriptList(ctx context.Context) (res *PlutusScriptListResponse, err error) {
+	res = &PlutusScriptListResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/plutus_script_list", nil, nil, nil)
 	if err != nil {
 		return
 	}

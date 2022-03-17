@@ -1054,7 +1054,7 @@ func TestGetPoolUpdatesEndpoint(t *testing.T) {
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
-func TestGetScriptNativeListEndpoint(t *testing.T) {
+func TestGetNativeScriptListEndpoint(t *testing.T) {
 	expected := []koios.NativeScriptListItem{}
 
 	spec := loadEndpointTestSpec(t, "endpoint_native_script_list.json.gz", &expected)
@@ -1073,6 +1073,28 @@ func TestGetScriptNativeListEndpoint(t *testing.T) {
 	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
 	assert.NoError(t, err)
 	_, err = c.GetNativeScriptList(context.TODO())
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
+}
+
+func TestGetPlutusScriptNativeListEndpoint(t *testing.T) {
+	expected := []koios.PlutusScriptListItem{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_plutus_script_list.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetPlutusScriptList(context.TODO())
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPlutusScriptList(context.TODO())
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 

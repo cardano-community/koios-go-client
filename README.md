@@ -238,8 +238,9 @@ Library uses for most cases to represent lovelace using [`Lovelace`](https://pkg
 | `/pool_relays` | [`*.GetPoolRelays(...) *PoolRelaysResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolRelays) | `pool-relays` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_relays) |
 | `/pool_metadata` | [`*.GetPoolMetadata(...) *PoolMetadataResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPoolMetadata) | `pool-metadata` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/pool_metadata) |
 | **SCRIPT** | | | |
-| `/script_list` | [`*.GetScriptList(...) *ScriptRedeemersResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetScriptList) | `script-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_list) |
-| `/script_redeemers` | [`*.GetScriptRedeemers(...) *ScriptListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetScriptRedeemers) | `script-redeemers` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_redeemers) |
+| `/native_script_list` | [`*.GetNativeScriptList(...) *NativeScriptListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetNativeScriptList) | `native-script-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/native_script_list) |
+| `/plutus_script_list` | [`*.GetPlutusScriptList(...) *PlutusScriptListResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetPlutusScriptList) | `plutus-script-list` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/plutus_script_list) |
+| `/script_redeemers` | [`*.GetScriptRedeemers(...) *ScriptRedeemersResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetScriptRedeemers) | `script-redeemers` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/script_redeemers) |
 
 ---
 
