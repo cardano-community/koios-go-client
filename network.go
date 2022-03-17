@@ -34,8 +34,8 @@ type (
 		// Timestamp for when the block was created
 		BlockTime string `json:"block_time"`
 
-		// Epoch number
-		Epoch int `json:"epoch"`
+		// EpochNo number
+		EpochNo int `json:"epoch_no"`
 
 		// Slot number within Epoch
 		EpochSlot int `json:"epoch_slot"`

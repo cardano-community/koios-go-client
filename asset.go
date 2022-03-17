@@ -86,7 +86,7 @@ type (
 		TokenRegistryMetadata *TokenRegistryMetadata `json:"token_registry_metadata"`
 
 		// Asset Policy ID (hex).
-		PolicyID PolicyID `json:"policy_id"`
+		PolicyID PolicyID `json:"policy_id,omitempty"`
 
 		// TotalSupply of Asset
 		TotalSupply Lovelace `json:"total_supply"`
