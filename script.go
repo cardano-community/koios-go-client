@@ -23,15 +23,6 @@ import (
 )
 
 type (
-	// ScriptListItem item of script list.
-	ScriptListItem struct {
-		// Hash of the script creation transaction
-		CreationTxHash TxHash `json:"creation_tx_hash"`
-
-		// Hash of a script
-		ScriptHash string `json:"script_hash"`
-	}
-
 	// ScriptRedeemers defines model for script_redeemers.
 	ScriptRedeemers struct {
 		// Hash of Transaction for which details are being shown
@@ -70,10 +61,24 @@ type (
 		UnitSteps int `json:"unit_steps"`
 	}
 
-	// ScriptListResponse represents response from `/script_list` endpoint.
-	ScriptListResponse struct {
+	// NativeScriptListItem item of native script list.
+	NativeScriptListItem struct {
+		// Hash of the script creation transaction
+		CreationTxHash TxHash `json:"creation_tx_hash"`
+
+		// Hash of a script
+		ScriptHash string `json:"script_hash"`
+		Type       string `json:"type"`
+		Script     struct {
+			Type    string                   `json:"type"`
+			Scripts []map[string]interface{} `json:"scripts"`
+		} `json:"script"`
+	}
+
+	// NativeScriptListResponse represents response from `/native_script_list` endpoint.
+	NativeScriptListResponse struct {
 		Response
-		Data []ScriptListItem `json:"response"`
+		Data []NativeScriptListItem `json:"response"`
 	}
 
 	// ScriptRedeemersResponse represents response from `/script_redeemers` endpoint.
@@ -83,11 +88,11 @@ type (
 	}
 )
 
-// GetScriptList returns the list of all existing script
-// hashes along with their creation transaction hashes.
-func (c *Client) GetScriptList(ctx context.Context) (res *ScriptListResponse, err error) {
-	res = &ScriptListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/script_list", nil, nil, nil)
+// GetNativeScriptList returns list of all existing native script hashes
+// along with their creation transaction hashes.
+func (c *Client) GetNativeScriptList(ctx context.Context) (res *NativeScriptListResponse, err error) {
+	res = &NativeScriptListResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/native_script_list", nil, nil, nil)
 	if err != nil {
 		return
 	}

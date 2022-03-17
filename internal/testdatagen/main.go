@@ -573,8 +573,8 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_script_list.json",
-			Endpoint: "/script_list",
+			Filename: "endpoint_native_script_list.json",
+			Endpoint: "/native_script_list",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},

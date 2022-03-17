@@ -1054,16 +1054,16 @@ func TestGetPoolUpdatesEndpoint(t *testing.T) {
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
-func TestGetScriptListEndpoint(t *testing.T) {
-	expected := []koios.ScriptListItem{}
+func TestGetScriptNativeListEndpoint(t *testing.T) {
+	expected := []koios.NativeScriptListItem{}
 
-	spec := loadEndpointTestSpec(t, "endpoint_script_list.json.gz", &expected)
+	spec := loadEndpointTestSpec(t, "endpoint_native_script_list.json.gz", &expected)
 
 	ts, api := setupTestServerAndClient(t, spec)
 
 	defer ts.Close()
 
-	res, err := api.GetScriptList(context.TODO())
+	res, err := api.GetNativeScriptList(context.TODO())
 
 	assert.NoError(t, err)
 	testHeaders(t, spec, res.Response)
@@ -1072,7 +1072,7 @@ func TestGetScriptListEndpoint(t *testing.T) {
 
 	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
 	assert.NoError(t, err)
-	_, err = c.GetScriptList(context.TODO())
+	_, err = c.GetNativeScriptList(context.TODO())
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
