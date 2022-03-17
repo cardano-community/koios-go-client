@@ -117,6 +117,7 @@ func (c *Client) request(
 
 	if res != nil {
 		res.RequestURL = requrl
+		res.RequestMethod = method
 	}
 
 	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(method), requrl, body)
