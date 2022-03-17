@@ -164,11 +164,13 @@ type (
 		Data *AssetPolicyInfo `json:"response"`
 	}
 
+	// AssetMintTX holds specific mint tx hash and amount.
 	AssetMintTX struct {
 		TxHashe  TxHash   `json:"tx_hash"`
 		Quantity Lovelace `json:"quantity"`
 	}
 
+	// AssetHistory holds given asset mint/burn tx's.
 	AssetHistory struct {
 		PolicyID   PolicyID      `json:"policy_id"`
 		AssetName  AssetName     `json:"asset_name"`

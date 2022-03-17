@@ -261,6 +261,23 @@ type (
 		BlockNo uint64 `json:"block_no"`
 	}
 
+	// PoolHistory entry.
+	PoolHistory struct {
+		// Epoch number.
+		Epoch EpochNo `json:"epoch_no"`
+		// ActiveStake Pool active stake.
+		ActiveStake    Lovelace `json:"active_stake"`
+		ActiveStakePCT float64  `json:"active_stake_pct"`
+		SaturationPCT  float64  `json:"saturation_pct"`
+		BlockCNT       int      `json:"block_cnt"`
+		DelegatorCNT   int      `json:"delegator_cnt"`
+		Margin         float64  `json:"margin"`
+		FixedCost      Lovelace `json:"fixed_cost"`
+		PoolFees       Lovelace `json:"pool_fees"`
+		DelegRewards   Lovelace `json:"deleg_rewards"`
+		EpochROS       float64  `json:"epoch_ros"`
+	}
+
 	// PoolListResponse represents response from `/pool_list` endpoint.
 	PoolListResponse struct {
 		Response
@@ -308,6 +325,12 @@ type (
 	PoolMetadataResponse struct {
 		Response
 		Data []PoolMetadata `json:"response"`
+	}
+
+	// PoolHistoryResponse represents response from `/pool_history` endpoint.
+	PoolHistoryResponse struct {
+		Response
+		Data []PoolHistory `json:"response"`
 	}
 )
 
@@ -435,6 +458,29 @@ func (c *Client) GetPoolMetadata(ctx context.Context) (res *PoolMetadataResponse
 	res = &PoolMetadataResponse{}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_metadata", nil, nil, nil)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetPoolHistory returns information about pool stake, block and reward history
+// in a given epoch _epoch_no (or all epochs that pool existed for, in descending
+// order if no _epoch_no was provided).
+func (c *Client) GetPoolHistory(
+	ctx context.Context,
+	pid PoolID,
+	epoch *EpochNo,
+) (res *PoolHistoryResponse, err error) {
+	res = &PoolHistoryResponse{}
+
+	params := url.Values{}
+	params.Set("_pool_bech32", string(pid))
+	if epoch != nil {
+		params.Set("_epoch_no", fmt.Sprint(*epoch))
+	}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_history", nil, params, nil)
 	if err != nil {
 		return
 	}

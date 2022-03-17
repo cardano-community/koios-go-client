@@ -875,6 +875,40 @@ func TestGetPoolDelegatorsEndpoint(t *testing.T) {
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
+func TestGetPoolHistoryEndpoint(t *testing.T) {
+	expected := []koios.PoolHistory{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_pool_history.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	epochNo, err := strconv.ParseUint(spec.Request.Query.Get("_epoch_no"), 10, 64)
+	assert.NoError(t, err)
+	epoch := koios.EpochNo(epochNo)
+
+	res, err := api.GetPoolHistory(
+		context.TODO(),
+		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+		&epoch,
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, expected, res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetPoolHistory(
+		context.TODO(),
+		koios.PoolID(spec.Request.Query.Get("_pool_bech32")),
+		&epoch,
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
+}
+
 func TestGetPoolInfoEndpoint(t *testing.T) {
 	expected := []koios.PoolInfo{}
 

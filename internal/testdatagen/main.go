@@ -538,6 +538,17 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
+			Filename: "endpoint_pool_history.json",
+			Endpoint: "/pool_history",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+				Query: url.Values{
+					"_pool_bech32": []string{"pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"},
+					"_epoch_no":    []string{TestEpoch},
+				},
+			},
+		},
+		{
 			Filename: "endpoint_pool_updates.json",
 			Endpoint: "/pool_updates",
 			Request: internal.APITestRequestSpec{
