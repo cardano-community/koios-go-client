@@ -525,7 +525,7 @@ func TestGetCredentialTxsEndpoint(t *testing.T) {
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 
-func TestAssetListEndpoint(t *testing.T) {
+func TestGetAssetListEndpoint(t *testing.T) {
 	expected := []koios.AssetListItem{}
 
 	spec := loadEndpointTestSpec(t, "endpoint_asset_list.json.gz", &expected)
@@ -688,6 +688,36 @@ func TestGetAssetTxsEndpoint(t *testing.T) {
 	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
 	assert.NoError(t, err)
 	_, err = c.GetAssetTxs(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
+}
+
+func TestGetAssetHistoryEndpoint(t *testing.T) {
+	expected := []koios.AssetHistory{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_asset_history.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	res, err := api.GetAssetHistory(
+		context.TODO(),
+		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
+		koios.AssetName(spec.Request.Query.Get("_asset_name")),
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetAssetHistory(
 		context.TODO(),
 		koios.PolicyID(spec.Request.Query.Get("_asset_policy")),
 		koios.AssetName(spec.Request.Query.Get("_asset_name")),

@@ -163,6 +163,23 @@ type (
 		Response
 		Data *AssetPolicyInfo `json:"response"`
 	}
+
+	AssetMintTX struct {
+		TxHashe  TxHash   `json:"tx_hash"`
+		Quantity Lovelace `json:"quantity"`
+	}
+
+	AssetHistory struct {
+		PolicyID   PolicyID      `json:"policy_id"`
+		AssetName  AssetName     `json:"asset_name"`
+		MintingTXs []AssetMintTX `json:"minting_txs"`
+	}
+
+	// AssetHistoryResponse represents response from `/asset_history` endpoint.
+	AssetHistoryResponse struct {
+		Response
+		Data *AssetHistory `json:"response"`
+	}
 )
 
 // GetAssetList returns the list of all native assets (paginated).
@@ -291,6 +308,31 @@ func (c *Client) GetAssetPolicyInfo(
 		return
 	}
 	info := []AssetPolicyInfo{}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info)
+
+	if len(info) == 1 {
+		res.Data = &info[0]
+	}
+	return
+}
+
+// GetAssetHistory returns mint/burn history of an asset.
+func (c *Client) GetAssetHistory(
+	ctx context.Context,
+	policy PolicyID,
+	name AssetName,
+) (res *AssetHistoryResponse, err error) {
+	res = &AssetHistoryResponse{}
+
+	params := url.Values{}
+	params.Set("_asset_policy", string(policy))
+	params.Set("_asset_name", string(name))
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_history", nil, params, nil)
+	if err != nil {
+		return
+	}
+	info := []AssetHistory{}
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info)
 
 	if len(info) == 1 {
