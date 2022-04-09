@@ -162,15 +162,18 @@ func main() {
 							)
 
 							log.Println("requesting: ", spec.Endpoint)
+							opts := api.NewRequestOptions()
+							opts.HeadersApply(spec.Request.Header)
+							opts.QueryApply(spec.Request.Query)
 							switch spec.Request.Method {
 							case "GET":
-								res, err = api.GET(callctx, spec.Endpoint, spec.Request.Query, spec.Request.Header)
+								res, err = api.GET(callctx, spec.Endpoint, opts)
 								handleErr(err)
 							case "HEAD":
-								res, err = api.HEAD(callctx, spec.Endpoint, spec.Request.Query, spec.Request.Header)
+								res, err = api.HEAD(callctx, spec.Endpoint, opts)
 								handleErr(err)
 							case "POST":
-								res, err = api.POST(callctx, spec.Endpoint, bytes.NewReader(spec.Request.Body), spec.Request.Query, spec.Request.Header)
+								res, err = api.POST(callctx, spec.Endpoint, bytes.NewReader(spec.Request.Body), opts)
 								handleErr(err)
 
 							}
@@ -613,6 +616,27 @@ func specs() []internal.APITestSpec {
 				Query: url.Values{
 					"_asset_policy": []string{"d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff"},
 					"_asset_name":   []string{"444f4e545350414d"},
+				},
+			},
+		},
+		{
+			Filename: "vertical_filtering.json",
+			Endpoint: "/blocks",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+				Query: url.Values{
+					"select": []string{"epoch,epoch_slot,block_height"},
+				},
+			},
+		},
+		{
+			Filename: "horizontal_filtering.json",
+			Endpoint: "/blocks",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+				Query: url.Values{
+					"epoch":      []string{"eq.250"},
+					"epoch_slot": []string{"lt.180"},
 				},
 			},
 		},

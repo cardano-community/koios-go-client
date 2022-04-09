@@ -18,8 +18,6 @@ package koios
 
 import (
 	"context"
-	"fmt"
-	"net/url"
 )
 
 type (
@@ -105,9 +103,12 @@ type (
 
 // GetNativeScriptList returns list of all existing native script hashes
 // along with their creation transaction hashes.
-func (c *Client) GetNativeScriptList(ctx context.Context) (res *NativeScriptListResponse, err error) {
+func (c *Client) GetNativeScriptList(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *NativeScriptListResponse, err error) {
 	res = &NativeScriptListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/native_script_list", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/native_script_list", nil, opts)
 	if err != nil {
 		return
 	}
@@ -117,9 +118,12 @@ func (c *Client) GetNativeScriptList(ctx context.Context) (res *NativeScriptList
 
 // GetPlutusScriptList returns all existing Plutus script
 // hashes along with their creation transaction hashes.
-func (c *Client) GetPlutusScriptList(ctx context.Context) (res *PlutusScriptListResponse, err error) {
+func (c *Client) GetPlutusScriptList(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *PlutusScriptListResponse, err error) {
 	res = &PlutusScriptListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/plutus_script_list", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/plutus_script_list", nil, opts)
 	if err != nil {
 		return
 	}
@@ -131,13 +135,16 @@ func (c *Client) GetPlutusScriptList(ctx context.Context) (res *PlutusScriptList
 func (c *Client) GetScriptRedeemers(
 	ctx context.Context,
 	sh ScriptHash,
+	opts *RequestOptions,
 ) (res *ScriptRedeemersResponse, err error) {
 	res = &ScriptRedeemersResponse{}
 
-	params := url.Values{}
-	params.Set("_script_hash", fmt.Sprint(sh))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_script_hash", sh.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/script_redeemers", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/script_redeemers", nil, opts)
 	if err != nil {
 		return
 	}

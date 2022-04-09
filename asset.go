@@ -18,7 +18,6 @@ package koios
 
 import (
 	"context"
-	"net/url"
 )
 
 type (
@@ -185,9 +184,12 @@ type (
 )
 
 // GetAssetList returns the list of all native assets (paginated).
-func (c *Client) GetAssetList(ctx context.Context) (res *AssetListResponse, err error) {
+func (c *Client) GetAssetList(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *AssetListResponse, err error) {
 	res = &AssetListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_list", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_list", nil, opts)
 	if err != nil {
 		return
 	}
@@ -200,14 +202,17 @@ func (c *Client) GetAssetAddressList(
 	ctx context.Context,
 	policy PolicyID,
 	name AssetName,
+	opts *RequestOptions,
 ) (res *AssetAddressListResponse, err error) {
 	res = &AssetAddressListResponse{}
 
-	params := url.Values{}
-	params.Set("_asset_policy", string(policy))
-	params.Set("_asset_name", string(name))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+	opts.QuerySet("_asset_name", name.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, opts)
 	if err != nil {
 		return
 	}
@@ -222,14 +227,17 @@ func (c *Client) GetAssetInfo(
 	ctx context.Context,
 	policy PolicyID,
 	name AssetName,
+	opts *RequestOptions,
 ) (res *AssetInfoResponse, err error) {
 	res = &AssetInfoResponse{}
 
-	params := url.Values{}
-	params.Set("_asset_policy", string(policy))
-	params.Set("_asset_name", string(name))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+	opts.QuerySet("_asset_name", name.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_info", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_info", nil, opts)
 	if err != nil {
 		return
 	}
@@ -245,19 +253,21 @@ func (c *Client) GetAssetInfo(
 // GetAssetSummary returns the summary of an asset
 // (total transactions exclude minting/total wallets
 // include only wallets with asset balance).
-
 func (c *Client) GetAssetSummary(
 	ctx context.Context,
 	policy PolicyID,
 	name AssetName,
+	opts *RequestOptions,
 ) (res *AssetSummaryResponse, err error) {
 	res = &AssetSummaryResponse{}
 
-	params := url.Values{}
-	params.Set("_asset_policy", string(policy))
-	params.Set("_asset_name", string(name))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+	opts.QuerySet("_asset_name", name.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, opts)
 	if err != nil {
 		return
 	}
@@ -275,14 +285,17 @@ func (c *Client) GetAssetTxs(
 	ctx context.Context,
 	policy PolicyID,
 	name AssetName,
+	opts *RequestOptions,
 ) (res *AssetTxsResponse, err error) {
 	res = &AssetTxsResponse{}
 
-	params := url.Values{}
-	params.Set("_asset_policy", string(policy))
-	params.Set("_asset_name", string(name))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+	opts.QuerySet("_asset_name", name.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, opts)
 	if err != nil {
 		return
 	}
@@ -299,13 +312,16 @@ func (c *Client) GetAssetTxs(
 func (c *Client) GetAssetPolicyInfo(
 	ctx context.Context,
 	policy PolicyID,
+	opts *RequestOptions,
 ) (res *AssetPolicyInfoResponse, err error) {
 	res = &AssetPolicyInfoResponse{}
 
-	params := url.Values{}
-	params.Set("_asset_policy", string(policy))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_policy_info", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_policy_info", nil, opts)
 	if err != nil {
 		return
 	}
@@ -323,14 +339,16 @@ func (c *Client) GetAssetHistory(
 	ctx context.Context,
 	policy PolicyID,
 	name AssetName,
+	opts *RequestOptions,
 ) (res *AssetHistoryResponse, err error) {
 	res = &AssetHistoryResponse{}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+	opts.QuerySet("_asset_name", name.String())
 
-	params := url.Values{}
-	params.Set("_asset_policy", string(policy))
-	params.Set("_asset_name", string(name))
-
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_history", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_history", nil, opts)
 	if err != nil {
 		return
 	}

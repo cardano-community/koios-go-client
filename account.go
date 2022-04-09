@@ -18,8 +18,6 @@ package koios
 
 import (
 	"context"
-	"fmt"
-	"net/url"
 )
 
 type (
@@ -115,10 +113,12 @@ type (
 )
 
 // GetAccountList returns a list of all accounts.
-func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, err error) {
+func (c *Client) GetAccountList(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *AccountListResponse, err error) {
 	res = &AccountListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/account_list", nil, nil, nil)
-
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_list", nil, opts)
 	if err != nil {
 		return
 	}
@@ -139,17 +139,24 @@ func (c *Client) GetAccountList(ctx context.Context) (res *AccountListResponse, 
 
 // GetAccountInfo returns the account info of any (payment or staking) address.
 
-func (c *Client) GetAccountInfo(ctx context.Context, addr Address) (res *AccountInfoResponse, err error) {
+func (c *Client) GetAccountInfo(
+	ctx context.Context,
+	addr Address,
+	opts *RequestOptions,
+) (res *AccountInfoResponse, err error) {
 	res = &AccountInfoResponse{}
 	if len(addr) == 0 {
 		err = ErrNoAddress
 		res.applyError(nil, err)
 		return
 	}
-	params := url.Values{}
-	params.Set("_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/account_info", nil, params, nil)
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_address", addr.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_info", nil, opts)
 	if err != nil {
 		return
 	}
@@ -169,15 +176,20 @@ func (c *Client) GetAccountRewards(
 	ctx context.Context,
 	addr StakeAddress,
 	epoch *EpochNo,
+	opts *RequestOptions,
 ) (res *AccountRewardsResponse, err error) {
 	res = &AccountRewardsResponse{}
-	params := url.Values{}
-	params.Set("_stake_address", string(addr))
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_stake_address", addr.String())
+
 	if epoch != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epoch))
+		opts.QuerySet("_epoch_no", epoch.String())
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/account_rewards", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_rewards", nil, opts)
 	if err != nil {
 		return
 	}
@@ -190,12 +202,16 @@ func (c *Client) GetAccountRewards(
 func (c *Client) GetAccountUpdates(
 	ctx context.Context,
 	addr StakeAddress,
+	opts *RequestOptions,
 ) (res *AccountUpdatesResponse, err error) {
 	res = &AccountUpdatesResponse{}
-	params := url.Values{}
-	params.Set("_stake_address", string(addr))
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/account_updates", nil, params, nil)
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_stake_address", addr.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_updates", nil, opts)
 	if err != nil {
 		return
 	}
@@ -207,12 +223,15 @@ func (c *Client) GetAccountUpdates(
 func (c *Client) GetAccountAddresses(
 	ctx context.Context,
 	addr StakeAddress,
+	opts *RequestOptions,
 ) (res *AccountAddressesResponse, err error) {
 	res = &AccountAddressesResponse{}
-	params := url.Values{}
-	params.Set("_address", string(addr))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_address", addr.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/account_addresses", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_addresses", nil, opts)
 	if err != nil {
 		return
 	}
@@ -234,12 +253,15 @@ func (c *Client) GetAccountAddresses(
 func (c *Client) GetAccountAssets(
 	ctx context.Context,
 	addr StakeAddress,
+	opts *RequestOptions,
 ) (res *AccountAssetsResponse, err error) {
 	res = &AccountAssetsResponse{}
-	params := url.Values{}
-	params.Set("_address", string(addr))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_address", addr.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/account_assets", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_assets", nil, opts)
 	if err != nil {
 		return
 	}
@@ -251,12 +273,15 @@ func (c *Client) GetAccountAssets(
 func (c *Client) GetAccountHistory(
 	ctx context.Context,
 	addr StakeAddress,
+	opts *RequestOptions,
 ) (res *AccountHistoryResponse, err error) {
 	res = &AccountHistoryResponse{}
-	params := url.Values{}
-	params.Set("_address", string(addr))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_address", addr.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/account_history", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_history", nil, opts)
 	if err != nil {
 		return
 	}

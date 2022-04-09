@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"net/url"
 )
 
 type (
@@ -39,7 +38,7 @@ type (
 		EpochSlot int `json:"epoch_slot"`
 
 		// Height is block number on chain where transaction was included.
-		Height int `json:"height"`
+		Height int `json:"block_height"`
 
 		// Size of block.
 		Size int `json:"size"`
@@ -92,9 +91,12 @@ type (
 )
 
 // GetBlocks returns summarised details about all blocks (paginated - latest first).
-func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error) {
+func (c *Client) GetBlocks(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *BlocksResponse, err error) {
 	res = &BlocksResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/blocks", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/blocks", nil, opts)
 	if err != nil {
 		return
 	}
@@ -103,9 +105,13 @@ func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error)
 }
 
 // GetBlockInfo returns detailed information about a specific block.
-func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockInfoResponse, err error) {
+func (c *Client) GetBlockInfo(
+	ctx context.Context,
+	hash BlockHash,
+	opts *RequestOptions,
+) (res *BlockInfoResponse, err error) {
 	res = &BlockInfoResponse{}
-	rsp, err := c.GetBlocksInfo(ctx, []BlockHash{hash})
+	rsp, err := c.GetBlocksInfo(ctx, []BlockHash{hash}, opts)
 	res.Response = rsp.Response
 	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
@@ -114,9 +120,13 @@ func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockIn
 }
 
 // GetBlocksInfo returns detailed information about a set of blocks.
-func (c *Client) GetBlocksInfo(ctx context.Context, hashes []BlockHash) (res *BlocksInfoResponse, err error) {
+func (c *Client) GetBlocksInfo(
+	ctx context.Context,
+	hashes []BlockHash,
+	opts *RequestOptions,
+) (res *BlocksInfoResponse, err error) {
 	res = &BlocksInfoResponse{}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/block_info", blockHashesPL(hashes), nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/block_info", blockHashesPL(hashes), opts)
 	if err != nil {
 		return
 	}
@@ -127,12 +137,18 @@ func (c *Client) GetBlocksInfo(ctx context.Context, hashes []BlockHash) (res *Bl
 
 // GetBlockTxHashes returns a list of all transactions hashes
 // included in a provided block.
-func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *BlockTxsHashesResponse, err error) {
+func (c *Client) GetBlockTxHashes(
+	ctx context.Context,
+	hash BlockHash,
+	opts *RequestOptions,
+) (res *BlockTxsHashesResponse, err error) {
 	res = &BlockTxsHashesResponse{}
-	params := url.Values{}
-	params.Set("_block_hash", string(hash))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_block_hash", hash.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/block_txs", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/block_txs", nil, opts)
 	if err != nil {
 		return
 	}

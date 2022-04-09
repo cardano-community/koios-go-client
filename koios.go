@@ -24,14 +24,11 @@
 package koios
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -74,6 +71,7 @@ var (
 	ErrNoPoolID                 = errors.New("missing pool id")
 	ErrResponse                 = errors.New("got unexpected response")
 	ErrSchema                   = errors.New("scheme must be http or https")
+	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
 )
 
 type (
@@ -187,6 +185,13 @@ type (
 		Stats *RequestStats `json:"stats,omitempty"`
 	}
 
+	// RequestOptions for the request.
+	RequestOptions struct {
+		locked  bool
+		query   url.Values
+		headers http.Header
+	}
+
 	// RequestStats represent collected request stats if collecting
 	// request stats is enabled.
 	RequestStats struct {
@@ -288,195 +293,52 @@ func New(opts ...Option) (*Client, error) {
 	return c, nil
 }
 
-// Host returns option apply func which can be used to change the
-// baseurl hostname https://<host>/api/v0/
-func Host(host string) Option {
-	return Option{
-		apply: func(c *Client) error {
-			if c.url.Port() == "" || c.url.Port() == "80" || c.url.Port() == "443" {
-				c.url.Host = host
-			} else {
-				c.url.Host = fmt.Sprint(host, ":", c.url.Port())
-			}
-			return nil
-		},
-	}
+// String returns Address as string.
+func (v Address) String() string {
+	return string(v)
 }
 
-// APIVersion returns option to apply change of the
-// baseurl api version https://api.koios.rest/api/<version>/
-func APIVersion(version string) Option {
-	return Option{
-		apply: func(c *Client) error {
-			url, err := c.url.Parse("/api/" + version + "/")
-			c.url = url
-			return err
-		},
-	}
+// String returns PaymentCredential as string.
+func (v PaymentCredential) String() string {
+	return string(v)
 }
 
-// Port returns option apply func which can be used to change the
-// baseurl port https://api.koios.rest:<port>/api/v0/
-func Port(port uint16) Option {
-	return Option{
-		apply: func(c *Client) error {
-			c.url.Host = fmt.Sprint(c.url.Hostname(), ":", port)
-			return nil
-		},
-	}
+// String returns AssetName as string.
+func (v AssetName) String() string {
+	return string(v)
 }
 
-// Scheme returns option apply func which can be used to change the
-// baseurl scheme <scheme>://api.koios.rest/api/v0/.
-func Scheme(scheme string) Option {
-	return Option{
-		apply: func(c *Client) error {
-			c.url.Scheme = scheme
-			if scheme != "http" && scheme != "https" {
-				return ErrSchema
-			}
-			return nil
-		},
-	}
+// String returns BlockHash as string.
+func (v BlockHash) String() string {
+	return string(v)
 }
 
-// HTTPClient enables to set htt.Client to be used for requests.
-func HTTPClient(client *http.Client) Option {
-	return Option{
-		apply: func(c *Client) error {
-			if c.client != nil {
-				return ErrHTTPClientChange
-			}
-			if client == nil {
-				client = &http.Client{
-					Timeout: time.Second * 60,
-				}
-			}
-			if client.Timeout == 0 {
-				return ErrHTTPClientTimeoutSetting
-			}
-			c.client = client
-			if c.client.Transport == nil {
-				c.client.Transport = http.DefaultTransport
-			}
-			return nil
-		},
-	}
+// String returns TxHash as string.
+func (v TxHash) String() string {
+	return string(v)
 }
 
-// RateLimit sets requests per second this client is allowed to create
-// and effectievely rate limits outgoing requests.
-// Let's respect usage of the community provided resources.
-func RateLimit(reqps int) Option {
-	return Option{
-		apply: func(c *Client) error {
-			if reqps == 0 {
-				return ErrRateLimitRange
-			}
-			c.r = rate.NewLimiter(rate.Every(time.Second), reqps)
-			return nil
-		},
-	}
+// String returns EpochNo as string.
+func (v EpochNo) String() string {
+	return fmt.Sprintf("%d", v)
 }
 
-// Origin sets Origin header for outgoing api requests.
-// Recomoended is to set it to URL or FQDN of your project using this library.
-//
-// In case you appliation goes rouge this could help to keep api.koios.rest
-// service stable and up and running while temporary limiting requests
-// it accepts from your application.
-//
-// It's not required, but considered as good practice so that Cardano Community
-// can provide HA services for Cardano ecosystem.
-func Origin(origin string) Option {
-	return Option{
-		apply: func(c *Client) error {
-			o, err := url.ParseRequestURI(origin)
-			if err != nil {
-				return err
-			}
-			c.commonHeaders.Set("Origin", o.String())
-			return nil
-		},
-	}
+// String returns PoolID as string.
+func (v PoolID) String() string {
+	return string(v)
 }
 
-// CollectRequestsStats when enabled uses httptrace is used
-// to collect detailed timing information about the request.
-func CollectRequestsStats(enabled bool) Option {
-	return Option{
-		apply: func(c *Client) error {
-			c.reqStatsEnabled = enabled
-			return nil
-		},
-	}
+// String returns PolicyID as string.
+func (v PolicyID) String() string {
+	return string(v)
 }
 
-// ReadResponseBody is reading http.Response aand closing it after read.
-func ReadResponseBody(rsp *http.Response) (body []byte, err error) {
-	if rsp == nil {
-		return nil, nil
-	}
-
-	defer func() { _ = rsp.Body.Close() }()
-
-	return io.ReadAll(rsp.Body)
+// String returns ScriptHash as string.
+func (v ScriptHash) String() string {
+	return string(v)
 }
 
-// ReadAndUnmarshalResponse is helper to unmarchal json responses.
-func ReadAndUnmarshalResponse(rsp *http.Response, res *Response, dest interface{}) error {
-	body, err := ReadResponseBody(rsp)
-	if !strings.Contains(rsp.Header.Get("Content-Type"), "json") {
-		return fmt.Errorf("%w: %s", ErrResponseIsNotJSON, string(body))
-	}
-
-	res.applyError(body, err)
-	if len(body) == 0 || err != nil {
-		return err
-	}
-
-	defer res.ready()
-	err = json.Unmarshal(body, dest)
-	res.applyError(body, err)
-	return err
-}
-
-func (r *Response) applyError(body []byte, err error) {
-	if err == nil {
-		return
-	}
-
-	if r.Error == nil {
-		r.Error = &ResponseError{}
-	}
-	if len(body) != 0 {
-		berr := json.Unmarshal(body, r.Error)
-		if berr != nil {
-			r.Error.Message = berr.Error()
-		}
-	}
-	defer r.ready()
-
-	if len(r.Error.Message) == 0 {
-		r.Error.Message = err.Error()
-	} else {
-		r.Error.Message = fmt.Sprintf("%s: %s", err.Error(), r.Error.Message)
-	}
-}
-
-func (r *Response) ready() {
-	if r.Stats == nil {
-		return
-	}
-	r.Stats.ReqDur = time.Since(r.Stats.ReqStartedAt)
-	r.Stats.ReqDurStr = fmt.Sprint(r.Stats.ReqDur)
-}
-
-func (r *Response) applyRsp(rsp *http.Response) {
-	r.StatusCode = rsp.StatusCode
-	r.RequestMethod = rsp.Request.Method
-	r.Status = rsp.Status
-	r.Date = rsp.Header.Get("date")
-	r.ContentRange = rsp.Header.Get("content-range")
-	r.ContentLocation = rsp.Header.Get("content-location")
+// String returns StakeAddress as string.
+func (v StakeAddress) String() string {
+	return string(v)
 }

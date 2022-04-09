@@ -18,8 +18,6 @@ package koios
 
 import (
 	"context"
-	"fmt"
-	"net/url"
 )
 
 type (
@@ -166,14 +164,20 @@ type (
 )
 
 // GetEpochInfo returns the epoch information, all epochs if no epoch specified.
-func (c *Client) GetEpochInfo(ctx context.Context, epoch *EpochNo) (res *EpochInfoResponse, err error) {
+func (c *Client) GetEpochInfo(
+	ctx context.Context,
+	epoch *EpochNo,
+	opts *RequestOptions,
+) (res *EpochInfoResponse, err error) {
 	res = &EpochInfoResponse{}
-	params := url.Values{}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
 	if epoch != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epoch))
+		opts.QuerySet("_epoch_no", epoch.String())
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/epoch_info", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/epoch_info", nil, opts)
 	if err != nil {
 		return
 	}
@@ -183,14 +187,20 @@ func (c *Client) GetEpochInfo(ctx context.Context, epoch *EpochNo) (res *EpochIn
 
 // GetEpochParams returns the protocol parameters for specific epoch,
 // and information about all epochs if no epoch specified.
-func (c *Client) GetEpochParams(ctx context.Context, epoch *EpochNo) (res *EpochParamsResponse, err error) {
+func (c *Client) GetEpochParams(
+	ctx context.Context,
+	epoch *EpochNo,
+	opts *RequestOptions,
+) (res *EpochParamsResponse, err error) {
 	res = &EpochParamsResponse{}
-	params := url.Values{}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
 	if epoch != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epoch))
+		opts.QuerySet("_epoch_no", epoch.String())
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/epoch_params", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/epoch_params", nil, opts)
 	if err != nil {
 		return
 	}

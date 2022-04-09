@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"net/url"
 )
 
 type (
@@ -90,17 +89,23 @@ type (
 // GetAddressInfo returns address info - balance,
 // associated stake address (if any) and UTxO set.
 
-func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *AddressInfoResponse, err error) {
+func (c *Client) GetAddressInfo(
+	ctx context.Context,
+	addr Address,
+	opts *RequestOptions,
+) (res *AddressInfoResponse, err error) {
 	res = &AddressInfoResponse{}
 	if len(addr) == 0 {
 		err = ErrNoAddress
 		res.applyError(nil, err)
 		return
 	}
-	params := url.Values{}
-	params.Set("_address", string(addr))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_address", addr.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/address_info", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/address_info", nil, opts)
 	if err != nil {
 		return
 	}
@@ -115,7 +120,12 @@ func (c *Client) GetAddressInfo(ctx context.Context, addr Address) (res *Address
 // GetAddressTxs returns the transaction hash list of input address array,
 // optionally filtering after specified block height (inclusive).
 
-func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (*AddressTxsResponse, error) {
+func (c *Client) GetAddressTxs(
+	ctx context.Context,
+	addrs []Address,
+	h uint64,
+	opts *RequestOptions,
+) (*AddressTxsResponse, error) {
 	res := &AddressTxsResponse{}
 	if len(addrs) == 0 {
 		err := ErrNoAddress
@@ -137,7 +147,7 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 		defer w.Close()
 	}()
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/address_txs", rpipe, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/address_txs", rpipe, opts)
 	if err != nil {
 		return res, err
 	}
@@ -157,17 +167,23 @@ func (c *Client) GetAddressTxs(ctx context.Context, addrs []Address, h uint64) (
 
 // GetAddressAssets returns the list of all the assets (policy, name and quantity)
 // for a given address.
-func (c *Client) GetAddressAssets(ctx context.Context, addr Address) (res *AddressAssetsResponse, err error) {
+func (c *Client) GetAddressAssets(
+	ctx context.Context,
+	addr Address,
+	opts *RequestOptions,
+) (res *AddressAssetsResponse, err error) {
 	res = &AddressAssetsResponse{}
 	if len(addr) == 0 {
 		err = ErrNoAddress
 		res.applyError(nil, err)
 		return
 	}
-	params := url.Values{}
-	params.Set("_address", string(addr))
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_address", addr.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/address_assets", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/address_assets", nil, opts)
 	if err != nil {
 		return
 	}
@@ -182,6 +198,7 @@ func (c *Client) GetCredentialTxs(
 	ctx context.Context,
 	creds []PaymentCredential,
 	h uint64,
+	opts *RequestOptions,
 ) (res *CredentialTxsResponse, err error) {
 	res = &CredentialTxsResponse{}
 	if len(creds) == 0 {
@@ -204,7 +221,7 @@ func (c *Client) GetCredentialTxs(
 		defer w.Close()
 	}()
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, opts)
 	if err != nil {
 		return
 	}

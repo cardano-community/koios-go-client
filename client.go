@@ -57,10 +57,9 @@ func (c *Client) WithOptions(opts ...Option) (*Client, error) {
 func (c *Client) HEAD(
 	ctx context.Context,
 	path string,
-	query url.Values,
-	headers http.Header,
+	opts *RequestOptions,
 ) (*http.Response, error) {
-	return c.request(ctx, nil, "HEAD", path, nil, query, headers)
+	return c.request(ctx, nil, "HEAD", path, nil, opts)
 }
 
 // POST sends api http POST request to provided relative path with query params
@@ -71,10 +70,9 @@ func (c *Client) POST(
 	ctx context.Context,
 	path string,
 	body io.Reader,
-	query url.Values,
-	headers http.Header,
+	opts *RequestOptions,
 ) (*http.Response, error) {
-	return c.request(ctx, nil, "POST", path, body, query, headers)
+	return c.request(ctx, nil, "POST", path, body, opts)
 }
 
 // GET sends api http GET request to provided relative path with query params
@@ -84,15 +82,21 @@ func (c *Client) POST(
 func (c *Client) GET(
 	ctx context.Context,
 	path string,
-	query url.Values,
-	headers http.Header,
+	opts *RequestOptions,
 ) (*http.Response, error) {
-	return c.request(ctx, nil, "GET", path, nil, query, headers)
+	return c.request(ctx, nil, "GET", path, nil, opts)
 }
 
 // BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0
 func (c *Client) BaseURL() string {
 	return c.url.String()
+}
+
+func (c *Client) NewRequestOptions() *RequestOptions {
+	return &RequestOptions{
+		query:   url.Values{},
+		headers: c.commonHeaders.Clone(),
+	}
 }
 
 func (c *Client) request(
@@ -101,19 +105,18 @@ func (c *Client) request(
 	method string,
 	path string,
 	body io.Reader,
-	query url.Values,
-	headers http.Header) (*http.Response, error) {
-	var (
-		requrl string
-	)
+	opts *RequestOptions,
+) (*http.Response, error) {
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+
+	if err := opts.lock(); err != nil {
+		return nil, err
+	}
 
 	path = strings.TrimLeft(path, "/")
-
-	if query == nil {
-		requrl = c.url.ResolveReference(&url.URL{Path: path}).String()
-	} else {
-		requrl = c.url.ResolveReference(&url.URL{Path: path, RawQuery: query.Encode()}).String()
-	}
+	requrl := c.url.ResolveReference(&url.URL{Path: path, RawQuery: opts.query.Encode()}).String()
 
 	if res != nil {
 		res.RequestURL = requrl
@@ -133,7 +136,7 @@ func (c *Client) request(
 		return nil, err
 	}
 
-	c.applyReqHeaders(req, headers)
+	c.applyReqHeaders(req, opts.headers)
 
 	var (
 		eqerr error
@@ -171,23 +174,12 @@ func (c *Client) request(
 }
 
 func (c *Client) applyReqHeaders(req *http.Request, headers http.Header) {
-	req.Header = c.commonHeaders.Clone()
-	if headers != nil {
-		for name, values := range headers {
-			for _, value := range values {
-				req.Header.Add(name, value)
-			}
+	for name, values := range headers {
+		for _, value := range values {
+			req.Header.Add(name, value)
 		}
-		return
 	}
-	// only apply if originally there were no headers defined.
-	// switch req.Method {
-	// case "POST":
-	// 	case "PATCH":
-	// 	case "PUT":
-	// 	req.Header.Set("Content-Type", "application/json")
-	// }
-	if req.Method == "POST" {
+	if req.Method == "POST" && len(headers.Get("Content-Type")) == 0 {
 		req.Header.Set("Content-Type", "application/json")
 	}
 }

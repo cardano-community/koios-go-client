@@ -114,7 +114,7 @@ func main() {
     log.Fatal(err)
   }
 
-  res, err := api.GetTip(context.Background())
+  res, err := api.GetTip(context.Background(), nil)
   if err != nil {
 	  log.Fatal(err)
   }
@@ -160,7 +160,7 @@ func main() {
       // switching host by creating light clone of client
       // with new options
       client, err := api.WithOptions(koios.Host(host))
-      res, _ := client.GET(ctx, "/tip", nil, nil)
+      res, _ := client.GET(ctx, "/tip", nil)
       defer res.Body.Close()
       body, _ := ioutil.ReadAll(res.Body)
       fmt.Println("Host: ", host)

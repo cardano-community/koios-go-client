@@ -19,9 +19,7 @@ package koios
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
-	"net/url"
 )
 
 type (
@@ -335,9 +333,12 @@ type (
 )
 
 // GetPoolList returns the list of all currently registered/retiring (not retired) pools.
-func (c *Client) GetPoolList(ctx context.Context) (res *PoolListResponse, err error) {
+func (c *Client) GetPoolList(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *PoolListResponse, err error) {
 	res = &PoolListResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_list", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_list", nil, opts)
 	if err != nil {
 		return
 	}
@@ -346,9 +347,13 @@ func (c *Client) GetPoolList(ctx context.Context) (res *PoolListResponse, err er
 }
 
 // GetPoolInfo returns current pool status and details for a specified pool.
-func (c *Client) GetPoolInfo(ctx context.Context, pid PoolID) (res *PoolInfoResponse, err error) {
+func (c *Client) GetPoolInfo(
+	ctx context.Context,
+	pid PoolID,
+	opts *RequestOptions,
+) (res *PoolInfoResponse, err error) {
 	res = &PoolInfoResponse{}
-	rsp, err := c.GetPoolInfos(ctx, []PoolID{pid})
+	rsp, err := c.GetPoolInfos(ctx, []PoolID{pid}, opts)
 	res.Response = rsp.Response
 	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
@@ -357,7 +362,11 @@ func (c *Client) GetPoolInfo(ctx context.Context, pid PoolID) (res *PoolInfoResp
 }
 
 // GetPoolInfos returns current pool statuses and details for a specified list of pool ids.
-func (c *Client) GetPoolInfos(ctx context.Context, pids []PoolID) (res *PoolInfosResponse, err error) {
+func (c *Client) GetPoolInfos(
+	ctx context.Context,
+	pids []PoolID,
+	opts *RequestOptions,
+) (res *PoolInfosResponse, err error) {
 	res = &PoolInfosResponse{}
 	if len(pids) == 0 {
 		err = ErrNoPoolID
@@ -365,7 +374,7 @@ func (c *Client) GetPoolInfos(ctx context.Context, pids []PoolID) (res *PoolInfo
 		return
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/pool_info", poolIdsPL(pids), nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/pool_info", poolIdsPL(pids), opts)
 	if err != nil {
 		return
 	}
@@ -379,15 +388,18 @@ func (c *Client) GetPoolDelegators(
 	ctx context.Context,
 	pid PoolID,
 	epoch *EpochNo,
+	opts *RequestOptions,
 ) (res *PoolDelegatorsResponse, err error) {
 	res = &PoolDelegatorsResponse{}
 
-	params := url.Values{}
-	params.Set("_pool_bech32", string(pid))
-	if epoch != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epoch))
+	if opts == nil {
+		opts = c.NewRequestOptions()
 	}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_delegators", nil, params, nil)
+	opts.QuerySet("_pool_bech32", pid.String())
+	if epoch != nil {
+		opts.QuerySet("_epoch_no", epoch.String())
+	}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_delegators", nil, opts)
 	if err != nil {
 		return
 	}
@@ -402,15 +414,18 @@ func (c *Client) GetPoolBlocks(
 	ctx context.Context,
 	pid PoolID,
 	epoch *EpochNo,
+	opts *RequestOptions,
 ) (res *PoolBlocksResponse, err error) {
 	res = &PoolBlocksResponse{}
 
-	params := url.Values{}
-	params.Set("_pool_bech32", string(pid))
-	if epoch != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epoch))
+	if opts == nil {
+		opts = c.NewRequestOptions()
 	}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_blocks", nil, params, nil)
+	opts.QuerySet("_pool_bech32", pid.String())
+	if epoch != nil {
+		opts.QuerySet("_epoch_no", epoch.String())
+	}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_blocks", nil, opts)
 	if err != nil {
 		return
 	}
@@ -423,15 +438,18 @@ func (c *Client) GetPoolBlocks(
 func (c *Client) GetPoolUpdates(
 	ctx context.Context,
 	pid *PoolID,
+	opts *RequestOptions,
 ) (res *PoolUpdatesResponse, err error) {
 	res = &PoolUpdatesResponse{}
 
-	params := url.Values{}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
 	if pid != nil {
-		params.Set("_pool_bech32", fmt.Sprint(*pid))
+		opts.QuerySet("_pool_bech32", pid.String())
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_updates", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_updates", nil, opts)
 	if err != nil {
 		return
 	}
@@ -441,10 +459,13 @@ func (c *Client) GetPoolUpdates(
 
 // GetPoolRelays returns a list of registered relays
 // for all currently registered/retiring (not retired) pools.
-func (c *Client) GetPoolRelays(ctx context.Context) (res *PoolRelaysResponse, err error) {
+func (c *Client) GetPoolRelays(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *PoolRelaysResponse, err error) {
 	res = &PoolRelaysResponse{}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_relays", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_relays", nil, opts)
 	if err != nil {
 		return
 	}
@@ -454,10 +475,14 @@ func (c *Client) GetPoolRelays(ctx context.Context) (res *PoolRelaysResponse, er
 
 // GetPoolMetadata returns Metadata(on & off-chain)
 // for all currently registered/retiring (not retired) pools.
-func (c *Client) GetPoolMetadata(ctx context.Context, pids []PoolID) (res *PoolMetadataResponse, err error) {
+func (c *Client) GetPoolMetadata(
+	ctx context.Context,
+	pids []PoolID,
+	opts *RequestOptions,
+) (res *PoolMetadataResponse, err error) {
 	res = &PoolMetadataResponse{}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/pool_metadata", poolIdsPL(pids), nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/pool_metadata", poolIdsPL(pids), opts)
 	if err != nil {
 		return
 	}
@@ -472,15 +497,18 @@ func (c *Client) GetPoolHistory(
 	ctx context.Context,
 	pid PoolID,
 	epoch *EpochNo,
+	opts *RequestOptions,
 ) (res *PoolHistoryResponse, err error) {
 	res = &PoolHistoryResponse{}
 
-	params := url.Values{}
-	params.Set("_pool_bech32", string(pid))
-	if epoch != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epoch))
+	if opts == nil {
+		opts = c.NewRequestOptions()
 	}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_history", nil, params, nil)
+	opts.QuerySet("_pool_bech32", pid.String())
+	if epoch != nil {
+		opts.QuerySet("_epoch_no", epoch.String())
+	}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_history", nil, opts)
 	if err != nil {
 		return
 	}

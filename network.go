@@ -18,8 +18,6 @@ package koios
 
 import (
 	"context"
-	"fmt"
-	"net/url"
 )
 
 type (
@@ -136,9 +134,12 @@ type (
 )
 
 // GetTip returns the tip info about the latest block seen by chain.
-func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
+func (c *Client) GetTip(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *TipResponse, err error) {
 	res = &TipResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/tip", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/tip", nil, opts)
 	if err != nil {
 		return res, err
 	}
@@ -151,9 +152,12 @@ func (c *Client) GetTip(ctx context.Context) (res *TipResponse, err error) {
 }
 
 // GetGenesis returns the Genesis parameters used to start specific era on chain.
-func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
+func (c *Client) GetGenesis(
+	ctx context.Context,
+	opts *RequestOptions,
+) (*GenesisResponse, error) {
 	res := &GenesisResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/genesis", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/genesis", nil, opts)
 	if err != nil {
 		return res, err
 	}
@@ -167,13 +171,19 @@ func (c *Client) GetGenesis(ctx context.Context) (*GenesisResponse, error) {
 
 // GetTotals returns the circulating utxo, treasury, rewards, supply and
 // reserves in lovelace for specified epoch, all epochs if empty.
-func (c *Client) GetTotals(ctx context.Context, epoch *EpochNo) (*TotalsResponse, error) {
-	params := url.Values{}
+func (c *Client) GetTotals(
+	ctx context.Context,
+	epoch *EpochNo,
+	opts *RequestOptions,
+) (*TotalsResponse, error) {
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
 	if epoch != nil {
-		params.Set("_epoch_no", fmt.Sprint(*epoch))
+		opts.QuerySet("_epoch_no", epoch.String())
 	}
 	res := &TotalsResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/totals", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/totals", nil, opts)
 	if err != nil {
 		return res, err
 	}

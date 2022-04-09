@@ -23,7 +23,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 )
 
 type (
@@ -248,9 +247,13 @@ type (
 )
 
 // GetTxInfo returns detailed information about transaction.
-func (c *Client) GetTxInfo(ctx context.Context, tx TxHash) (res *TxInfoResponse, err error) {
+func (c *Client) GetTxInfo(
+	ctx context.Context,
+	tx TxHash,
+	opts *RequestOptions,
+) (res *TxInfoResponse, err error) {
 	res = &TxInfoResponse{}
-	rsp, err := c.GetTxsInfos(ctx, []TxHash{tx})
+	rsp, err := c.GetTxsInfos(ctx, []TxHash{tx}, opts)
 	res.Response = rsp.Response
 	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
@@ -259,7 +262,11 @@ func (c *Client) GetTxInfo(ctx context.Context, tx TxHash) (res *TxInfoResponse,
 }
 
 // GetTxsInfos returns detailed information about transaction(s).
-func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (*TxsInfosResponse, error) {
+func (c *Client) GetTxsInfos(
+	ctx context.Context,
+	txs []TxHash,
+	opts *RequestOptions,
+) (*TxsInfosResponse, error) {
 	res := &TxsInfosResponse{}
 	if len(txs) == 0 || len(txs[0]) == 0 {
 		err := ErrNoTxHash
@@ -267,7 +274,7 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (*TxsInfosRespon
 		return res, err
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_info", txHashesPL(txs), nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_info", txHashesPL(txs), opts)
 	if err != nil {
 		return res, err
 	}
@@ -275,7 +282,11 @@ func (c *Client) GetTxsInfos(ctx context.Context, txs []TxHash) (*TxsInfosRespon
 }
 
 // GetTxsUTxOs returns UTxO set (inputs/outputs) of transactions.
-func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (*TxUTxOsResponse, error) {
+func (c *Client) GetTxsUTxOs(
+	ctx context.Context,
+	txs []TxHash,
+	opts *RequestOptions,
+) (*TxUTxOsResponse, error) {
 	res := &TxUTxOsResponse{}
 	if len(txs) == 0 || len(txs[0]) == 0 {
 		err := ErrNoTxHash
@@ -283,7 +294,7 @@ func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (*TxUTxOsRespons
 		return res, err
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), opts)
 	if err != nil {
 		return res, err
 	}
@@ -292,9 +303,13 @@ func (c *Client) GetTxsUTxOs(ctx context.Context, txs []TxHash) (*TxUTxOsRespons
 }
 
 // GetTxMetadata returns metadata information (if any) for given transaction.
-func (c *Client) GetTxMetadata(ctx context.Context, tx TxHash) (res *TxMetadataResponse, err error) {
+func (c *Client) GetTxMetadata(
+	ctx context.Context,
+	tx TxHash,
+	opts *RequestOptions,
+) (res *TxMetadataResponse, err error) {
 	res = &TxMetadataResponse{}
-	rsp, err := c.GetTxsMetadata(ctx, []TxHash{tx})
+	rsp, err := c.GetTxsMetadata(ctx, []TxHash{tx}, opts)
 	res.Response = rsp.Response
 	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
@@ -303,7 +318,11 @@ func (c *Client) GetTxMetadata(ctx context.Context, tx TxHash) (res *TxMetadataR
 }
 
 // GetTxsMetadata returns metadata for requested transaction(s).
-func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (*TxsMetadataResponse, error) {
+func (c *Client) GetTxsMetadata(
+	ctx context.Context,
+	txs []TxHash,
+	opts *RequestOptions,
+) (*TxsMetadataResponse, error) {
 	res := &TxsMetadataResponse{}
 	if len(txs) == 0 {
 		err := ErrNoTxHash
@@ -311,7 +330,7 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (*TxsMetadata
 		return res, err
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_metadata", txHashesPL(txs), nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_metadata", txHashesPL(txs), opts)
 	if err != nil {
 		return res, err
 	}
@@ -320,9 +339,12 @@ func (c *Client) GetTxsMetadata(ctx context.Context, txs []TxHash) (*TxsMetadata
 }
 
 // GetTxMetaLabels retruns a list of all transaction metalabels.
-func (c *Client) GetTxMetaLabels(ctx context.Context) (*TxMetaLabelsResponse, error) {
+func (c *Client) GetTxMetaLabels(
+	ctx context.Context,
+	opts *RequestOptions,
+) (*TxMetaLabelsResponse, error) {
 	res := &TxMetaLabelsResponse{}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/tx_metalabels", nil, opts)
 	if err != nil {
 		return res, err
 	}
@@ -330,7 +352,11 @@ func (c *Client) GetTxMetaLabels(ctx context.Context) (*TxMetaLabelsResponse, er
 }
 
 // SubmitSignedTx Submit an transaction to the network.
-func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (*SubmitSignedTxResponse, error) {
+func (c *Client) SubmitSignedTx(
+	ctx context.Context,
+	stx TxBodyJSON,
+	opts *RequestOptions,
+) (*SubmitSignedTxResponse, error) {
 	res := &SubmitSignedTxResponse{}
 
 	var method = "POST"
@@ -342,10 +368,13 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (*SubmitSig
 		return res, err
 	}
 
-	h := http.Header{}
-	h.Set("Content-Type", "application/cbor")
-	h.Set("Content-Length", fmt.Sprint(len(cborb)))
-	rsp, err := c.request(ctx, &res.Response, method, "/submittx", bytes.NewBuffer(cborb), nil, h)
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.HeadersSet("Content-Type", "application/cbor")
+	opts.HeadersSet("Content-Length", fmt.Sprint(len(cborb)))
+
+	rsp, err := c.request(ctx, &res.Response, method, "/submittx", bytes.NewBuffer(cborb), opts)
 	if err != nil {
 		return res, err
 	}
@@ -355,9 +384,13 @@ func (c *Client) SubmitSignedTx(ctx context.Context, stx TxBodyJSON) (*SubmitSig
 }
 
 // GetTxStatus returns status of transaction.
-func (c *Client) GetTxStatus(ctx context.Context, tx TxHash) (res *TxStatusResponse, err error) {
+func (c *Client) GetTxStatus(
+	ctx context.Context,
+	tx TxHash,
+	opts *RequestOptions,
+) (res *TxStatusResponse, err error) {
 	res = &TxStatusResponse{}
-	rsp, err := c.GetTxsStatuses(ctx, []TxHash{tx})
+	rsp, err := c.GetTxsStatuses(ctx, []TxHash{tx}, opts)
 	res.Response = rsp.Response
 	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
@@ -366,7 +399,11 @@ func (c *Client) GetTxStatus(ctx context.Context, tx TxHash) (res *TxStatusRespo
 }
 
 // GetTxsStatuses returns status of transaction(s).
-func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (*TxsStatusesResponse, error) {
+func (c *Client) GetTxsStatuses(
+	ctx context.Context,
+	txs []TxHash,
+	opts *RequestOptions,
+) (*TxsStatusesResponse, error) {
 	res := &TxsStatusesResponse{}
 	if len(txs) == 0 {
 		err := ErrNoTxHash
@@ -374,7 +411,7 @@ func (c *Client) GetTxsStatuses(ctx context.Context, txs []TxHash) (*TxsStatuses
 		return res, err
 	}
 
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_status", txHashesPL(txs), nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_status", txHashesPL(txs), opts)
 	if err != nil {
 		return res, err
 	}
