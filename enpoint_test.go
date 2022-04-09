@@ -738,10 +738,45 @@ func TestGetBlockInfoEndpoint(t *testing.T) {
 	var payload = struct {
 		BlockHashes []koios.BlockHash `json:"_block_hashes"`
 	}{}
+
 	err := json.Unmarshal(spec.Request.Body, &payload)
 	assert.NoError(t, err)
 
 	res, err := api.GetBlockInfo(
+		context.TODO(),
+		payload.BlockHashes[0],
+	)
+
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+
+	assert.Equal(t, &expected[0], res.Data)
+
+	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
+	assert.NoError(t, err)
+	_, err = c.GetBlockInfo(
+		context.TODO(),
+		payload.BlockHashes[0],
+	)
+	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
+}
+
+func TestGetBlocksInfoEndpoint(t *testing.T) {
+	expected := []koios.Block{}
+
+	spec := loadEndpointTestSpec(t, "endpoint_block_info.json.gz", &expected)
+
+	ts, api := setupTestServerAndClient(t, spec)
+
+	defer ts.Close()
+
+	var payload = struct {
+		BlockHashes []koios.BlockHash `json:"_block_hashes"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.GetBlocksInfo(
 		context.TODO(),
 		payload.BlockHashes,
 	)
@@ -753,7 +788,7 @@ func TestGetBlockInfoEndpoint(t *testing.T) {
 
 	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
 	assert.NoError(t, err)
-	_, err = c.GetBlockInfo(
+	_, err = c.GetBlocksInfo(
 		context.TODO(),
 		payload.BlockHashes,
 	)

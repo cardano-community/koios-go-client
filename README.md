@@ -194,7 +194,8 @@ Library uses for most cases to represent lovelace using [`Lovelace`](https://pkg
 | `/epoch_params` | [`*.GetEpochParams(...) *EpochParamsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetEpochParams) | `epoch-params` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/epoch_params) |
 | **BLOCK** | | | |
 | `/blocks` | [`*.GetBlocks(...) *BlocksResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetBlocks) | `blocks` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/blocks) |
-| `/block_info` | [`*.GetBlockInfo(...) *BlockInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetBlockInfo) | `block-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_info) |
+| `/block_info` | [`*.GetBlocksInfo(...) *BlocksInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetBlocksInfo) | `blocks-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_info) |
+| | [`*.GetBlockInfo(...) *BlockInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetBlockInfo) | `block-info` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_info) |
 | `/block_txs` | [`*.GetBlockTxs(...) *BlockTxsResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetBlockTxs) | `block-txs` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/block_txs) |
 | **TRANSACTIONS** | | | |
 | `/tx_info` | [`*.GetTxsInfos(...) *TxsInfoResponse`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Client.GetTxsInfos) | `txs-infos` | [![](https://img.shields.io/badge/API-doc-%2349cc90)](https://api.koios.rest/#get-/tx_info) |

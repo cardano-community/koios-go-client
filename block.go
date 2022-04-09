@@ -77,6 +77,11 @@ type (
 	// BlockInfoResponse represents response from `/block_info` endpoint.
 	BlockInfoResponse struct {
 		Response
+		Data *Block `json:"data"`
+	}
+	// BlockInfoResponse represents response from `/block_info` endpoint.
+	BlocksInfoResponse struct {
+		Response
 		Data []Block `json:"data"`
 	}
 	// BlockTxsHashesResponse represents response from `/block_txs` endpoint.
@@ -98,9 +103,20 @@ func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error)
 }
 
 // GetBlockInfo returns detailed information about a specific block.
-func (c *Client) GetBlockInfo(ctx context.Context, hash []BlockHash) (res *BlockInfoResponse, err error) {
+func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockInfoResponse, err error) {
 	res = &BlockInfoResponse{}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/block_info", blockHashesPL(hash), nil, nil)
+	rsp, err := c.GetBlocksInfo(ctx, []BlockHash{hash})
+	res.Response = rsp.Response
+	if len(rsp.Data) == 1 {
+		res.Data = &rsp.Data[0]
+	}
+	return
+}
+
+// GetBlocksInfo returns detailed information about a set of blocks.
+func (c *Client) GetBlocksInfo(ctx context.Context, hashes []BlockHash) (res *BlocksInfoResponse, err error) {
+	res = &BlocksInfoResponse{}
+	rsp, err := c.request(ctx, &res.Response, "POST", "/block_info", blockHashesPL(hashes), nil, nil)
 	if err != nil {
 		return
 	}
