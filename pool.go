@@ -454,10 +454,10 @@ func (c *Client) GetPoolRelays(ctx context.Context) (res *PoolRelaysResponse, er
 
 // GetPoolMetadata returns Metadata(on & off-chain)
 // for all currently registered/retiring (not retired) pools.
-func (c *Client) GetPoolMetadata(ctx context.Context) (res *PoolMetadataResponse, err error) {
+func (c *Client) GetPoolMetadata(ctx context.Context, pids []PoolID) (res *PoolMetadataResponse, err error) {
 	res = &PoolMetadataResponse{}
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_metadata", nil, nil, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/pool_metadata", poolIdsPL(pids), nil, nil)
 	if err != nil {
 		return
 	}

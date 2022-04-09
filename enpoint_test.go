@@ -1033,7 +1033,13 @@ func TestGetPoolMetadataEndpoint(t *testing.T) {
 
 	defer ts.Close()
 
-	res, err := api.GetPoolMetadata(context.TODO())
+	var payload = struct {
+		PoolIDs []koios.PoolID `json:"_pool_bech32_ids"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
+	res, err := api.GetPoolMetadata(context.TODO(), payload.PoolIDs)
 
 	assert.NoError(t, err)
 	testHeaders(t, spec, res.Response)
@@ -1042,7 +1048,7 @@ func TestGetPoolMetadataEndpoint(t *testing.T) {
 
 	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
 	assert.NoError(t, err)
-	_, err = c.GetPoolMetadata(context.TODO())
+	_, err = c.GetPoolMetadata(context.TODO(), payload.PoolIDs)
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
 

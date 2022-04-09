@@ -567,7 +567,8 @@ func specs() []internal.APITestSpec {
 			Filename: "endpoint_pool_metadata.json",
 			Endpoint: "/pool_metadata",
 			Request: internal.APITestRequestSpec{
-				Method: "GET",
+				Method: "POST",
+				Body:   []byte("{\"_pool_bech32_ids\": [\"pool100wj94uzf54vup2hdzk0afng4dhjaqggt7j434mtgm8v2gfvfgp\",\"pool102s2nqtea2hf5q0s4amj0evysmfnhrn4apyyhd4azcmsclzm96m\",\"pool102vsulhfx8ua2j9fwl2u7gv57fhhutc3tp6juzaefgrn7ae35wm\"]}"),
 			},
 		},
 		{
