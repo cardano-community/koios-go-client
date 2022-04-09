@@ -367,7 +367,7 @@ func specs() []internal.APITestSpec {
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 				Query: url.Values{
-					"_address": []string{"addr1q8d5kc3u4lcu84g08apa9ckj7df605lahzzpcfy0m5tpkyk9uauw44k56c2vvnkggawgk00wf54cvyl6ruada624sy2se0snsj"},
+					"_address": []string{"addr1q8h22z0n3zqecr9n4q9ysds2m2ms3dqesz575accjpc3jclw55yl8zypnsxt82q2fqmq4k4hpz6pnq9fafm33yr3r93sgnpdw6"},
 				},
 			},
 		},
