@@ -57,7 +57,7 @@ const (
 	DefaultPort       uint16 = 443
 	DefaultScheme            = "https"
 	LibraryVersion           = "v0"
-	DefaultRateLimit  int    = 5
+	DefaultRateLimit  int    = 10 // https://api.koios.rest/#overview--limits
 	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client"
 )
 
