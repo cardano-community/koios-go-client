@@ -127,14 +127,14 @@ func Test404s(t *testing.T) {
 	res, err := api.GetGenesis(context.TODO())
 	assert.Error(t, err)
 	assert.Nil(t, res.Data)
-	assert.Equal(t, "got unexpected response: Not Found", res.Error.Message)
+	assert.Equal(t, "got unexpected response: 404 Not Found", res.Error.Message)
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
 
 	// errors with stats should be same
 	res2, err := api.GetGenesis(context.TODO())
 	assert.Error(t, err)
 	assert.Nil(t, res2.Data)
-	assert.Equal(t, "got unexpected response: Not Found", res2.Error.Message)
+	assert.Equal(t, "got unexpected response: 404 Not Found", res2.Error.Message)
 	assert.Equal(t, http.StatusNotFound, res2.StatusCode)
 }
 
@@ -1395,7 +1395,7 @@ func TestHTTP(t *testing.T) {
 	defer func() { _ = rsp3.Body.Close() }()
 
 	assert.EqualError(t, koios.ReadAndUnmarshalResponse(rsp3, res3, nil), "got non json response: ")
-	assert.EqualError(t, err3, "got unexpected response: Not Found")
+	assert.EqualError(t, err3, "got unexpected response: 404 Not Found")
 	assert.Equal(t, rsp3.Header.Get("Content-Type"), "text/plain; charset=utf-8")
 }
 
