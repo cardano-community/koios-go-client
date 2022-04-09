@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -734,21 +735,27 @@ func TestGetBlockInfoEndpoint(t *testing.T) {
 
 	defer ts.Close()
 
+	var payload = struct {
+		BlockHashes []koios.BlockHash `json:"_block_hashes"`
+	}{}
+	err := json.Unmarshal(spec.Request.Body, &payload)
+	assert.NoError(t, err)
+
 	res, err := api.GetBlockInfo(
 		context.TODO(),
-		koios.BlockHash(spec.Request.Query.Get("_block_hash")),
+		payload.BlockHashes,
 	)
 
 	assert.NoError(t, err)
 	testHeaders(t, spec, res.Response)
 
-	assert.Equal(t, &expected[0], res.Data)
+	assert.Equal(t, expected, res.Data)
 
 	c, err := api.WithOptions(koios.Host("127.0.0.2:80"))
 	assert.NoError(t, err)
 	_, err = c.GetBlockInfo(
 		context.TODO(),
-		koios.BlockHash(spec.Request.Query.Get("_block_hash")),
+		payload.BlockHashes,
 	)
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
 }
@@ -1389,14 +1396,47 @@ func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httpte
 				w.Header().Add(header, value)
 			}
 		}
+
+		if spec.Request.Method == "POST" {
+			var expectedBody map[string]interface{}
+			if err := json.Unmarshal(spec.Request.Body, &expectedBody); err != nil {
+				http.Error(w, "failed to verify expected post body", spec.Response.Code)
+				return
+			}
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, "failed to read post body", spec.Response.Code)
+				return
+			}
+			var submitedBody map[string]interface{}
+
+			if err := json.Unmarshal(body, &submitedBody); err != nil {
+				http.Error(w, "failed to verify submitted post body", spec.Response.Code)
+				return
+			}
+			for k, v := range expectedBody {
+				val, ok := submitedBody[k]
+				if !ok {
+					http.Error(w, fmt.Sprintf("did not find expected post body: %s", k), spec.Response.Code)
+					return
+				}
+				expected := fmt.Sprint(v)
+				actual := fmt.Sprint(val)
+				if expected != actual {
+					http.Error(w, fmt.Sprintf("post body: %s has invalid value(%v) expected(%v)", k, actual, expected), spec.Response.Code)
+					return
+				}
+			}
+		}
 		w.WriteHeader(spec.Response.Code)
 
 		// Add response payload
 		res, err := json.Marshal(spec.Response.Body)
 		if err != nil {
-			http.Error(w, "failed to marshal response", http.StatusInternalServerError)
+			http.Error(w, "failed to marshal response", spec.Response.Code)
 			return
 		}
+
 		w.Write(res)
 	})
 
@@ -1424,8 +1464,8 @@ func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httpte
 // testHeaders universal header tester.
 // Currently testing only headers we care about.
 func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
-	assert.Equalf(t, spec.Request.Method, res.RequestMethod, "%s: invalid request method", spec.Request.Method)
-	assert.Equalf(t, spec.Response.Code, res.StatusCode, "%s: invalid response code", spec.Request.Method)
+	assert.Equalf(t, spec.Request.Method, res.RequestMethod, "%s: invalid request method (%s)", spec.Request.Method, res.Status)
+	assert.Equalf(t, spec.Response.Code, res.StatusCode, "%s: invalid response code (%s)", spec.Request.Method, res.Status)
 	assert.Equalf(
 		t,
 		res.ContentRange,

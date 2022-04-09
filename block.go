@@ -18,6 +18,8 @@ package koios
 
 import (
 	"context"
+	"encoding/json"
+	"io"
 	"net/url"
 )
 
@@ -75,7 +77,7 @@ type (
 	// BlockInfoResponse represents response from `/block_info` endpoint.
 	BlockInfoResponse struct {
 		Response
-		Data *Block `json:"data"`
+		Data []Block `json:"data"`
 	}
 	// BlockTxsHashesResponse represents response from `/block_txs` endpoint.
 	BlockTxsHashesResponse struct {
@@ -96,21 +98,14 @@ func (c *Client) GetBlocks(ctx context.Context) (res *BlocksResponse, err error)
 }
 
 // GetBlockInfo returns detailed information about a specific block.
-func (c *Client) GetBlockInfo(ctx context.Context, hash BlockHash) (res *BlockInfoResponse, err error) {
+func (c *Client) GetBlockInfo(ctx context.Context, hash []BlockHash) (res *BlockInfoResponse, err error) {
 	res = &BlockInfoResponse{}
-	params := url.Values{}
-	params.Set("_block_hash", string(hash))
-
-	rsp, err := c.request(ctx, &res.Response, "GET", "/block_info", nil, params, nil)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/block_info", blockHashesPL(hash), nil, nil)
 	if err != nil {
 		return
 	}
-	blockpl := []Block{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &blockpl)
 
-	if len(blockpl) == 1 {
-		res.Data = &blockpl[0]
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -136,4 +131,16 @@ func (c *Client) GetBlockTxHashes(ctx context.Context, hash BlockHash) (res *Blo
 		}
 	}
 	return
+}
+
+func blockHashesPL(bhash []BlockHash) io.Reader {
+	var payload = struct {
+		BlockHashes []BlockHash `json:"_block_hashes"`
+	}{bhash}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+	return rpipe
 }

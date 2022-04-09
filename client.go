@@ -160,7 +160,7 @@ func (c *Client) request(
 	}
 
 	if rsp.StatusCode > http.StatusAccepted {
-		rerr := fmt.Errorf("%w: %s", ErrResponse, http.StatusText(rsp.StatusCode))
+		rerr := fmt.Errorf("%w: %s", ErrResponse, rsp.Status)
 		if res != nil {
 			res.applyError(nil, rerr)
 		}

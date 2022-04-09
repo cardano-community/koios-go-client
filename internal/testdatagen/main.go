@@ -278,10 +278,8 @@ func specs() []internal.APITestSpec {
 			Filename: "endpoint_block_info.json",
 			Endpoint: "/block_info",
 			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_block_hash": []string{"f6192a1aaa6d3d05b4703891a6b66cd757801c61ace86cbe5ab0d66e07f601ab"},
-				},
+				Method: "POST",
+				Body:   []byte("{\"_block_hashes\": [\"fb9087c9f1408a7bbd7b022fd294ab565fec8dd3a8ef091567482722a1fa4e30\"]}"),
 			},
 		},
 		{
