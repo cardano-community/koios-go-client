@@ -191,7 +191,10 @@ linters-settings:
     # put imports beginning with prefix after 3rd-party packages;
     # only support one prefix
     # if not set, use goimports.local-prefixes
-    local-prefixes: github.com/cardano-community/
+    sections:
+      - standard
+      - default
+      - prefix(github.com/cardano-community/)
   goconst:
     ignore-calls: true
     ignore-tests: false

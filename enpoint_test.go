@@ -1421,6 +1421,7 @@ func loadEndpointTestSpec(t *testing.T, filename string, exp interface{}) *inter
 // INTENAL TEST UTILS
 
 // setupTestServerAndClient httptest server and api client based on specs.
+//nolint: gocognit, funlen
 func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httptest.Server, *koios.Client) {
 	mux := http.NewServeMux()
 	endpoint := fmt.Sprintf("/api/%s%s", koios.DefaultAPIVersion, spec.Endpoint)
@@ -1437,6 +1438,7 @@ func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httpte
 			}
 		}
 
+		//nolint: nestif
 		if spec.Request.Method == "POST" {
 			var expectedBody map[string]interface{}
 			if err := json.Unmarshal(spec.Request.Body, &expectedBody); err != nil {
@@ -1463,7 +1465,14 @@ func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httpte
 				expected := fmt.Sprint(v)
 				actual := fmt.Sprint(val)
 				if expected != actual {
-					http.Error(w, fmt.Sprintf("post body: %s has invalid value(%v) expected(%v)", k, actual, expected), spec.Response.Code)
+					http.Error(
+						w,
+						fmt.Sprintf(
+							"post body: %s has invalid value(%v) expected(%v)",
+							k,
+							actual,
+							expected,
+						), spec.Response.Code)
 					return
 				}
 			}
@@ -1504,7 +1513,14 @@ func setupTestServerAndClient(t *testing.T, spec *internal.APITestSpec) (*httpte
 // testHeaders universal header tester.
 // Currently testing only headers we care about.
 func testHeaders(t *testing.T, spec *internal.APITestSpec, res koios.Response) {
-	assert.Equalf(t, spec.Request.Method, res.RequestMethod, "%s: invalid request method (%s)", spec.Request.Method, res.Status)
+	assert.Equalf(
+		t,
+		spec.Request.Method,
+		res.RequestMethod,
+		"%s: invalid request method (%s)",
+		spec.Request.Method,
+		res.Status,
+	)
 	assert.Equalf(t, spec.Response.Code, res.StatusCode, "%s: invalid response code (%s)", spec.Request.Method, res.Status)
 	assert.Equalf(
 		t,
