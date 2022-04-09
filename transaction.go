@@ -41,7 +41,7 @@ type (
 	// TxMetalabel defines model for tx_metalabels.
 	TxMetalabel struct {
 		// A distinct known metalabel
-		Metalabel uint64 `json:"metalabel"`
+		Metalabel string `json:"metalabel"`
 	}
 
 	// TxInput an transaxtion input.
