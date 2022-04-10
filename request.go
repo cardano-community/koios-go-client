@@ -86,7 +86,7 @@ func (ro *RequestOptions) lock() error {
 	ro.locked = true
 	if ro.pageSize != PageSize || ro.page != 1 {
 		e := (ro.pageSize * ro.page) - 1
-		s := e - ro.pageSize
+		s := (e + 1) - ro.pageSize
 		ro.headers.Set("Range", fmt.Sprintf("%d-%d", s, e))
 	}
 	return nil
