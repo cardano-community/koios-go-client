@@ -64,7 +64,7 @@ type (
 	// CredentialTxsResponse represents response from `/credential_txs` endpoint.
 	CredentialTxsResponse struct {
 		Response
-		Data []TxHash `json:"response"`
+		Data []TX `json:"response"`
 	}
 
 	// AddressAssetsResponse represents response from `/address_info` endpoint.
@@ -213,16 +213,6 @@ func (c *Client) GetCredentialTxs(
 	if err != nil {
 		return
 	}
-	atxs := []struct {
-		Hash TxHash `json:"tx_hash"`
-	}{}
-
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
-
-	if len(atxs) > 0 {
-		for _, tx := range atxs {
-			res.Data = append(res.Data, tx.Hash)
-		}
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return res, err
 }

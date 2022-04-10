@@ -26,6 +26,15 @@ import (
 )
 
 type (
+	TX struct {
+		/// TxHash is hash of transaction.
+		TxHash TxHash `json:"tx_hash"`
+		// BlockHeight is block number on chain where transaction was included.
+		BlockHeight int `json:"block_height"`
+		// BlockTime is time of the block.
+		BlockTime string `json:"block_time"`
+	}
+
 	// UTxO model holds inputs and outputs for given UTxO.
 	UTxO struct {
 		/// TxHash is hash of transaction.
@@ -267,7 +276,7 @@ func (c *Client) GetTxInfo(
 	return
 }
 
-// GetTxsInfos returns detailed information about transaction(s).
+// GetTxsInfo returns detailed information about transaction(s).
 func (c *Client) GetTxsInfo(
 	ctx context.Context,
 	txs []TxHash,
