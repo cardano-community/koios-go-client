@@ -186,6 +186,12 @@ type (
 	// TxUTxOsResponse represents response from `/tx_utxos` endpoint.
 	TxUTxOsResponse struct {
 		Response
+		Data *UTxO `json:"data"`
+	}
+
+	// TxsUTxOsResponse represents response from `/tx_utxos` endpoint.
+	TxsUTxOsResponse struct {
+		Response
 		Data []UTxO `json:"data"`
 	}
 
@@ -253,7 +259,7 @@ func (c *Client) GetTxInfo(
 	opts *RequestOptions,
 ) (res *TxInfoResponse, err error) {
 	res = &TxInfoResponse{}
-	rsp, err := c.GetTxsInfos(ctx, []TxHash{tx}, opts)
+	rsp, err := c.GetTxsInfo(ctx, []TxHash{tx}, opts)
 	res.Response = rsp.Response
 	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
@@ -262,7 +268,7 @@ func (c *Client) GetTxInfo(
 }
 
 // GetTxsInfos returns detailed information about transaction(s).
-func (c *Client) GetTxsInfos(
+func (c *Client) GetTxsInfo(
 	ctx context.Context,
 	txs []TxHash,
 	opts *RequestOptions,
@@ -281,13 +287,28 @@ func (c *Client) GetTxsInfos(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
+// GetTxUTxOs returns UTxO set (inputs/outputs) of transaction.
+func (c *Client) GetTxUTxOs(
+	ctx context.Context,
+	tx TxHash,
+	opts *RequestOptions,
+) (res *TxUTxOsResponse, err error) {
+	res = &TxUTxOsResponse{}
+	rsp, err := c.GetTxsUTxOs(ctx, []TxHash{tx}, opts)
+	res.Response = rsp.Response
+	if len(rsp.Data) == 1 {
+		res.Data = &rsp.Data[0]
+	}
+	return
+}
+
 // GetTxsUTxOs returns UTxO set (inputs/outputs) of transactions.
 func (c *Client) GetTxsUTxOs(
 	ctx context.Context,
 	txs []TxHash,
 	opts *RequestOptions,
-) (*TxUTxOsResponse, error) {
-	res := &TxUTxOsResponse{}
+) (*TxsUTxOsResponse, error) {
+	res := &TxsUTxOsResponse{}
 	if len(txs) == 0 || len(txs[0]) == 0 {
 		err := ErrNoTxHash
 		res.applyError(nil, err)
