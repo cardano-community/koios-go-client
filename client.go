@@ -94,8 +94,10 @@ func (c *Client) BaseURL() string {
 
 func (c *Client) NewRequestOptions() *RequestOptions {
 	return &RequestOptions{
-		query:   url.Values{},
-		headers: c.commonHeaders.Clone(),
+		pageSize: PageSize,
+		page:     1,
+		query:    url.Values{},
+		headers:  c.commonHeaders.Clone(),
 	}
 }
 

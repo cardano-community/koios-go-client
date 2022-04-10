@@ -1446,6 +1446,7 @@ func TestHorizontalFiltering(t *testing.T) {
 	opts := api.NewRequestOptions()
 	opts.HeadersApply(spec.Request.Header)
 	opts.QueryApply(spec.Request.Query)
+
 	res, err := api.GetBlocks(context.Background(), opts)
 
 	assert.NoError(t, err)
@@ -1461,6 +1462,33 @@ func TestHorizontalFiltering(t *testing.T) {
 	opts2.QueryApply(spec.Request.Query)
 	_, err = c.GetBlocks(context.Background(), opts2)
 	assert.EqualError(t, err, "dial tcp: lookup 127.0.0.2:80: no such host")
+}
+func TestPaginator(t *testing.T) {
+	expected := []koios.Block{}
+	spec := loadEndpointTestSpec(t, "pagination-page-1.json.gz", &expected)
+	ts, api := setupTestServerAndClient(t, spec)
+	defer ts.Close()
+	opts := api.NewRequestOptions()
+	opts.PageSize(10)
+	opts.Page(1)
+	opts.QueryApply(spec.Request.Query)
+	res, err := api.GetBlocks(context.Background(), opts)
+	assert.NoError(t, err)
+	testHeaders(t, spec, res.Response)
+	assert.Equal(t, expected, res.Data)
+
+	expected2 := []koios.Block{}
+	spec2 := loadEndpointTestSpec(t, "pagination-page-1.json.gz", &expected2)
+	ts2, api2 := setupTestServerAndClient(t, spec2)
+	defer ts2.Close()
+	opts2 := api2.NewRequestOptions()
+	opts2.PageSize(10)
+	opts2.Page(2)
+	opts2.QueryApply(spec2.Request.Query)
+	res2, err2 := api2.GetBlocks(context.Background(), opts2)
+	assert.NoError(t, err2)
+	testHeaders(t, spec2, res2.Response)
+	assert.Equal(t, expected2, res2.Data)
 }
 
 //nolint: funlen

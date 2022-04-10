@@ -640,5 +640,33 @@ func specs() []internal.APITestSpec {
 				},
 			},
 		},
+		{
+			Filename: "pagination-page-1.json",
+			Endpoint: "/blocks",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+				Query: url.Values{
+					"select": []string{"epoch,epoch_slot,block_height"},
+					"order":  []string{"block_height.asc"},
+				},
+				Header: http.Header{
+					"Range": []string{"0-9"},
+				},
+			},
+		},
+		{
+			Filename: "pagination-page-2.json",
+			Endpoint: "/blocks",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+				Query: url.Values{
+					"select": []string{"epoch,epoch_slot,block_height"},
+					"order":  []string{"block_height.asc"},
+				},
+				Header: http.Header{
+					"Range": []string{"10-19"},
+				},
+			},
+		},
 	}
 }

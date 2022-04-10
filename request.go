@@ -16,6 +16,7 @@
 package koios
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -83,5 +84,20 @@ func (ro *RequestOptions) lock() error {
 		return ErrReqOptsAlreadyUsed
 	}
 	ro.locked = true
+	if ro.pageSize != PageSize || ro.page != 1 {
+		e := (ro.pageSize * ro.page) - 1
+		s := e - ro.pageSize
+		ro.headers.Set("Range", fmt.Sprintf("%d-%d", s, e))
+	}
 	return nil
+}
+
+// PageSize for request sets size of Range header.
+func (ro *RequestOptions) PageSize(size uint) {
+	ro.pageSize = size
+}
+
+// Page modifies Range header starting point.
+func (ro *RequestOptions) Page(page uint) {
+	ro.page = page
 }

@@ -56,6 +56,7 @@ const (
 	LibraryVersion           = "v0"
 	DefaultRateLimit  int    = 10 // https://api.koios.rest/#overview--limits
 	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client"
+	PageSize          uint   = 1000
 )
 
 // Predefined errors used by the library.
@@ -187,9 +188,11 @@ type (
 
 	// RequestOptions for the request.
 	RequestOptions struct {
-		locked  bool
-		query   url.Values
-		headers http.Header
+		page     uint
+		pageSize uint
+		locked   bool
+		query    url.Values
+		headers  http.Header
 	}
 
 	// RequestStats represent collected request stats if collecting
