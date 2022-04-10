@@ -472,7 +472,7 @@ func TestGetAddressTxsEndpoint(t *testing.T) {
 }
 
 func TestGetAddressAssetsEndpoint(t *testing.T) {
-	expected := []koios.AddressAsset{}
+	expected := []koios.Asset{}
 
 	spec := loadEndpointTestSpec(t, "endpoint_address_assets.json.gz", &expected)
 
@@ -499,9 +499,7 @@ func TestGetAddressAssetsEndpoint(t *testing.T) {
 }
 
 func TestGetCredentialTxsEndpoint(t *testing.T) {
-	expected := []struct {
-		TxHash koios.TxHash `json:"tx_hash"`
-	}{}
+	expected := []koios.TX{}
 
 	spec := loadEndpointTestSpec(t, "endpoint_credential_txs.json.gz", &expected)
 
@@ -521,9 +519,7 @@ func TestGetCredentialTxsEndpoint(t *testing.T) {
 	assert.NoError(t, err)
 	testHeaders(t, spec, res.Response)
 
-	for _, e := range expected {
-		assert.Contains(t, res.Data, e.TxHash)
-	}
+	assert.Equal(t, expected, res.Data)
 
 	res2, err := api.GetCredentialTxs(context.Background(), []koios.PaymentCredential{}, 0, nil)
 	assert.ErrorIs(t, err, koios.ErrNoAddress)
