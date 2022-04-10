@@ -92,6 +92,15 @@ type (
 
 		// CreationTime of Asset
 		CreationTime string `json:"creation_time"`
+
+		// MintCnt count of mint transactions
+		MintCnt int `json:"mint_cnt"`
+
+		// BurnCnt count of burn transactions
+		BurnCnt int `json:"burn_cnt"`
+
+		// MintingTxHash mint tx
+		MintingTxHash TxHash `json:"minting_tx_hash"`
 	}
 
 	// AssetTxs Txs info for the given asset (latest first).

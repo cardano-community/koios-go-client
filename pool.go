@@ -103,6 +103,9 @@ type (
 		// LiveStake Pool live stake
 		LiveStake Lovelace `json:"live_stake"`
 
+		// LivePledge Pool live pledge
+		LivePledge Lovelace `json:"live_pledge"`
+
 		// Margin (decimal format)
 		Margin float32 `json:"margin"`
 
