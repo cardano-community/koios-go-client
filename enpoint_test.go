@@ -1513,10 +1513,16 @@ func TestHTTP(t *testing.T) {
 			opts.QueryAdd(k, v)
 		}
 	}
+
+	extheaders := http.Header{}
+	extheaders.Set("X-Ext-Header", "ext-val")
+	opts.HeadersAdd("X-Custom-Header", "header-val")
+	opts.QueryAdd("prop", "val")
+	opts.HeadersApply(extheaders)
+
 	opts2, o2err := opts.Clone()
 	assert.NoError(t, o2err)
-	opts3, o3err := opts.Clone()
-	assert.NoError(t, o3err)
+	opts3 := api.NewRequestOptions()
 
 	res, err := api.GET(context.Background(), "/tip", opts2)
 	assert.NoError(t, err)
@@ -1540,6 +1546,13 @@ func TestHTTP(t *testing.T) {
 
 	assert.NoError(t, err2)
 	assert.Equal(t, "application/json; charset=utf-8", res2.Header.Get("Content-Type"))
+
+	res21, err21 := api.HEAD(context.Background(), "/tip", opts3)
+	assert.Nil(t, res21)
+	if res21 != nil {
+		res21.Body.Close()
+	}
+	assert.ErrorIs(t, err21, koios.ErrReqOptsAlreadyUsed)
 
 	_, o4err := opts3.Clone()
 	assert.ErrorIs(t, o4err, koios.ErrReqOptsAlreadyUsed)

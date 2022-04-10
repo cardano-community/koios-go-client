@@ -21,7 +21,7 @@
 // Koios is best described as a Decentralized and Elastic RESTful query layer
 // for exploring data on Cardano blockchain to consume within
 // applications/wallets/explorers/etc.
-package koios
+package koios // imports as package "koios"
 
 import (
 	"errors"

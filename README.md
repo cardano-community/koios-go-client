@@ -1,10 +1,5 @@
 <h1>Koios API Client Library for Go</h1>
 
-**:warning: UNTIL v1.0.0 RELEASE THIS LIBRARY WILL GET BREAKING CHANGES :warning:**
-
-- before v1 every `v0.x.x` MINOR semver update most likely has breaking change. 
-- before updating e.g. `go get -u` check for changes to prevent inconveniences. 
-
 **[Koios API] is Elastic Cardano Query Layer!**
 
 > A consistent query layer for developers to build upon Cardano, 
@@ -162,7 +157,7 @@ func main() {
       client, err := api.WithOptions(koios.Host(host))
       res, _ := client.GET(ctx, "/tip", nil)
       defer res.Body.Close()
-      body, _ := ioutil.ReadAll(res.Body)
+      body, _ := io.ReadAll(res.Body)
       fmt.Println("Host: ", host)
       fmt.Println("Response: ", string(body))
     }(ctx, host)
