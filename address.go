@@ -67,22 +67,10 @@ type (
 		Data []TxHash `json:"response"`
 	}
 
-	// AddressAsset payload item returned by.
-	AddressAsset struct {
-		// Asset Name (hex).
-		NameHEX string `json:"asset_name_hex"`
-
-		// Asset Policy ID (hex).
-		PolicyID PolicyID `json:"asset_policy_hex"`
-
-		// Quantity of asset accoiated to the given address.
-		Quantity Lovelace `json:"quantity"`
-	}
-
 	// AddressAssetsResponse represents response from `/address_info` endpoint.
 	AddressAssetsResponse struct {
 		Response
-		Data []AddressAsset `json:"response"`
+		Data []Asset `json:"response"`
 	}
 )
 
