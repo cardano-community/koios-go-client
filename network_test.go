@@ -45,10 +45,10 @@ type networkTestSuite struct {
 func (s *networkTestSuite) TestNetworkTipEndpoint() {
 	res, err := s.api.GetTip(context.Background(), nil)
 	if s.NoError(err) {
-		s.Greater(res.Data.AbsSlot, 0)
-		s.Greater(res.Data.BlockNo, 0)
-		s.Greater(res.Data.EpochNo, 0)
-		s.Greater(res.Data.EpochSlot, 0)
+		s.Greater(res.Data.AbsSlot, uint64(0))
+		s.Greater(res.Data.BlockNo, uint64(0))
+		s.Greater(res.Data.EpochNo, uint64(0))
+		s.Greater(res.Data.EpochSlot, uint64(0))
 		s.NotEmpty(res.Data.Hash)
 		s.NotZero(res.Data.BlockTime)
 	}
