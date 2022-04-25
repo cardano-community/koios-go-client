@@ -100,7 +100,7 @@ type (
 		JSON map[string]interface{} `json:"json"`
 
 		// Key is metadata (index).
-		Key int `json:"key"`
+		Key string `json:"key"`
 	}
 
 	// TxsWithdrawal withdrawal record in transaction.
@@ -354,7 +354,7 @@ func (c *Client) GetTxsMetadata(
 	opts *RequestOptions,
 ) (*TxsMetadataResponse, error) {
 	res := &TxsMetadataResponse{}
-	if len(txs) == 0 {
+	if len(txs) == 0 || len(txs[0]) == 0 {
 		err := ErrNoTxHash
 		res.applyError(nil, err)
 		return res, err
