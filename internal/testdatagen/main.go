@@ -44,7 +44,7 @@ var (
 	cancel  context.CancelFunc
 )
 
-const TestEpoch = "320"
+const TestEpoch = "334"
 
 func main() {
 	api, err := koios.New(
@@ -89,11 +89,13 @@ func main() {
 						return errors.New("path is not a directory")
 					}
 					filestats, err := ioutil.ReadDir(dirpath)
-
+					if err != nil {
+						return err
+					}
 					var wg sync.WaitGroup
 					for _, filestat := range filestats {
 						if filepath.Ext(filestat.Name()) == ".gz" &&
-							(filename == "all" || filename+".gz" == filestat.Name()) {
+							(filename == "all" || filename+".json.gz" == filestat.Name()) {
 							wg.Add(1)
 							go func(filestat fs.FileInfo) {
 								log.Print("reading: ", filestat.Name())
@@ -101,12 +103,17 @@ func main() {
 								gzfilename := filepath.Join(dirpath, filestat.Name())
 
 								gzfile, err := os.Open(gzfilename)
-								defer gzfile.Close()
-
 								handleErr(err)
+								defer func() {
+									if err := gzfile.Close(); err != nil {
+										log.Println(err)
+									}
+								}()
+
 								gzr, err := gzip.NewReader(gzfile)
 								handleErr(err)
 								specb, err := io.ReadAll(gzr)
+								handleErr(err)
 								gzr.Close()
 
 								spec := &internal.APITestSpec{}
@@ -120,6 +127,7 @@ func main() {
 
 								log.Println("saving: ", jsonfile)
 								out, err := json.MarshalIndent(spec, "", " ")
+								handleErr(err)
 								handleErr(os.WriteFile(jsonfile, out, 0644))
 							}(filestat)
 						}
@@ -185,7 +193,7 @@ func main() {
 							spec.Response.Code = res.StatusCode
 							handleErr(json.Unmarshal(body, &spec.Response.Body))
 
-							outfile := filepath.Join(dirpath, spec.Filename+".gz")
+							outfile := filepath.Join(dirpath, spec.Filename+".json.gz")
 							_ = os.Remove(filepath.Join(dirpath, spec.Filename))
 							_ = os.Remove(outfile)
 
@@ -227,21 +235,21 @@ func handleErr(err error) {
 func specs() []internal.APITestSpec {
 	return []internal.APITestSpec{
 		{
-			Filename: "endpoint_network_tip.json",
+			Filename: "endpoint_network_tip",
 			Endpoint: "/tip",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_network_genesis.json",
+			Filename: "endpoint_network_genesis",
 			Endpoint: "/genesis",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_network_totals.json",
+			Filename: "endpoint_network_totals",
 			Endpoint: "/totals",
 			Request: internal.APITestRequestSpec{
 				Query: url.Values{
@@ -251,7 +259,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_epoch_info.json",
+			Filename: "endpoint_epoch_info",
 			Endpoint: "/epoch_info",
 			Request: internal.APITestRequestSpec{
 				Query: url.Values{
@@ -261,7 +269,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_epoch_params.json",
+			Filename: "endpoint_epoch_params",
 			Endpoint: "/epoch_params",
 			Request: internal.APITestRequestSpec{
 				Query: url.Values{
@@ -271,14 +279,14 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_blocks.json",
+			Filename: "endpoint_blocks",
 			Endpoint: "/blocks",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_block_info.json",
+			Filename: "endpoint_block_info",
 			Endpoint: "/block_info",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
@@ -286,7 +294,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_block_txs.json",
+			Filename: "endpoint_block_txs",
 			Endpoint: "/block_txs",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -296,15 +304,15 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_tx_info.json",
+			Filename: "endpoint_tx_info",
 			Endpoint: "/tx_info",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
-				Body:   []byte("{\"_tx_hashes\": [\"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e\"]}"),
+				Body:   []byte("{\"_tx_hashes\": [\"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94\"]}"),
 			},
 		},
 		{
-			Filename: "endpoint_tx_utxos.json",
+			Filename: "endpoint_tx_utxos",
 			Endpoint: "/tx_utxos",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
@@ -312,7 +320,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_tx_metadata.json",
+			Filename: "endpoint_tx_metadata",
 			Endpoint: "/tx_metadata",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
@@ -320,14 +328,14 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_tx_metalabels.json",
+			Filename: "endpoint_tx_metalabels",
 			Endpoint: "/tx_metalabels",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_tx_status.json",
+			Filename: "endpoint_tx_status",
 			Endpoint: "/tx_status",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
@@ -335,7 +343,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_tx_submit.json",
+			Filename: "endpoint_tx_submit",
 			Endpoint: "/submittx",
 			Request: internal.APITestRequestSpec{
 				Header: http.Header{
@@ -347,7 +355,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_address_info.json",
+			Filename: "endpoint_address_info",
 			Endpoint: "/address_info",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -357,7 +365,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_address_txs.json",
+			Filename: "endpoint_address_txs",
 			Endpoint: "/address_txs",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
@@ -365,7 +373,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_address_assets.json",
+			Filename: "endpoint_address_assets",
 			Endpoint: "/address_assets",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -375,7 +383,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_credential_txs.json",
+			Filename: "endpoint_credential_txs",
 			Endpoint: "/credential_txs",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
@@ -383,14 +391,14 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_account_list.json",
+			Filename: "endpoint_account_list",
 			Endpoint: "/account_list",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_account_info.json",
+			Filename: "endpoint_account_info",
 			Endpoint: "/account_info",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -400,18 +408,18 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_account_rewards.json",
+			Filename: "endpoint_account_rewards",
 			Endpoint: "/account_rewards",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 				Query: url.Values{
 					"_stake_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
-					"_epoch_no":      []string{TestEpoch},
+					"_epoch_no":      []string{"320"},
 				},
 			},
 		},
 		{
-			Filename: "endpoint_account_updates.json",
+			Filename: "endpoint_account_updates",
 			Endpoint: "/account_updates",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -421,7 +429,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_account_addresses.json",
+			Filename: "endpoint_account_addresses",
 			Endpoint: "/account_addresses",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -431,7 +439,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_account_assets.json",
+			Filename: "endpoint_account_assets",
 			Endpoint: "/account_assets",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -441,7 +449,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_account_history.json",
+			Filename: "endpoint_account_history",
 			Endpoint: "/account_history",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -451,14 +459,14 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_asset_list.json",
+			Filename: "endpoint_asset_list",
 			Endpoint: "/asset_list",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_asset_address_list.json",
+			Filename: "endpoint_asset_address_list",
 			Endpoint: "/asset_address_list",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -469,7 +477,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_asset_info.json",
+			Filename: "endpoint_asset_info",
 			Endpoint: "/asset_info",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -480,7 +488,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_asset_summary.json",
+			Filename: "endpoint_asset_summary",
 			Endpoint: "/asset_summary",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -491,7 +499,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_asset_txs.json",
+			Filename: "endpoint_asset_txs",
 			Endpoint: "/asset_txs",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -502,14 +510,14 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_pool_list.json",
+			Filename: "endpoint_pool_list",
 			Endpoint: "/pool_list",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_pool_info.json",
+			Filename: "endpoint_pool_info",
 			Endpoint: "/pool_info",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
@@ -517,7 +525,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_pool_delegators.json",
+			Filename: "endpoint_pool_delegators",
 			Endpoint: "/pool_delegators",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -528,7 +536,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_pool_blocks.json",
+			Filename: "endpoint_pool_blocks",
 			Endpoint: "/pool_blocks",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -539,18 +547,18 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_pool_history.json",
+			Filename: "endpoint_pool_history",
 			Endpoint: "/pool_history",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 				Query: url.Values{
 					"_pool_bech32": []string{"pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"},
-					"_epoch_no":    []string{TestEpoch},
+					"_epoch_no":    []string{"320"},
 				},
 			},
 		},
 		{
-			Filename: "endpoint_pool_updates.json",
+			Filename: "endpoint_pool_updates",
 			Endpoint: "/pool_updates",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -560,14 +568,14 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_pool_relays.json",
+			Filename: "endpoint_pool_relays",
 			Endpoint: "/pool_relays",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_pool_metadata.json",
+			Filename: "endpoint_pool_metadata",
 			Endpoint: "/pool_metadata",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
@@ -575,21 +583,21 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_native_script_list.json",
+			Filename: "endpoint_native_script_list",
 			Endpoint: "/native_script_list",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_plutus_script_list.json",
+			Filename: "endpoint_plutus_script_list",
 			Endpoint: "/plutus_script_list",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
 			},
 		},
 		{
-			Filename: "endpoint_script_redeemers.json",
+			Filename: "endpoint_script_redeemers",
 			Endpoint: "/script_redeemers",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -599,7 +607,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_asset_policy_info.json",
+			Filename: "endpoint_asset_policy_info",
 			Endpoint: "/asset_policy_info",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -609,7 +617,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "endpoint_asset_history.json",
+			Filename: "endpoint_asset_history",
 			Endpoint: "/asset_history",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -620,7 +628,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "vertical_filtering.json",
+			Filename: "vertical_filtering",
 			Endpoint: "/blocks",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -630,7 +638,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "horizontal_filtering.json",
+			Filename: "horizontal_filtering",
 			Endpoint: "/blocks",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -641,7 +649,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "pagination-page-1.json",
+			Filename: "pagination-page-1",
 			Endpoint: "/blocks",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",
@@ -655,7 +663,7 @@ func specs() []internal.APITestSpec {
 			},
 		},
 		{
-			Filename: "pagination-page-2.json",
+			Filename: "pagination-page-2",
 			Endpoint: "/blocks",
 			Request: internal.APITestRequestSpec{
 				Method: "GET",

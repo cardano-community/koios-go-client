@@ -187,14 +187,14 @@ linters-settings:
     lines: 80
     statements: 40
 
-  gci:
-    # put imports beginning with prefix after 3rd-party packages;
-    # only support one prefix
-    # if not set, use goimports.local-prefixes
-    sections:
-      - standard
-      - default
-      - prefix(github.com/cardano-community/)
+  # gci:
+  #   # put imports beginning with prefix after 3rd-party packages;
+  #   # only support one prefix
+  #   # if not set, use goimports.local-prefixes
+  #   sections:
+  #     - standard
+  #     - default
+  #     - prefix(github.com/cardano-community/)
   goconst:
     ignore-calls: true
     ignore-tests: false

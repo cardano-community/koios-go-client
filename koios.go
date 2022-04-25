@@ -74,7 +74,7 @@ var (
 	ErrSchema                   = errors.New("scheme must be http or https")
 	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
-	ZeroLovelace                = NewLovelace(0, 1)
+	ZeroLovelace                = NewLovelace(0, 1) //nolint: gochecknoglobals
 )
 
 type (
@@ -123,7 +123,7 @@ type (
 	// StakeAddress is Cardano staking address (reward account, bech32 encoded).
 	StakeAddress string
 
-	// Time extends time to fix time format anomalies turing Unmarshal and Marshal
+	// Time extends time to fix time format anomalies turing Unmarshal and Marshal.
 	Time struct {
 		time.Time
 	}
