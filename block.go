@@ -41,10 +41,10 @@ type (
 		Height int `json:"block_height"`
 
 		// Size of block.
-		Size int `json:"size"`
+		Size int `json:"block_size"`
 
 		// Time time of the block.
-		Time string `json:"block_time"`
+		Time Time `json:"block_time"`
 
 		// TxCount transactions count in block.
 		TxCount int `json:"tx_count"`
@@ -175,4 +175,22 @@ func blockHashesPL(bhash []BlockHash) io.Reader {
 		defer w.Close()
 	}()
 	return rpipe
+}
+
+// handle api json tags Block.epoch and Block.epoch_no.
+func (block *Block) UnmarshalJSON(b []byte) error {
+	type B Block
+	if err := json.Unmarshal(b, (*B)(block)); err != nil {
+		return err
+	}
+	if block.Epoch == 0 {
+		var fix = struct {
+			Epoch EpochNo `json:"epoch_no"`
+		}{}
+		if err := json.Unmarshal(b, &fix); err != nil {
+			return err
+		}
+		block.Epoch = fix.Epoch
+	}
+	return nil
 }
