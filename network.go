@@ -18,6 +18,10 @@ package koios
 
 import (
 	"context"
+	"encoding/json"
+	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -53,21 +57,21 @@ type (
 		// Active Slot Co-Efficient (f) - determines the _probability_ of number of
 		// slots in epoch that are expected to have blocks
 		// (so mainnet, this would be: 432000 * 0.05 = 21600 estimated blocks).
-		Activeslotcoeff string `json:"activeslotcoeff"`
+		Activeslotcoeff decimal.Decimal `json:"activeslotcoeff"`
 
 		// A JSON dump of Alonzo Genesis.
 		Alonzogenesis string `json:"alonzogenesis"`
 
 		// Number of slots in an epoch.
-		Epochlength string `json:"epochlength"`
+		Epochlength decimal.Decimal `json:"epochlength"`
 
 		// Number of KES key evolutions that will automatically occur before a KES
 		// (hot) key is expired. This parameter is for security of a pool,
 		// in case an operator had access to his hot(online) machine compromised.
-		Maxkesrevolutions string `json:"maxkesrevolutions"`
+		Maxkesrevolutions decimal.Decimal `json:"maxkesrevolutions"`
 
 		// Maximum smallest units (lovelaces) supply for the blockchain.
-		Maxlovelacesupply string `json:"maxlovelacesupply"`
+		Maxlovelacesupply Lovelace `json:"maxlovelacesupply"`
 
 		// Network ID used at various CLI identification to distinguish between
 		// Mainnet and other networks.
@@ -83,14 +87,14 @@ type (
 		Securityparam string `json:"securityparam"`
 
 		// Duration of a single slot (in seconds).
-		Slotlength string `json:"slotlength"`
+		Slotlength decimal.Decimal `json:"slotlength"`
 
 		// Number of slots that represent a single KES period
 		// (a unit used for validation of KES key evolutions).
-		Slotsperkesperiod string `json:"slotsperkesperiod"`
+		Slotsperkesperiod decimal.Decimal `json:"slotsperkesperiod"`
 
 		// Timestamp for first block (genesis) on chain.
-		Systemstart string `json:"systemstart"`
+		Systemstart time.Time `json:"systemstart"`
 
 		// Number of BFT members that need to approve
 		// (via vote) a Protocol Update Proposal.
@@ -188,4 +192,12 @@ func (c *Client) GetTotals(
 		return res, err
 	}
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+func (g *Genesis) AlonzoGenesisMap() (map[string]interface{}, error) {
+	var data map[string]interface{}
+	if err := json.Unmarshal([]byte(g.Alonzogenesis), &data); err != nil {
+		return nil, err
+	}
+	return data, nil
 }
