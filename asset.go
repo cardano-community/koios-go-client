@@ -51,26 +51,26 @@ type (
 	// AssetSummary aggregated asset summary.
 	AssetSummary struct {
 		// Asset Name (hex)
-		AssetName string `json:"asset_name"`
+		AssetName AssetName `json:"asset_name"`
 
 		// Asset Policy ID (hex)
 		PolicyID PolicyID `json:"policy_id"`
 
 		// Total number of registered wallets holding the given asset
-		StakedWallets int64 `json:"staked_wallets"`
+		StakedWallets uint64 `json:"staked_wallets"`
 
 		// Total number of transactions including the given asset
-		TotalTransactions int64 `json:"total_transactions"`
+		TotalTransactions uint64 `json:"total_transactions"`
 
 		// Total number of payment addresses (not belonging
 		// to registered wallets) holding the given asset
-		UnstakedAddresses int64 `json:"unstaked_addresses"`
+		UnstakedAddresses uint64 `json:"unstaked_addresses"`
 	}
 
 	// AssetInfo info about the asset.
 	AssetInfo struct {
 		// Asset Name (hex).
-		Name string `json:"asset_name"`
+		Name AssetName `json:"asset_name"`
 
 		// Asset Name (ASCII)
 		NameASCII string `json:"asset_name_ascii"`
@@ -91,7 +91,7 @@ type (
 		TotalSupply Lovelace `json:"total_supply"`
 
 		// CreationTime of Asset
-		CreationTime string `json:"creation_time"`
+		CreationTime Time `json:"creation_time"`
 
 		// MintCnt count of mint transactions
 		MintCnt int `json:"mint_cnt"`
@@ -106,7 +106,7 @@ type (
 	// AssetTxs Txs info for the given asset (latest first).
 	AssetTxs struct {
 		// AssetName (hex)
-		AssetName string `json:"asset_name"`
+		AssetName AssetName `json:"asset_name"`
 
 		// PoliciID Asset Policy ID (hex)
 		PolicyID PolicyID `json:"policy_id"`
@@ -174,7 +174,7 @@ type (
 
 	// AssetMintTX holds specific mint tx hash and amount.
 	AssetMintTX struct {
-		TxHashe  TxHash   `json:"tx_hash"`
+		TxHash   TxHash   `json:"tx_hash"`
 		Quantity Lovelace `json:"quantity"`
 	}
 
