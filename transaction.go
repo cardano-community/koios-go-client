@@ -244,8 +244,8 @@ type (
 
 	// TxStatus is tx_status enpoint response.
 	TxStatus struct {
-		TxHash           TxHash `json:"tx_hash"`
-		NumConfirmations uint64 `json:"num_confirmations"`
+		TxHash        TxHash `json:"tx_hash"`
+		Confirmations uint64 `json:"num_confirmations"`
 	}
 
 	// TxsStatusesResponse represents response from `/tx_status` endpoint.
