@@ -55,16 +55,22 @@ type (
 		Data *AddressInfo `json:"response"`
 	}
 
+	AddressTx struct {
+		TxHash      TxHash `json:"tx_hash"`
+		BlockTime   Time   `json:"block_time"`
+		BlockHeight uint64 `json:"block_height"`
+	}
+
 	// AddressTxsResponse represents response from `/address_txs` endpoint.
 	AddressTxsResponse struct {
 		Response
-		Data []TxHash `json:"response"`
+		Data []AddressTx `json:"response"`
 	}
 
 	// CredentialTxsResponse represents response from `/credential_txs` endpoint.
 	CredentialTxsResponse struct {
 		Response
-		Data []TX `json:"response"`
+		Data []AddressTx `json:"response"`
 	}
 
 	// AddressAssetsResponse represents response from `/address_info` endpoint.
@@ -139,17 +145,8 @@ func (c *Client) GetAddressTxs(
 	if err != nil {
 		return res, err
 	}
-	atxs := []struct {
-		Hash TxHash `json:"tx_hash"`
-	}{}
 
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
-
-	if len(atxs) > 0 {
-		for _, tx := range atxs {
-			res.Data = append(res.Data, tx.Hash)
-		}
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return res, err
 }
 
@@ -189,7 +186,7 @@ func (c *Client) GetCredentialTxs(
 	opts *RequestOptions,
 ) (res *CredentialTxsResponse, err error) {
 	res = &CredentialTxsResponse{}
-	if len(creds) == 0 {
+	if len(creds) == 0 || len(creds[0]) == 0 {
 		err = ErrNoAddress
 		res.applyError(nil, err)
 		return
