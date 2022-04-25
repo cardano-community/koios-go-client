@@ -18,16 +18,18 @@ package koios
 
 import (
 	"context"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
 	// EpochInfo defines model for epoch_info.
 	EpochInfo struct {
 		// Rewards accumulated as of given epoch (in lovelaces)
-		ActiveStake string `json:"active_stake"`
+		ActiveStake Lovelace `json:"active_stake"`
 
 		// Number of blocks created in epoch
-		BlkCount int `json:"blk_count"`
+		BlkCount int64 `json:"blk_count"`
 
 		// Epoch number
 		Epoch EpochNo `json:"epoch_no"`
@@ -36,16 +38,22 @@ type (
 		Fees Lovelace `json:"fees"`
 
 		// Timestamp for first block created in epoch
-		FirstBlockTime string `json:"first_block_time"`
+		FirstBlockTime Time `json:"first_block_time"`
 
 		// Timestamp for last block created in epoch
-		LastBlockTime string `json:"last_block_time"`
+		LastBlockTime Time `json:"last_block_time"`
 
 		// Total output value across all transactions in epoch
 		OutSum Lovelace `json:"out_sum"`
 
 		// Number of transactions submitted in epoch
-		TxCount int `json:"tx_count"`
+		TxCount int64 `json:"tx_count"`
+
+		// EndTime of epoch
+		EndTime Time `json:"end_time"`
+
+		// StartTime of epoch
+		StartTime Time `json:"start_time"`
 	}
 
 	// EpochInfoResponse response of /epoch_info.
@@ -57,14 +65,14 @@ type (
 	// EpochParams defines model for epoch_params.
 	EpochParams struct {
 		// The hash of the first block where these parameters are valid
-		BlockHash string `json:"block_hash"`
+		BlockHash BlockHash `json:"block_hash"`
 
 		// The cost per UTxO word
 		CoinsPerUtxoWord Lovelace `json:"coins_per_utxo_word"`
 
 		// The percentage of the tx fee which must be provided as collateral
 		// when including non-native scripts
-		CollateralPercent int `json:"collateral_percent"`
+		CollateralPercent int64 `json:"collateral_percent"`
 
 		// The per language cost models
 		CostModels string `json:"cost_models"`
@@ -117,16 +125,16 @@ type (
 		MaxValSize float32 `json:"max_val_size"`
 
 		// The 'a' parameter to calculate the minimum transaction fee
-		MinFeeA int `json:"min_fee_a"`
+		MinFeeA decimal.Decimal `json:"min_fee_a"`
 
 		// The 'b' parameter to calculate the minimum transaction fee
-		MinFeeB int `json:"min_fee_b"`
+		MinFeeB decimal.Decimal `json:"min_fee_b"`
 
 		// The minimum pool cost
 		MinPoolCost Lovelace `json:"min_pool_cost"`
 
 		// The minimum value of a UTxO entry
-		MinUtxoValue int `json:"min_utxo_value"`
+		MinUtxoValue Lovelace `json:"min_utxo_value"`
 
 		// The monetary expansion rate
 		MonetaryExpandRate float64 `json:"monetary_expand_rate"`
@@ -141,10 +149,10 @@ type (
 		PoolDeposit Lovelace `json:"pool_deposit"`
 
 		// The per word cost of script memory usage
-		PriceMem float64 `json:"price_mem"`
+		PriceMem Lovelace `json:"price_mem"`
 
 		// The cost of script execution step usage
-		PriceStep float64 `json:"price_step"`
+		PriceStep Lovelace `json:"price_step"`
 
 		// The protocol major version
 		ProtocolMajor int `json:"protocol_major"`
