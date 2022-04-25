@@ -243,23 +243,23 @@ type (
 
 	// PoolBlockInfo block info.
 	PoolBlockInfo struct {
+		// Slot is overall slot number (slots from genesis block of chain).
+		AbsSlot uint64 `json:"abs_slot"`
+
 		// Hash block hash
 		Hash BlockHash `json:"block_hash"`
+
+		// BlockHeight ogf the block
+		Height uint64 `json:"block_height"`
+
+		// Time time of the block.
+		Time Time `json:"block_time"`
 
 		// Epoch number.
 		Epoch EpochNo `json:"epoch_no"`
 
 		// EpochSlot slot number within epoch.
-		EpochSlot int `json:"epoch_slot_no"`
-
-		// Slot is overall slot number (slots from genesis block of chain).
-		Slot int `json:"slot_no"`
-
-		// Time time of the block.
-		Time string `json:"block_time"`
-
-		// BlockNo is block number on chain.
-		BlockNo uint64 `json:"block_no"`
+		EpochSlot uint64 `json:"epoch_slot"`
 	}
 
 	// PoolHistory entry.

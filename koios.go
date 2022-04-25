@@ -73,6 +73,8 @@ var (
 	ErrResponse                 = errors.New("got unexpected response")
 	ErrSchema                   = errors.New("scheme must be http or https")
 	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
+	ErrUnexpectedResponseField  = errors.New("unexpected response field")
+	ZeroLovelace                = NewLovelace(0, 1)
 )
 
 type (
@@ -120,6 +122,11 @@ type (
 
 	// StakeAddress is Cardano staking address (reward account, bech32 encoded).
 	StakeAddress string
+
+	// Time extends time to fix time format anomalies turing Unmarshal and Marshal
+	Time struct {
+		time.Time
+	}
 
 	// Lovelace defines type for ADA lovelaces. This library uses forked snapshot
 	// of github.com/shopspring/decimal package to provide. JSON and XML
@@ -344,4 +351,14 @@ func (v ScriptHash) String() string {
 // String returns StakeAddress as string.
 func (v StakeAddress) String() string {
 	return string(v)
+}
+
+func (t *Time) UnmarshalJSON(b []byte) error {
+	str := string(b)
+	p, err := time.Parse("\""+time.RFC3339+"\"", str)
+	if err != nil {
+		p, err = time.Parse("\"2006-01-02T15:04:05\"", str)
+	}
+	t.Time = p
+	return err
 }
