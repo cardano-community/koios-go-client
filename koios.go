@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -35,6 +36,7 @@ import (
 // DefaultOrigin     : is default origin header used by api client.
 const (
 	MainnetHost              = "api.koios.rest"
+	MainnetHostEU            = "eu-api.koios.rest"
 	GuildHost                = "guild.koios.rest"
 	TestnetHost              = "testnet.koios.rest"
 	DefaultAPIVersion        = "v0"
@@ -316,7 +318,7 @@ func (v BlockHash) String() string {
 
 // String returns TxHash as string.
 func (v TxHash) String() string {
-	return string(v)
+	return strings.Trim(string(v), "\"")
 }
 
 // String returns EpochNo as string.
