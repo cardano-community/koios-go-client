@@ -38,13 +38,13 @@ type (
 		BlockTime Time `json:"block_time"`
 
 		// EpochNo number
-		EpochNo int `json:"epoch_no"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// Slot number within Epoch
 		EpochSlot int `json:"epoch_slot"`
 
 		// Block Hash in hex
-		Hash string `json:"hash"`
+		Hash BlockHash `json:"hash"`
 	}
 
 	// TipResponse response of /tip.
