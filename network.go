@@ -34,16 +34,16 @@ type (
 		BlockNo uint64 `json:"block_no"`
 
 		// Timestamp for when the block was created
-		BlockTime string `json:"block_time"`
+		BlockTime Time `json:"block_time"`
 
 		// EpochNo number
-		EpochNo uint64 `json:"epoch_no"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// Slot number within Epoch
 		EpochSlot uint64 `json:"epoch_slot"`
 
 		// Block Hash in hex
-		Hash string `json:"hash"`
+		Hash BlockHash `json:"hash"`
 	}
 
 	// TipResponse response of /tip.
