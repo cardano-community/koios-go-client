@@ -18,6 +18,7 @@ package koios
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/shopspring/decimal"
 )
@@ -214,6 +215,11 @@ func (c *Client) GetEpochParams(
 	if err != nil {
 		return
 	}
+
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
+	if len(res.Data) == 0 {
+		return nil, fmt.Errorf("%w: could not get epoch params %s", ErrResponse, epoch)
+	}
 	return
 }

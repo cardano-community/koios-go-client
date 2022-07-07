@@ -141,7 +141,7 @@ func (s *addressTestSuite) TestGetCredentialTxsEndpoint() {
 	}
 }
 
-// Requires more tests with supported address formats
+// Requires more tests with supported address formats.
 func (s *addressTestSuite) TestInvalidAddress() {
 	var tests = []struct {
 		Addr koios.Address
@@ -175,5 +175,7 @@ func (s *addressTestSuite) TestBytes() {
 		0x6b, 0x34, 0x77, 0x36, 0x71, 0x72, 0x78, 0x33,
 		0x70, 0x39, 0x38, 0x7a, 0x61, 0x64, 0x33, 0x66,
 		0x71, 0x30, 0x37, 0x78, 0x65, 0x39, 0x67},
-		koios.Address("addr1qyp9kz50sh9c53hpmk3l4ewj9ur794t2hdqpngsjn3wkc5sztv9glpwt3frwrhdrltjaytc8ut2k4w6qrx3p98zad3fq07xe9g").Bytes())
+		koios.Address(
+			"addr1qyp9kz50sh9c53hpmk3l4ewj9ur794t2hdqpngsjn3wkc5sztv9glpwt3frwrhdrltjaytc8ut2k4w6qrx3p98zad3fq07xe9g",
+		).Bytes())
 }
