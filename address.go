@@ -215,7 +215,7 @@ func (c *Client) GetCredentialTxs(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
-// String returns of address
+// String returns of address.
 func (a Address) String() string {
 	return string(a)
 }
