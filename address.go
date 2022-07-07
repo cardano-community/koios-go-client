@@ -23,6 +23,9 @@ import (
 )
 
 type (
+	// Address defines type for _address.
+	Address string
+
 	// AddressUTxO UTxO attached to address.
 	AddressUTxO struct {
 		// Hash of Transaction for input UTxO.
@@ -207,9 +210,16 @@ func (c *Client) GetCredentialTxs(
 	}()
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, opts)
-	if err != nil {
-		return
-	}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	return res, err
+	res.applyError(nil, err)
+
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+// String returns of address
+func (a Address) String() string {
+	return string(a)
+}
+
+func (a Address) Bytes() []byte {
+	return []byte(a)
 }
