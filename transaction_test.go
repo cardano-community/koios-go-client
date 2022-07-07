@@ -57,20 +57,20 @@ func (s *transactionTestSuite) TestGetTxInfoEndpoint() {
 		if s.NoError(err) {
 			res, err := s.api.GetTxInfo(context.Background(), payload.TxHashes[0], nil)
 			if s.NoError(err) {
-				s.Greater(res.Data.AbsoluteSlot, 0)
+				s.Greater(res.Data.AbsoluteSlot, uint64(0))
 				s.Len(res.Data.AssetsMinted, 3)
 				s.NotEmpty(res.Data.BlockHash)
-				s.Greater(res.Data.BlockHeight, 0)
+				s.Greater(res.Data.BlockHeight, uint64(0))
 				s.True(res.Data.Deposit.GreaterThanOrEqual(decimal.Zero))
 				s.Greater(res.Data.Epoch, uint64(0))
-				s.Greater(res.Data.EpochSlot, 0)
+				s.Greater(res.Data.EpochSlot, uint32(0))
 				s.True(res.Data.Fee.IsPositive())
 				s.Len(res.Data.Inputs, 1)
-				s.Greater(res.Data.InvalidAfter, 0)
-				s.Equal(res.Data.InvalidBefore, 0)
+				s.Greater(res.Data.InvalidAfter, uint64(0))
+				s.Equal(res.Data.InvalidBefore, uint64(0))
 				s.True(res.Data.TotalOutput.IsPositive())
-				s.Greater(res.Data.TxBlockIndex, 0)
-				s.Greater(res.Data.TxSize, 0)
+				s.Greater(res.Data.TxBlockIndex, uint32(0))
+				s.Greater(res.Data.TxSize, uint32(0))
 			}
 		}
 

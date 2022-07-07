@@ -23,30 +23,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+
+	"github.com/fxamacker/cbor/v2"
 )
 
 // introduces breaking change since v1.3.0
 
 type (
 	TX struct {
-		/// TxHash is hash of transaction.
-		TxHash TxHash `json:"tx_hash"`
-		// BlockHeight is block number on chain where transaction was included.
-		BlockHeight int `json:"block_height"`
-		// BlockTime is time of the block.
-		BlockTime Time    `json:"block_time"`
-		Epoch     EpochNo `json:"epoch_no,omitempty"`
+		TxInfo
 	}
 
 	// UTxO model holds inputs and outputs for given UTxO.
 	UTxO struct {
 		/// TxHash is hash of transaction.
-		TxHash TxHash `json:"tx_hash"`
+		TxHash TxHash `json:"tx_hash,omitempty"`
 
 		// Inputs An array with details about inputs used in a transaction.
-		Inputs []TxInput `json:"inputs"`
+		Inputs []TxInput `json:"inputs" cbor:"0,keyasint"`
 		// Outputs An array with details about outputs from the transaction.
-		Outputs []TxOutput `json:"outputs"`
+		Outputs []TxOutput `json:"outputs" cbor:"1,keyasint"`
 	}
 
 	// TxMetalabel defines model for tx_metalabels.
@@ -58,10 +54,10 @@ type (
 	// TxInput an transaxtion input.
 	TxInput struct {
 		// An array of assets contained on input UTxO.
-		AssetList []Asset `json:"asset_list"`
+		AssetList []Asset `json:"asset_list,omitempty"`
 
 		// input UTxO.
-		PaymentAddr PaymentAddr `json:"payment_addr"`
+		PaymentAddr PaymentAddr `json:"payment_addr,omitempty"`
 
 		// StakeAddress for transaction's input UTxO.
 		StakeAddress StakeAddress `json:"stake_addr,omitempty"`
@@ -70,7 +66,7 @@ type (
 		TxHash TxHash `json:"tx_hash"`
 
 		// Index of input UTxO on the mentioned address used for input.
-		TxIndex int `json:"tx_index"`
+		TxIndex uint32 `json:"tx_index"`
 
 		// Balance on the selected input transaction.
 		Value Lovelace `json:"value"`
@@ -79,10 +75,10 @@ type (
 	// TxOutput an transaxtion output.
 	TxOutput struct {
 		// An array of assets to be included in output UTxO.
-		AssetList []Asset `json:"asset_list"`
+		AssetList []Asset `json:"asset_list,omitempty"`
 
 		// where funds were sent or change to be returned.
-		PaymentAddr PaymentAddr `json:"payment_addr"`
+		PaymentAddr PaymentAddr `json:"payment_addr,omitempty"`
 
 		// StakeAddress for transaction's output UTxO.
 		StakeAddress StakeAddress `json:"stake_addr,omitempty"`
@@ -91,7 +87,7 @@ type (
 		TxHash TxHash `json:"tx_hash"`
 
 		// Index of output UTxO.
-		TxIndex int `json:"tx_index"`
+		TxIndex uint32 `json:"tx_index"`
 
 		// Total sum on the output address.
 		Value Lovelace `json:"value"`
@@ -116,70 +112,63 @@ type (
 
 	// TxInfo transaction info.
 	TxInfo struct {
-		// TxHash is hash of transaction.
-		TxHash TxHash `json:"tx_hash"`
+		UTxO
 
 		// BlockHash is hash of the block in which transaction was included.
-		BlockHash BlockHash `json:"block_hash"`
+		BlockHash BlockHash `json:"block_hash,omitempty"`
 
 		// BlockHeight is block number on chain where transaction was included.
-		BlockHeight int `json:"block_height"`
+		BlockHeight uint64 `json:"block_height,omitempty"`
 
 		// Epoch number.
-		Epoch EpochNo `json:"epoch"`
+		Epoch EpochNo `json:"epoch,omitempty"`
 
 		// EpochSlot is slot number within epoch.
-		EpochSlot int `json:"epoch_slot"`
+		EpochSlot uint32 `json:"epoch_slot,omitempty"`
 
 		// AbsoluteSlot is overall slot number (slots from genesis block of chain).
-		AbsoluteSlot int `json:"absolute_slot"`
+		AbsoluteSlot uint64 `json:"absolute_slot,omitempty"`
 
 		// TxTimestamp is timestamp when block containing transaction was created.
-		TxTimestamp Time `json:"tx_timestamp"`
+		TxTimestamp string `json:"tx_timestamp,omitempty"`
 
 		// TxBlockIndex is index of transaction within block.
-		TxBlockIndex int `json:"tx_block_index"`
+		TxBlockIndex uint32 `json:"tx_block_index,omitempty"`
 
 		// TxSize is transaction size in bytes.
-		TxSize int `json:"tx_size"`
+		TxSize uint32 `json:"tx_size,omitempty"`
 
 		// TotalOutput is total sum of all transaction outputs (in lovelaces).
-		TotalOutput Lovelace `json:"total_output"`
+		TotalOutput Lovelace `json:"total_output,omitempty"`
 
 		// Fee is total transaction fee (in lovelaces).
-		Fee Lovelace `json:"fee"`
+		Fee Lovelace `json:"fee,omitempty" cbor:"2,keyasint"`
 
 		// Deposit is total deposits included in transaction (for example,
 		// if it is registering a pool/key).
-		Deposit Lovelace `json:"deposit"`
+		Deposit Lovelace `json:"deposit,omitempty"`
 
 		// InvalidAfter is slot number after which transaction cannot be validated.
-		InvalidAfter int `json:"invalid_after,omitempty"`
+		InvalidAfter uint64 `json:"invalid_after,omitempty" cbor:"3,keyasint,omitempty"`
 
 		// InvalidBefore is slot number before which transaction cannot be validated.
 		// (if supplied, else 0)
-		InvalidBefore int `json:"invalid_before,omitempty"`
-
-		// Inputs An array with details about inputs used in a transaction
-		Inputs []TxInput `json:"inputs"`
-
-		// Outputs An array with details about outputs from the transaction.
-		Outputs []TxOutput `json:"outputs,omitempty"`
+		InvalidBefore uint64 `json:"invalid_before,omitempty" cbor:"8,keyasint,omitempty"`
 
 		// AssetsMinted An array of minted assets with-in a transaction (if any).
-		AssetsMinted []Asset `json:"assets_minted"`
+		AssetsMinted []Asset `json:"assets_minted,omitempty"`
 
 		// Collaterals An array of collateral inputs needed when dealing with smart contracts.
-		Collaterals []TxInput `json:"collaterals"`
+		Collaterals []TxInput `json:"collaterals,omitempty"`
 
 		// Metadata present with-in a transaction (if any)
-		Metadata []TxInfoMetadata `json:"metadata"`
+		Metadata []TxInfoMetadata `json:"metadata,omitempty"`
 
 		// Array of withdrawals with-in a transaction (if any)
-		Withdrawals []TxsWithdrawal `json:"withdrawals"`
+		Withdrawals []TxsWithdrawal `json:"withdrawals,omitempty"`
 
 		// Certificates present with-in a transaction (if any)
-		Certificates []Certificate `json:"certificates"`
+		Certificates []Certificate `json:"certificates,omitempty"`
 	}
 
 	// TxsInfosResponse represents response from `/tx_info` endpoint.
@@ -409,6 +398,8 @@ func (c *Client) SubmitSignedTx(
 
 	rsp, err := c.request(ctx, &res.Response, method, "/submittx", bytes.NewBuffer(cborb), opts)
 	if err != nil {
+		body, _ := ReadResponseBody(rsp)
+		res.applyError(body, err)
 		return res, err
 	}
 	body, err := ReadResponseBody(rsp)
@@ -451,6 +442,11 @@ func (c *Client) GetTxsStatuses(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
+// NewTxWithAutoFee.
+func NewTransaction() *TX {
+	return &TX{}
+}
+
 func txHashesPL(txs []TxHash) io.Reader {
 	var payload = struct {
 		TxHashes []TxHash `json:"_tx_hashes"`
@@ -461,4 +457,43 @@ func txHashesPL(txs []TxHash) io.Reader {
 		defer w.Close()
 	}()
 	return rpipe
+}
+
+// AddUTxO adds utxo inputs and otputs to transaction
+// Useful when composing batch transaction.
+func (tx *TX) AddUTxO(utxo UTxO) error {
+	for _, in := range utxo.Inputs {
+		// check that UTxO inputs are not already used
+		for _, tin := range tx.Inputs {
+			if in.TxHash == tin.TxHash && in.TxIndex == tin.TxIndex {
+				return fmt.Errorf("%w: %s#%d", ErrUTxOInputAlreadyUsed, in.TxHash, in.TxIndex)
+			}
+		}
+		tx.Inputs = append(tx.Inputs, in)
+	}
+
+	tx.Outputs = append(tx.Outputs, utxo.Outputs...)
+
+	return nil
+}
+
+// CalculateSharedFee calculates fee and shares fee between transaction outputs.
+// Optionally you can provide destination addresses which will not share the fee.
+// e.g
+// most cases you would exclude your own address so that only
+// external receivers pay the fee. Useful when using this lib in faucet.
+func (tx *TX) CalculateSharedFee(params EpochParams, exclude ...Address) error {
+	return nil
+}
+
+func (out *TxOutput) MarshalCBOR() ([]byte, error) {
+	if len(out.PaymentAddr.Bech32) == 0 {
+		return nil, fmt.Errorf("cbor: %w", ErrNoAddress)
+	}
+
+	// handle assets
+	//   if len(o.Assets) > 0 {
+	// 		return cbor.Marshal([]interface{}{o.Address.Bytes(), []interface{}{o.Amount, o.Assets}})
+	// 	}
+	return cbor.Marshal([]interface{}{out.PaymentAddr.Bech32.Bytes(), out.Value.IntPart()})
 }
