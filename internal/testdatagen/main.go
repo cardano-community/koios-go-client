@@ -44,7 +44,7 @@ var (
 	cancel  context.CancelFunc
 )
 
-const TestEpoch = "334"
+const TestEpoch = "349"
 
 func main() {
 	api, err := koios.New(
