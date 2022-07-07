@@ -60,3 +60,7 @@ func NewLovelaceFromInt(value int64) Lovelace {
 func NewLovelaceFromInt32(value int32) Lovelace {
 	return Lovelace{Decimal: decimal.NewFromInt32(value)}
 }
+
+func NewLovelaceFromDecimal(value decimal.Decimal) Lovelace {
+	return Lovelace{Decimal: value}
+}

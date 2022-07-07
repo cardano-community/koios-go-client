@@ -76,7 +76,9 @@ var (
 	ErrSchema                   = errors.New("scheme must be http or https")
 	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
-	ZeroLovelace                = NewLovelace(0, 1) //nolint: gochecknoglobals
+	ErrUTxOInputAlreadyUsed     = errors.New("UTxO already used")
+
+	ZeroLovelace = NewLovelace(0, 1) //nolint: gochecknoglobals
 )
 
 type (
@@ -94,9 +96,6 @@ type (
 	Option struct {
 		apply func(*Client) error
 	}
-
-	// Address defines type for _address.
-	Address string
 
 	// PaymentCredential type def.
 	PaymentCredential string
@@ -145,7 +144,7 @@ type (
 	PaymentAddr struct {
 		// Bech32 is Cardano payment/base address (bech32 encoded)
 		// for transaction's or change to be returned.
-		Bech32 string `json:"bech32"`
+		Bech32 Address `json:"bech32"`
 
 		// Payment credential.
 		Cred PaymentCredential `json:"cred"`
@@ -303,11 +302,6 @@ func New(opts ...Option) (*Client, error) {
 	}
 
 	return c, nil
-}
-
-// String returns Address as string.
-func (v Address) String() string {
-	return string(v)
 }
 
 // String returns PaymentCredential as string.
