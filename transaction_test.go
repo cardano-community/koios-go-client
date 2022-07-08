@@ -153,7 +153,11 @@ func (s *transactionTestSuite) TestGetTxsUTxOsEndpoint() {
 func (s *transactionTestSuite) TestTxSubmit() {
 	spec := s.GetSpec("endpoint_tx_submit")
 	if s.NotNil(spec) {
-		payload := koios.TxBodyJSON{}
+		payload := koios.TxBodyJSON{
+			CborHex:     "",
+			Description: "",
+			Type:        "",
+		}
 		err := json.Unmarshal(spec.Request.Body, &payload)
 		if s.NoError(err) {
 			res, err := s.api.SubmitSignedTx(context.Background(), payload, nil)
@@ -164,7 +168,11 @@ func (s *transactionTestSuite) TestTxSubmit() {
 			}
 		}
 
-		res2, err := s.api.SubmitSignedTx(context.Background(), koios.TxBodyJSON{CborHex: "x"}, nil)
+		res2, err := s.api.SubmitSignedTx(context.Background(), koios.TxBodyJSON{
+			CborHex:     "x",
+			Description: "",
+			Type:        "",
+		}, nil)
 		s.Error(err, "submited tx should return error")
 		s.Equal(res2.StatusCode, 400)
 	}

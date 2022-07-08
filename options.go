@@ -84,9 +84,8 @@ func HTTPClient(client *http.Client) Option {
 				return ErrHTTPClientChange
 			}
 			if client == nil {
-				client = &http.Client{
-					Timeout: time.Second * 60,
-				}
+				client = http.DefaultClient
+				client.Timeout = time.Second * 60
 			}
 			if client.Timeout == 0 {
 				return ErrHTTPClientTimeoutSetting

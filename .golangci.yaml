@@ -132,7 +132,8 @@ linters:
     - durationcheck
     - errorlint
     - exhaustive
-    - exhaustivestruct
+    - exhaustruct
+    # - exhaustivestruct // DEPRECATED
     - exportloopref
     - forbidigo
     - forcetypeassert
@@ -172,6 +173,36 @@ linters:
     - whitespace
 
 linters-settings:
+  exhaustruct:
+    # List of regular expressions to match struct packages and names.
+    # If this list is empty, all structs are tested.
+    # Default: []
+    # include:
+    # - '.*\.Test'
+    # - 'github\.com/cardano-community/koios-go-client\.Response[\d]{1,2}'
+    # List of regular expressions to exclude struct packages and names from check.
+    # Default: []
+    exclude:
+      # - 'cobra\.Command$'
+      - 'Client'
+      - 'RequestStats'
+      - 'RequestOptions'
+      - 'URL'
+      - 'Response$'
+      - 'ResponseError$'
+      - 'APITestSpec'
+      - 'transactionTestSuite'
+      - 'sciptTestSuite'
+      - 'poolTestSuite'
+      - 'networkTestSuite'
+      - 'epochTestSuite'
+      - 'endpointsTestSuite'
+      - 'clientTestSuite'
+      - 'blockTestSuite'
+      - 'assetTestSuite'
+      - 'addressTestSuite'
+      - 'accountTestSuite'
+
   cyclop:
     # the maximal code complexity to report
     max-complexity: 15
