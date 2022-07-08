@@ -140,7 +140,9 @@ func (s *assetTestSuite) TestGetAssetTxsEndpoint() {
 			nil,
 		)
 		if s.NoError(err) {
-			s.Greater(len(res.Data), 0)
+			// s.Equal(res.Data.PolicyID, koios.PolicyID(spec.Request.Query.Get("_asset_policy")))
+			// s.Equal(res.Data.AssetName, koios.AssetName(spec.Request.Query.Get("_asset_name")))
+			s.Greater(len(res.Data[0].TxHash), 0)
 		}
 	}
 }
