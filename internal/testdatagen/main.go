@@ -369,7 +369,7 @@ func specs() []internal.APITestSpec {
 			Endpoint: "/address_txs",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
-				Body:   []byte("{\"_addresses\": [\"addr1qyp9kz50sh9c53hpmk3l4ewj9ur794t2hdqpngsjn3wkc5sztv9glpwt3frwrhdrltjaytc8ut2k4w6qrx3p98zad3fq07xe9g\"], \"_after_block_height\": 6238675}"),
+				Body:   []byte("{\"_addresses\": [\"addr1qyp9kz50sh9c53hpmk3l4ewj9ur794t2hdqpngsjn3wkc5sztv9glpwt3frwrhdrltjaytc8ut2k4w6qrx3p98zad3fq07xe9g\",\"addr1qyfldpcvte8nkfpyv0jdc8e026cz5qedx7tajvupdu2724tlj8sypsq6p90hl40ya97xamkm9fwsppus2ru8zf6j8g9sm578cu\"], \"_after_block_height\": 6238675}"),
 			},
 		},
 		{
@@ -387,7 +387,7 @@ func specs() []internal.APITestSpec {
 			Endpoint: "/credential_txs",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
-				Body:   []byte("{\"_payment_credentials\": [\"025b0a8f85cb8a46e1dda3fae5d22f07e2d56abb4019a2129c5d6c52\"], \"_after_block_height\": 6238675}"),
+				Body:   []byte("{\"_payment_credentials\": [\"025b0a8f85cb8a46e1dda3fae5d22f07e2d56abb4019a2129c5d6c52\",\"13f6870c5e4f3b242463e4dc1f2f56b02a032d3797d933816f15e555\"], \"_after_block_height\": 6238675}"),
 			},
 		},
 		{
