@@ -103,17 +103,17 @@ type (
 		MintingTxHash TxHash `json:"minting_tx_hash"`
 	}
 
-	// AssetTxs Txs info for the given asset (latest first).
-	AssetTxs struct {
-		// AssetName (hex)
-		AssetName AssetName `json:"asset_name"`
+	// // AssetTxs Txs info for the given asset (latest first).
+	// AssetTx struct {
+	// 	// AssetName (hex)
+	// 	AssetName AssetName `json:"asset_name"`
 
-		// PoliciID Asset Policy ID (hex)
-		PolicyID PolicyID `json:"policy_id"`
+	// 	// PoliciID Asset Policy ID (hex)
+	// 	PolicyID PolicyID `json:"policy_id"`
 
-		// TxHashes List of Tx hashes
-		TxHashes []TxHash `json:"tx_hashes"`
-	}
+	// 	// TxHashes List of Tx hashes
+	// 	TxHash TxHash `json:"tx_hash"`
+	// }.
 
 	// AssetListItem used to represent response from /asset_list`.
 	AssetListItem struct {
@@ -157,7 +157,7 @@ type (
 	// AssetTxsResponse represents response from `/asset_txs` endpoint.
 	AssetTxsResponse struct {
 		Response
-		Data *AssetTxs `json:"response"`
+		Data []TX `json:"response"`
 	}
 
 	// AssetPolicyInfo is response body for `/asset_policy_info` endpoint.
@@ -308,11 +308,11 @@ func (c *Client) GetAssetTxs(
 	if err != nil {
 		return
 	}
-	atxs := []AssetTxs{}
+	atxs := []TX{}
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
-	if len(atxs) == 1 {
-		res.Data = &atxs[0]
+	if len(atxs) > 0 {
+		res.Data = atxs
 	}
 	return
 }
@@ -334,11 +334,14 @@ func (c *Client) GetAssetPolicyInfo(
 	if err != nil {
 		return
 	}
-	info := []AssetPolicyInfo{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info)
+	info := &AssetPolicyInfo{
+		PolicyID: policy,
+		Assets:   nil,
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info.Assets)
 
-	if len(info) == 1 {
-		res.Data = &info[0]
+	if len(info.Assets) == 1 {
+		res.Data = info
 	}
 	return
 }
