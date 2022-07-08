@@ -308,7 +308,7 @@ func specs() []internal.APITestSpec {
 			Endpoint: "/tx_info",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
-				Body:   []byte("{\"_tx_hashes\": [\"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94\"]}"),
+				Body:   []byte("{\"_tx_hashes\": [\"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e\",\"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94\"]}"),
 			},
 		},
 		{
@@ -316,7 +316,7 @@ func specs() []internal.APITestSpec {
 			Endpoint: "/tx_utxos",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
-				Body:   []byte("{\"_tx_hashes\": [\"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e\"]}"),
+				Body:   []byte("{\"_tx_hashes\": [\"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e\", \"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94\"]}"),
 			},
 		},
 		{
@@ -324,7 +324,7 @@ func specs() []internal.APITestSpec {
 			Endpoint: "/tx_metadata",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
-				Body:   []byte("{\"_tx_hashes\": [\"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94\"]}"),
+				Body:   []byte("{\"_tx_hashes\": [\"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e\",\"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94\"]}"),
 			},
 		},
 		{
@@ -339,7 +339,7 @@ func specs() []internal.APITestSpec {
 			Endpoint: "/tx_status",
 			Request: internal.APITestRequestSpec{
 				Method: "POST",
-				Body:   []byte("{\"_tx_hashes\": [\"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e\"]}"),
+				Body:   []byte("{\"_tx_hashes\": [\"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e\",\"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94\"]}"),
 			},
 		},
 		{

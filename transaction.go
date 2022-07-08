@@ -262,7 +262,7 @@ func (c *Client) GetTxInfo(
 	res = &TxInfoResponse{}
 	rsp, err := c.GetTxsInfo(ctx, []TxHash{tx}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
+	if len(rsp.Data) > 0 {
 		res.Data = &rsp.Data[0]
 	}
 	return
@@ -297,7 +297,7 @@ func (c *Client) GetTxUTxOs(
 	res = &TxUTxOsResponse{}
 	rsp, err := c.GetTxsUTxOs(ctx, []TxHash{tx}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
+	if len(rsp.Data) > 0 {
 		res.Data = &rsp.Data[0]
 	}
 	return
@@ -333,7 +333,7 @@ func (c *Client) GetTxMetadata(
 	res = &TxMetadataResponse{}
 	rsp, err := c.GetTxsMetadata(ctx, []TxHash{tx}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
+	if len(rsp.Data) > 0 {
 		res.Data = &rsp.Data[0]
 	}
 	return
@@ -416,7 +416,7 @@ func (c *Client) GetTxStatus(
 	res = &TxStatusResponse{}
 	rsp, err := c.GetTxsStatuses(ctx, []TxHash{tx}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
+	if len(rsp.Data) > 0 {
 		res.Data = &rsp.Data[0]
 	}
 	return
