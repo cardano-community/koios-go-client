@@ -444,7 +444,33 @@ func (c *Client) GetTxsStatuses(
 
 // NewTxWithAutoFee.
 func NewTransaction() *TX {
-	return &TX{}
+	return &TX{
+		TxInfo{
+			UTxO: UTxO{
+				TxHash:  "",
+				Inputs:  nil,
+				Outputs: nil,
+			},
+			BlockHash:     BlockHash(""),
+			BlockHeight:   0,
+			Epoch:         EpochNo(0),
+			EpochSlot:     0,
+			AbsoluteSlot:  0,
+			TxTimestamp:   "",
+			TxBlockIndex:  0,
+			TxSize:        0,
+			TotalOutput:   NewLovelaceFromInt(0),
+			Fee:           NewLovelaceFromInt(0),
+			Deposit:       NewLovelaceFromInt(0),
+			InvalidAfter:  0,
+			InvalidBefore: 0,
+			AssetsMinted:  nil,
+			Collaterals:   nil,
+			Metadata:      nil,
+			Withdrawals:   nil,
+			Certificates:  nil,
+		},
+	}
 }
 
 func txHashesPL(txs []TxHash) io.Reader {

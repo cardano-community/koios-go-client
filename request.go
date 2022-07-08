@@ -69,7 +69,11 @@ func (ro *RequestOptions) Clone() (*RequestOptions, error) {
 		return nil, ErrReqOptsAlreadyUsed
 	}
 	opts := &RequestOptions{
-		headers: ro.headers.Clone(),
+		headers:  ro.headers.Clone(),
+		page:     ro.page,
+		pageSize: ro.pageSize,
+		query:    ro.query,
+		locked:   false,
 	}
 	q := url.Values{}
 	for k, v := range ro.query {
