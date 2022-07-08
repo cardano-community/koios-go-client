@@ -58,7 +58,7 @@ func (s *transactionTestSuite) TestGetTxInfoEndpoint() {
 			res, err := s.api.GetTxInfo(context.Background(), payload.TxHashes[0], nil)
 			if s.NoError(err) {
 				s.Greater(res.Data.AbsoluteSlot, uint64(0))
-				s.Len(res.Data.AssetsMinted, 3)
+				s.Len(res.Data.AssetsMinted, 0)
 				s.NotEmpty(res.Data.BlockHash)
 				s.Greater(res.Data.BlockHeight, uint64(0))
 				s.True(res.Data.Deposit.GreaterThanOrEqual(decimal.Zero))
@@ -91,7 +91,7 @@ func (s *transactionTestSuite) TestGetTxMetadataEndpoint() {
 		if s.NoError(err) {
 			res, err := s.api.GetTxMetadata(context.Background(), payload.TxHashes[0], nil)
 			if s.NoError(err) {
-				s.Equal(payload.TxHashes[0].String(), res.Data.TxHash.String())
+				s.Contains(payload.TxHashes, res.Data.TxHash)
 				s.NotNil(res.Data.Metadata)
 			}
 		}
