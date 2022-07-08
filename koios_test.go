@@ -76,8 +76,8 @@ func TestOptionErrs(t *testing.T) {
 
 func TestHTTPClient(t *testing.T) {
 	client, err := New(HTTPClient(http.DefaultClient))
-	assert.Nil(t, client, "client should be nil if there was error")
-	assert.Error(t, err, "should not accept default http client")
+	assert.NotEqual(t, http.DefaultClient, client)
+	assert.NoError(t, err)
 }
 
 func TestReadResponseBody(t *testing.T) {
@@ -93,12 +93,12 @@ func TestNewClients(t *testing.T) {
 	assert.NotNil(t, c1)
 
 	c2, err := New(HTTPClient(http.DefaultClient))
-	assert.Error(t, err)
-	assert.Nil(t, c2)
+	assert.NoError(t, err)
+	assert.NotNil(t, c2)
 
 	c3, err := c1.WithOptions(HTTPClient(http.DefaultClient))
-	assert.Error(t, err)
-	assert.Nil(t, c3)
+	assert.NoError(t, err)
+	assert.NotNil(t, c3)
 }
 
 var errApply = errors.New("apply error")
