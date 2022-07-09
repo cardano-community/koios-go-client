@@ -40,18 +40,30 @@ import (
 type endpointsTestSuite struct {
 	suite.Suite
 	specNames []string
-	srv       *httptest.Server
-	api       *koios.Client
+	mnsrv     *httptest.Server
+	mainnet   *koios.Client
+	tnsrv     *httptest.Server
+	testnet   *koios.Client
 	specs     []internal.APITestSpec
+	networks  []string
 }
 
 func (s *endpointsTestSuite) LoadSpecs(specNames []string) {
 	s.specNames = specNames
 }
 
-func (s *endpointsTestSuite) GetSpec(specName string) *internal.APITestSpec {
+func (s *endpointsTestSuite) Client(network string) *koios.Client {
+	switch network {
+	case "testnet":
+		return s.testnet
+	default:
+		return s.mainnet
+	}
+}
+
+func (s *endpointsTestSuite) GetSpec(specName, network string) *internal.APITestSpec {
 	for _, spec := range s.specs {
-		if spec.Filename == specName {
+		if spec.Filename == specName && spec.Network == network {
 			return &spec
 		}
 	}
@@ -59,15 +71,23 @@ func (s *endpointsTestSuite) GetSpec(specName string) *internal.APITestSpec {
 }
 
 func (s *endpointsTestSuite) TearDownSuite() {
-	s.srv.Close()
+	s.mnsrv.Close()
+	s.tnsrv.Close()
 }
 
 func (s *endpointsTestSuite) SetupSuite() {
-	mux := http.NewServeMux()
+	s.networks = []string{"mainnet", "testnet"}
+	s.T().Parallel()
+	s.setupMainnet()
+	s.setupTestnet()
+}
 
+func (s *endpointsTestSuite) setupMainnet() {
+	// mainnet
+	mnmux := http.NewServeMux()
 	for _, specName := range s.specNames {
 		spec := internal.APITestSpec{}
-		gzfile, err := os.Open(filepath.Join("testdata", specName+".json.gz"))
+		gzfile, err := os.Open(filepath.Join("testdata", "mainnet", specName+".json.gz"))
 		s.NoErrorf(err, "failed to open test compressed spec: %s", specName)
 		defer gzfile.Close()
 
@@ -80,34 +100,84 @@ func (s *endpointsTestSuite) SetupSuite() {
 
 		s.NoErrorf(json.Unmarshal(specb, &spec), "failed to Unmarshal test spec: %s", specName)
 
-		endpoint := fmt.Sprintf("/api/%s%s", koios.DefaultAPIVersion, spec.Endpoint)
-		mux.HandleFunc(endpoint, s.newHandleFunc(spec))
+		endpoint := fmt.Sprintf("/api/%s%s", "mainnet", spec.Endpoint)
+		mnmux.HandleFunc(endpoint, s.newHandleFunc(spec))
 		s.specs = append(s.specs, spec)
 	}
 
-	s.srv = httptest.NewUnstartedServer(mux)
-	s.srv.EnableHTTP2 = true
-	s.srv.StartTLS()
-	u, err := url.Parse(s.srv.URL)
-	s.NoErrorf(err, "failed to parse test server url: %s", s.srv.URL)
-	port, err := strconv.ParseUint(u.Port(), 0, 16)
-	s.NoError(err, "failed to parse port from server url %s", s.srv.URL)
-	client := s.srv.Client()
-	client.Timeout = time.Second * 10
+	s.mnsrv = httptest.NewUnstartedServer(mnmux)
+	s.mnsrv.EnableHTTP2 = true
+	s.mnsrv.StartTLS()
+	mnu, err := url.Parse(s.mnsrv.URL)
+	s.NoErrorf(err, "failed to parse test server url: %s", s.mnsrv.URL)
+	mnport, err := strconv.ParseUint(mnu.Port(), 0, 16)
+	s.NoError(err, "failed to parse port from server url %s", s.mnsrv.URL)
+	mnclient := s.mnsrv.Client()
+	mnclient.Timeout = time.Second * 10
 
 	c, err := koios.New(
-		koios.HTTPClient(client),
-		koios.Port(uint16(port)),
-		koios.Host(u.Hostname()),
+		koios.HTTPClient(mnclient),
+		koios.Port(uint16(mnport)),
+		koios.Host(mnu.Hostname()),
 		koios.CollectRequestsStats(true),
+		koios.APIVersion("mainnet"),
 	)
-	s.NoError(err, "failed to create api client")
+	s.NoError(err, "failed to create mainnet api client")
 
 	c2, err := c.WithOptions(koios.Host("127.0.0.2:80"))
 	s.NoError(err)
 	_, err = c2.GetTip(context.Background(), nil)
 	s.EqualError(err, "dial tcp: lookup 127.0.0.2:80: no such host")
-	s.api = c
+	s.mainnet = c
+}
+
+func (s *endpointsTestSuite) setupTestnet() {
+	// testnet
+	tnmux := http.NewServeMux()
+	for _, specName := range s.specNames {
+		spec := internal.APITestSpec{}
+		gzfile, err := os.Open(filepath.Join("testdata", "testnet", specName+".json.gz"))
+		s.NoErrorf(err, "failed to open test compressed spec: %s", specName)
+		defer gzfile.Close()
+
+		gzr, err := gzip.NewReader(gzfile)
+		s.NoErrorf(err, "failed create reader for test spec: %s", specName)
+
+		specb, err := io.ReadAll(gzr)
+		s.NoErrorf(err, "failed to read test spec: %s", specName)
+		gzr.Close()
+
+		s.NoErrorf(json.Unmarshal(specb, &spec), "failed to Unmarshal test spec: %s", specName)
+
+		endpoint := fmt.Sprintf("/api/%s%s", "testnet", spec.Endpoint)
+		tnmux.HandleFunc(endpoint, s.newHandleFunc(spec))
+		s.specs = append(s.specs, spec)
+	}
+
+	s.tnsrv = httptest.NewUnstartedServer(tnmux)
+	s.tnsrv.EnableHTTP2 = true
+	s.tnsrv.StartTLS()
+	tnu, err := url.Parse(s.tnsrv.URL)
+	s.NoErrorf(err, "failed to parse test server url: %s", s.tnsrv.URL)
+	tnport, err := strconv.ParseUint(tnu.Port(), 0, 16)
+	s.NoError(err, "failed to parse port from server url %s", s.tnsrv.URL)
+	tnclient := s.tnsrv.Client()
+	tnclient.Timeout = time.Second * 10
+
+	c3, err := koios.New(
+		koios.HTTPClient(tnclient),
+		koios.Port(uint16(tnport)),
+		koios.Host(tnu.Hostname()),
+		koios.CollectRequestsStats(true),
+		koios.APIVersion("testnet"),
+	)
+	s.NoError(err, "failed to create testnet api client")
+
+	c4, err := c3.WithOptions(koios.Host("127.0.0.2:80"))
+	s.NoError(err)
+	_, err = c4.GetTip(context.Background(), nil)
+	s.EqualError(err, "dial tcp: lookup 127.0.0.2:80: no such host")
+	s.testnet = c3
 }
 
 func (s *endpointsTestSuite) newHandleFunc(spec internal.APITestSpec) func(w http.ResponseWriter, r *http.Request) {

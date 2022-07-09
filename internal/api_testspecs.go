@@ -38,6 +38,7 @@ type APITestResponseSpec struct {
 
 // APITestSpec is testdata spec.
 type APITestSpec struct {
+	Network  string              `json:"network"`
 	Filename string              `json:"filename"`
 	Endpoint string              `json:"endpoint"`
 	Request  APITestRequestSpec  `json:"request"`
