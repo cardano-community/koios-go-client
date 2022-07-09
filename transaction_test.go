@@ -22,7 +22,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/cardano-community/koios-go-client"
+	"github.com/cardano-community/koios-go-client/v2"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/suite"
 )

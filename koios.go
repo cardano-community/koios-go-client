@@ -136,7 +136,7 @@ type (
 		Index int `json:"index"`
 
 		// Info is A JSON object containing information from the certificate.
-		Info map[string]interface{} `json:"info"`
+		Info map[string]any `json:"info"`
 
 		// Type of certificate could be:
 		// delegation, stake_registration, stake_deregistraion, pool_update,

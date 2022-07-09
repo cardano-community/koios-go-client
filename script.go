@@ -36,7 +36,7 @@ type (
 		DatumHash string `json:"datum_hash"`
 
 		// The actual data in json format
-		DatumValue map[string]interface{} `json:"datum_value"`
+		DatumValue map[string]any `json:"datum_value"`
 
 		// The budget in fees to run a script - the fees depend on the
 		// ExUnits and the current prices.
@@ -68,8 +68,8 @@ type (
 		ScriptHash string `json:"script_hash"`
 		Type       string `json:"type"`
 		Script     struct {
-			Type    string                   `json:"type"`
-			Scripts []map[string]interface{} `json:"scripts"`
+			Type    string           `json:"type"`
+			Scripts []map[string]any `json:"scripts"`
 		} `json:"script"`
 	}
 
