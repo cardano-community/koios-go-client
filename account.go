@@ -18,37 +18,39 @@ package koios
 
 import (
 	"context"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
 	// AccountInfo data returned by `/account_info`.
 	AccountInfo struct {
-		Status           string   `json:"status"`
-		DelegatedPool    PoolID   `json:"delegated_pool"`
-		TotalBalance     Lovelace `json:"total_balance"`
-		UTxO             Lovelace `json:"utxo"`
-		Rewards          Lovelace `json:"rewards"`
-		Withdrawals      Lovelace `json:"withdrawals"`
-		RewardsAvailable Lovelace `json:"rewards_available"`
-		Reserves         Lovelace `json:"reserves"`
-		Treasury         Lovelace `json:"treasury"`
+		Status           string          `json:"status"`
+		DelegatedPool    PoolID          `json:"delegated_pool"`
+		TotalBalance     decimal.Decimal `json:"total_balance"`
+		UTxO             decimal.Decimal `json:"utxo"`
+		Rewards          decimal.Decimal `json:"rewards"`
+		Withdrawals      decimal.Decimal `json:"withdrawals"`
+		RewardsAvailable decimal.Decimal `json:"rewards_available"`
+		Reserves         decimal.Decimal `json:"reserves"`
+		Treasury         decimal.Decimal `json:"treasury"`
 	}
 
 	// AccountRewards data returned by `/account_rewards`.
 	AccountRewards struct {
-		PoolID         PoolID   `json:"pool_id"`
-		EarnedEpoch    EpochNo  `json:"earned_epoch"`
-		SpendableEpoch EpochNo  `json:"spendable_epoch"`
-		Amount         Lovelace `json:"amount"`
-		Type           string   `json:"type"`
+		PoolID         PoolID          `json:"pool_id"`
+		EarnedEpoch    EpochNo         `json:"earned_epoch"`
+		SpendableEpoch EpochNo         `json:"spendable_epoch"`
+		Amount         decimal.Decimal `json:"amount"`
+		Type           string          `json:"type"`
 	}
 
 	// AccountHistoryEntry history entry list item.
 	AccountHistoryEntry struct {
-		StakeAddress StakeAddress `json:"stake_address"`
-		PoolID       PoolID       `json:"pool_id"`
-		Epoch        EpochNo      `json:"epoch_no"`
-		ActiveStake  Lovelace     `json:"active_stake"`
+		StakeAddress StakeAddress    `json:"stake_address"`
+		PoolID       PoolID          `json:"pool_id"`
+		Epoch        EpochNo         `json:"epoch_no"`
+		ActiveStake  decimal.Decimal `json:"active_stake"`
 	}
 
 	// AccountAsset asset list item when requesting account info.
@@ -60,7 +62,7 @@ type (
 		PolicyID PolicyID `json:"asset_policy"`
 
 		// Quantity of assets
-		Quantity Lovelace `json:"quantity"`
+		Quantity decimal.Decimal `json:"quantity"`
 	}
 
 	// AccountAction data entry for `/account_updates`.
