@@ -118,7 +118,7 @@ func TestApplyError(t *testing.T) {
 	)
 	assert.Equal(t, "the-hint", res.Error.Hint)
 	assert.Equal(t, "apply error: the-message", res.Error.Message)
-	assert.Equal(t, "101", res.Error.Code)
+	assert.Equal(t, ErrorCode("101"), res.Error.Code)
 	assert.Equal(t, "the-details", res.Error.Details)
 }
 
