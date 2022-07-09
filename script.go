@@ -18,6 +18,8 @@ package koios
 
 import (
 	"context"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -36,11 +38,11 @@ type (
 		DatumHash string `json:"datum_hash"`
 
 		// The actual data in json format
-		DatumValue map[string]interface{} `json:"datum_value"`
+		DatumValue map[string]any `json:"datum_value"`
 
 		// The budget in fees to run a script - the fees depend on the
 		// ExUnits and the current prices.
-		Fee Lovelace `json:"fee,omitempty"`
+		Fee decimal.Decimal `json:"fee,omitempty"`
 
 		// What kind pf validation this redeemer is used for,
 		// it can be one of 'spend', 'mint', 'cert', 'reward'.
@@ -50,7 +52,7 @@ type (
 		TxHash TxHash `json:"tx_hash"`
 
 		// TxIndex The index of the redeemer pointer in the transaction.
-		TxIndex int `json:"tx_index"`
+		TxIndex uint32 `json:"tx_index"`
 
 		// The budget in Memory to run a script.
 		UnitMem int `json:"unit_mem"`
@@ -68,8 +70,8 @@ type (
 		ScriptHash string `json:"script_hash"`
 		Type       string `json:"type"`
 		Script     struct {
-			Type    string                   `json:"type"`
-			Scripts []map[string]interface{} `json:"scripts"`
+			Type    string           `json:"type"`
+			Scripts []map[string]any `json:"scripts"`
 		} `json:"script"`
 	}
 

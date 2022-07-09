@@ -10,7 +10,8 @@
 *~
 **/*.sw[mnop]
 .env
-testdata/**.json
+testdata/mainnet/**.json
+testdata/testnet/**.json
 covprofile.coverprofile
 coverage.txt
 

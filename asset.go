@@ -18,6 +18,8 @@ package koios
 
 import (
 	"context"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -33,7 +35,7 @@ type (
 		// Input: asset balance on the selected input transaction.
 		// Output: sum of assets for output UTxO.
 		// Mint: sum of minted assets (negative on burn).
-		Quantity Lovelace `json:"quantity"`
+		Quantity decimal.Decimal `json:"quantity"`
 	}
 
 	// TokenRegistryMetadata metadata registered on the Cardano Token Registry.
@@ -88,7 +90,7 @@ type (
 		PolicyID PolicyID `json:"policy_id,omitempty"`
 
 		// TotalSupply of Asset
-		TotalSupply Lovelace `json:"total_supply"`
+		TotalSupply decimal.Decimal `json:"total_supply"`
 
 		// CreationTime of Asset
 		CreationTime Time `json:"creation_time"`
@@ -103,17 +105,17 @@ type (
 		MintingTxHash TxHash `json:"minting_tx_hash"`
 	}
 
-	// AssetTxs Txs info for the given asset (latest first).
-	AssetTxs struct {
-		// AssetName (hex)
-		AssetName AssetName `json:"asset_name"`
+	// // AssetTxs Txs info for the given asset (latest first).
+	// AssetTx struct {
+	// 	// AssetName (hex)
+	// 	AssetName AssetName `json:"asset_name"`
 
-		// PoliciID Asset Policy ID (hex)
-		PolicyID PolicyID `json:"policy_id"`
+	// 	// PoliciID Asset Policy ID (hex)
+	// 	PolicyID PolicyID `json:"policy_id"`
 
-		// TxHashes List of Tx hashes
-		TxHashes []TxHash `json:"tx_hashes"`
-	}
+	// 	// TxHashes List of Tx hashes
+	// 	TxHash TxHash `json:"tx_hash"`
+	// }.
 
 	// AssetListItem used to represent response from /asset_list`.
 	AssetListItem struct {
@@ -132,8 +134,8 @@ type (
 
 	// AssetHolder payment addresses holding the given token (including balance).
 	AssetHolder struct {
-		PaymentAddress Address  `json:"payment_address"`
-		Quantity       Lovelace `json:"quantity"`
+		PaymentAddress Address         `json:"payment_address"`
+		Quantity       decimal.Decimal `json:"quantity"`
 	}
 
 	// AssetAddressListResponse represents response from `/asset_address_list` endpoint.
@@ -157,7 +159,7 @@ type (
 	// AssetTxsResponse represents response from `/asset_txs` endpoint.
 	AssetTxsResponse struct {
 		Response
-		Data *AssetTxs `json:"response"`
+		Data []TX `json:"response"`
 	}
 
 	// AssetPolicyInfo is response body for `/asset_policy_info` endpoint.
@@ -174,8 +176,8 @@ type (
 
 	// AssetMintTX holds specific mint tx hash and amount.
 	AssetMintTX struct {
-		TxHash   TxHash   `json:"tx_hash"`
-		Quantity Lovelace `json:"quantity"`
+		TxHash   TxHash          `json:"tx_hash"`
+		Quantity decimal.Decimal `json:"quantity"`
 	}
 
 	// AssetHistory holds given asset mint/burn tx's.
@@ -308,11 +310,11 @@ func (c *Client) GetAssetTxs(
 	if err != nil {
 		return
 	}
-	atxs := []AssetTxs{}
+	atxs := []TX{}
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
-	if len(atxs) == 1 {
-		res.Data = &atxs[0]
+	if len(atxs) > 0 {
+		res.Data = atxs
 	}
 	return
 }
@@ -334,11 +336,14 @@ func (c *Client) GetAssetPolicyInfo(
 	if err != nil {
 		return
 	}
-	info := []AssetPolicyInfo{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info)
+	info := &AssetPolicyInfo{
+		PolicyID: policy,
+		Assets:   nil,
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info.Assets)
 
-	if len(info) == 1 {
-		res.Data = &info[0]
+	if len(info.Assets) == 1 {
+		res.Data = info
 	}
 	return
 }

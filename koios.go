@@ -29,6 +29,7 @@ import (
 	"net/http"
 	"net/url"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -48,6 +49,7 @@ import (
 // DefaultOrigin     : is default origin header used by api client.
 const (
 	MainnetHost              = "api.koios.rest"
+	MainnetHostEU            = "eu-api.koios.rest"
 	GuildHost                = "guild.koios.rest"
 	TestnetHost              = "testnet.koios.rest"
 	DefaultAPIVersion        = "v0"
@@ -70,11 +72,16 @@ var (
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoPoolID                 = errors.New("missing pool id")
-	ErrResponse                 = errors.New("got unexpected response")
+	ErrResponse                 = errors.New("http error")
 	ErrSchema                   = errors.New("scheme must be http or https")
 	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
-	ZeroLovelace                = NewLovelace(0, 1) //nolint: gochecknoglobals
+	ErrUTxOInputAlreadyUsed     = errors.New("UTxO already used")
+
+	// ZeroLovelace is alias decimal.Zero
+	ZeroLovelace = decimal.Zero.Copy() //1nolint: gochecknoglobals
+	// ZeroCoin is alias decimal.Zero
+	ZeroCoin = decimal.Zero.Copy() //nolint: gochecknoglobals
 )
 
 type (
@@ -86,15 +93,6 @@ type (
 		client          *http.Client
 		commonHeaders   http.Header
 	}
-
-	// Option is callback function to apply
-	// configurations options of API Client.
-	Option struct {
-		apply func(*Client) error
-	}
-
-	// Address defines type for _address.
-	Address string
 
 	// PaymentCredential type def.
 	PaymentCredential string
@@ -120,30 +118,16 @@ type (
 	// ScriptHash defines type for _script_hash.
 	ScriptHash string
 
-	// StakeAddress is Cardano staking address (reward account, bech32 encoded).
-	StakeAddress string
-
 	// Time extends time to fix time format anomalies turing Unmarshal and Marshal.
 	Time struct {
 		time.Time
-	}
-
-	// Lovelace defines type for ADA lovelaces. This library uses forked snapshot
-	// of github.com/shopspring/decimal package to provide. JSON and XML
-	// serialization/deserialization and make it ease to work with calculations
-	// and deciimal precisions of ADA lovelace and native assets.
-	//
-	// For API of decimal package see
-	// https://pkg.go.dev/github.com/shopspring/decimal
-	Lovelace struct {
-		decimal.Decimal
 	}
 
 	// PaymentAddr info.
 	PaymentAddr struct {
 		// Bech32 is Cardano payment/base address (bech32 encoded)
 		// for transaction's or change to be returned.
-		Bech32 string `json:"bech32"`
+		Bech32 Address `json:"bech32"`
 
 		// Payment credential.
 		Cred PaymentCredential `json:"cred"`
@@ -155,7 +139,7 @@ type (
 		Index int `json:"index"`
 
 		// Info is A JSON object containing information from the certificate.
-		Info map[string]interface{} `json:"info"`
+		Info map[string]any `json:"info"`
 
 		// Type of certificate could be:
 		// delegation, stake_registration, stake_deregistraion, pool_update,
@@ -193,15 +177,6 @@ type (
 		Stats *RequestStats `json:"stats,omitempty"`
 	}
 
-	// RequestOptions for the request.
-	RequestOptions struct {
-		page     uint
-		pageSize uint
-		locked   bool
-		query    url.Values
-		headers  http.Header
-	}
-
 	// RequestStats represent collected request stats if collecting
 	// request stats is enabled.
 	RequestStats struct {
@@ -226,21 +201,6 @@ type (
 
 		// ReqDurStr String representation of ReqDur.
 		ReqDurStr string `json:"req_dur_str,omitempty"`
-	}
-
-	// ResponseError represents api error messages.
-	ResponseError struct {
-		// Hint of the error reported by server.
-		Hint string `json:"hint,omitempty"`
-
-		// Details of the error reported by server.
-		Details string `json:"details,omitempty"`
-
-		// Code is error code reported by server.
-		Code string `json:"code,omitempty"`
-
-		// Message is error message reported by server.
-		Message string `json:"message,omitempty"`
 	}
 )
 
@@ -303,11 +263,6 @@ func New(opts ...Option) (*Client, error) {
 	return c, nil
 }
 
-// String returns Address as string.
-func (v Address) String() string {
-	return string(v)
-}
-
 // String returns PaymentCredential as string.
 func (v PaymentCredential) String() string {
 	return string(v)
@@ -325,7 +280,7 @@ func (v BlockHash) String() string {
 
 // String returns TxHash as string.
 func (v TxHash) String() string {
-	return string(v)
+	return strings.Trim(string(v), "\"")
 }
 
 // String returns EpochNo as string.
@@ -345,11 +300,6 @@ func (v PolicyID) String() string {
 
 // String returns ScriptHash as string.
 func (v ScriptHash) String() string {
-	return string(v)
-}
-
-// String returns StakeAddress as string.
-func (v StakeAddress) String() string {
 	return string(v)
 }
 

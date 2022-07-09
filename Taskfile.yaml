@@ -90,4 +90,5 @@ tasks:
     desc: Unpack testdata - useful if you want to inspect it. (task testdata:unpack endpoint_id|all)
     dir: internal/testdatagen
     cmds:
-      - go run . unpack ../../testdata {{.CLI_ARGS}}
+      - go run . unpack ../../testdata/mainnet {{.CLI_ARGS}}
+      - go run . unpack ../../testdata/testnet {{.CLI_ARGS}}

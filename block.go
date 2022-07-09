@@ -113,7 +113,8 @@ func (c *Client) GetBlockInfo(
 	res = &BlockInfoResponse{}
 	rsp, err := c.GetBlocksInfo(ctx, []BlockHash{hash}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
+
+	if len(rsp.Data) > 0 {
 		res.Data = &rsp.Data[0]
 	}
 	return

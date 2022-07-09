@@ -20,19 +20,27 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
+	// Address defines type for _address.
+	Address string
+
+	// StakeAddress is Cardano staking address (reward account, bech32 encoded).
+	StakeAddress Address
+
 	// AddressUTxO UTxO attached to address.
 	AddressUTxO struct {
 		// Hash of Transaction for input UTxO.
 		TxHash TxHash `json:"tx_hash"`
 
 		// Index of input UTxO on the mentioned address used for input.
-		TxIndex int `json:"tx_index"`
+		TxIndex uint32 `json:"tx_index"`
 
 		// Balance on the selected input transaction.
-		Value Lovelace `json:"value"`
+		Value decimal.Decimal `json:"value"`
 
 		// An array of assets contained on UTxO.
 		AssetList []Asset `json:"asset_list"`
@@ -41,7 +49,7 @@ type (
 	// AddressInfo esponse for `/address_info`.
 	AddressInfo struct {
 		// Balance ADA Lovelace balance of address
-		Balance Lovelace `json:"balance"`
+		Balance decimal.Decimal `json:"balance"`
 
 		// StakeAddress associated with address
 		StakeAddress StakeAddress `json:"stake_address,omitempty"`
@@ -80,9 +88,46 @@ type (
 	}
 )
 
+// Valid validates address and returns false and error
+// if address is invalid otherwise it returns true, nil.
+func (a Address) Valid() (bool, error) {
+	if len(a) == 0 {
+		return false, ErrNoAddress
+	}
+	return true, nil
+}
+
+// String returns StakeAddress as string.
+func (a Address) String() string {
+	return string(a)
+}
+
+// Bytes returns address bytes.
+func (a Address) Bytes() []byte {
+	return []byte(a)
+}
+
+// Valid validates address and returns false and error
+// if address is invalid otherwise it returns true, nil.
+func (a StakeAddress) Valid() (bool, error) {
+	if len(a) == 0 {
+		return false, ErrNoAddress
+	}
+	return true, nil
+}
+
+// String returns StakeAddress as string.
+func (a StakeAddress) String() string {
+	return string(a)
+}
+
+// Bytes returns address bytes.
+func (a StakeAddress) Bytes() []byte {
+	return []byte(a)
+}
+
 // GetAddressInfo returns address info - balance,
 // associated stake address (if any) and UTxO set.
-
 func (c *Client) GetAddressInfo(
 	ctx context.Context,
 	addr Address,
@@ -207,9 +252,7 @@ func (c *Client) GetCredentialTxs(
 	}()
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, opts)
-	if err != nil {
-		return
-	}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-	return res, err
+	res.applyError(nil, err)
+
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }

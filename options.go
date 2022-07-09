@@ -24,6 +24,23 @@ import (
 	"golang.org/x/time/rate"
 )
 
+type (
+	// RequestOptions for the request.
+	RequestOptions struct {
+		page     uint
+		pageSize uint
+		locked   bool
+		query    url.Values
+		headers  http.Header
+	}
+
+	// Option is callback function to apply
+	// configurations options of API Client.
+	Option struct {
+		apply func(*Client) error
+	}
+)
+
 // Host returns option apply func which can be used to change the
 // baseurl hostname https://<host>/api/v0/
 func Host(host string) Option {
@@ -84,9 +101,8 @@ func HTTPClient(client *http.Client) Option {
 				return ErrHTTPClientChange
 			}
 			if client == nil {
-				client = &http.Client{
-					Timeout: time.Second * 60,
-				}
+				client = http.DefaultClient
+				client.Timeout = time.Second * 60
 			}
 			if client.Timeout == 0 {
 				return ErrHTTPClientTimeoutSetting

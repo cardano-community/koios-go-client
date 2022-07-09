@@ -34,16 +34,16 @@ type (
 		BlockNo uint64 `json:"block_no"`
 
 		// Timestamp for when the block was created
-		BlockTime string `json:"block_time"`
+		BlockTime Time `json:"block_time"`
 
 		// EpochNo number
-		EpochNo uint64 `json:"epoch_no"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// Slot number within Epoch
 		EpochSlot uint64 `json:"epoch_slot"`
 
 		// Block Hash in hex
-		Hash string `json:"hash"`
+		Hash BlockHash `json:"hash"`
 	}
 
 	// TipResponse response of /tip.
@@ -71,7 +71,7 @@ type (
 		Maxkesrevolutions decimal.Decimal `json:"maxkesrevolutions"`
 
 		// Maximum smallest units (lovelaces) supply for the blockchain.
-		Maxlovelacesupply Lovelace `json:"maxlovelacesupply"`
+		Maxlovelacesupply decimal.Decimal `json:"maxlovelacesupply"`
 
 		// Network ID used at various CLI identification to distinguish between
 		// Mainnet and other networks.
@@ -111,23 +111,23 @@ type (
 	Totals struct {
 
 		// Circulating UTxOs for given epoch (in lovelaces).
-		Circulation Lovelace `json:"circulation"`
+		Circulation decimal.Decimal `json:"circulation"`
 
 		// Epoch number.
 		Epoch EpochNo `json:"epoch_no"`
 
 		// Total Reserves yet to be unlocked on chain.
-		Reserves Lovelace `json:"reserves"`
+		Reserves decimal.Decimal `json:"reserves"`
 
 		// Rewards accumulated as of given epoch (in lovelaces).
-		Reward Lovelace `json:"reward"`
+		Reward decimal.Decimal `json:"reward"`
 
 		// Total Active Supply (sum of treasury funds, rewards,
 		// UTxOs, deposits and fees) for given epoch (in lovelaces).
-		Supply Lovelace `json:"supply"`
+		Supply decimal.Decimal `json:"supply"`
 
 		// Funds in treasury for given epoch (in lovelaces).
-		Treasury Lovelace `json:"treasury"`
+		Treasury decimal.Decimal `json:"treasury"`
 	}
 
 	// TotalsResponse represents response from `/totals` endpoint.
@@ -194,8 +194,8 @@ func (c *Client) GetTotals(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
-func (g *Genesis) AlonzoGenesisMap() (map[string]interface{}, error) {
-	var data map[string]interface{}
+func (g *Genesis) AlonzoGenesisMap() (map[string]any, error) {
+	var data map[string]any
 	if err := json.Unmarshal([]byte(g.Alonzogenesis), &data); err != nil {
 		return nil, err
 	}

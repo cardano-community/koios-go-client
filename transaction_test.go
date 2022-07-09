@@ -22,7 +22,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/cardano-community/koios-go-client"
+	"github.com/cardano-community/koios-go-client/v2"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/suite"
 )
@@ -57,20 +57,20 @@ func (s *transactionTestSuite) TestGetTxInfoEndpoint() {
 		if s.NoError(err) {
 			res, err := s.api.GetTxInfo(context.Background(), payload.TxHashes[0], nil)
 			if s.NoError(err) {
-				s.Greater(res.Data.AbsoluteSlot, 0)
-				s.Len(res.Data.AssetsMinted, 3)
+				s.Greater(res.Data.AbsoluteSlot, uint64(0))
+				s.Len(res.Data.AssetsMinted, 0)
 				s.NotEmpty(res.Data.BlockHash)
-				s.Greater(res.Data.BlockHeight, 0)
+				s.Greater(res.Data.BlockHeight, uint64(0))
 				s.True(res.Data.Deposit.GreaterThanOrEqual(decimal.Zero))
 				s.Greater(res.Data.Epoch, uint64(0))
-				s.Greater(res.Data.EpochSlot, 0)
+				s.Greater(res.Data.EpochSlot, uint32(0))
 				s.True(res.Data.Fee.IsPositive())
 				s.Len(res.Data.Inputs, 1)
-				s.Greater(res.Data.InvalidAfter, 0)
-				s.Equal(res.Data.InvalidBefore, 0)
+				s.Greater(res.Data.InvalidAfter, uint64(0))
+				s.Equal(res.Data.InvalidBefore, uint64(0))
 				s.True(res.Data.TotalOutput.IsPositive())
-				s.Greater(res.Data.TxBlockIndex, 0)
-				s.Greater(res.Data.TxSize, 0)
+				s.Greater(res.Data.TxBlockIndex, uint32(0))
+				s.Greater(res.Data.TxSize, uint32(0))
 			}
 		}
 
@@ -91,7 +91,7 @@ func (s *transactionTestSuite) TestGetTxMetadataEndpoint() {
 		if s.NoError(err) {
 			res, err := s.api.GetTxMetadata(context.Background(), payload.TxHashes[0], nil)
 			if s.NoError(err) {
-				s.Equal(payload.TxHashes[0].String(), res.Data.TxHash.String())
+				s.Contains(payload.TxHashes, res.Data.TxHash)
 				s.NotNil(res.Data.Metadata)
 			}
 		}
@@ -153,7 +153,11 @@ func (s *transactionTestSuite) TestGetTxsUTxOsEndpoint() {
 func (s *transactionTestSuite) TestTxSubmit() {
 	spec := s.GetSpec("endpoint_tx_submit")
 	if s.NotNil(spec) {
-		payload := koios.TxBodyJSON{}
+		payload := koios.TxBodyJSON{
+			CborHex:     "",
+			Description: "",
+			Type:        "",
+		}
 		err := json.Unmarshal(spec.Request.Body, &payload)
 		if s.NoError(err) {
 			res, err := s.api.SubmitSignedTx(context.Background(), payload, nil)
@@ -164,7 +168,11 @@ func (s *transactionTestSuite) TestTxSubmit() {
 			}
 		}
 
-		res2, err := s.api.SubmitSignedTx(context.Background(), koios.TxBodyJSON{CborHex: "x"}, nil)
+		res2, err := s.api.SubmitSignedTx(context.Background(), koios.TxBodyJSON{
+			CborHex:     "x",
+			Description: "",
+			Type:        "",
+		}, nil)
 		s.Error(err, "submited tx should return error")
 		s.Equal(res2.StatusCode, 400)
 	}

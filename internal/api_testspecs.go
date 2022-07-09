@@ -33,11 +33,12 @@ type APITestRequestSpec struct {
 type APITestResponseSpec struct {
 	Code   int         `json:"code"`
 	Header http.Header `json:"headers"`
-	Body   interface{} `json:"body"`
+	Body   any         `json:"body"`
 }
 
 // APITestSpec is testdata spec.
 type APITestSpec struct {
+	Network  string              `json:"network"`
 	Filename string              `json:"filename"`
 	Endpoint string              `json:"endpoint"`
 	Request  APITestRequestSpec  `json:"request"`
