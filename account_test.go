@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/cardano-community/koios-go-client"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -62,16 +63,25 @@ func (s *accountTestSuite) TestAccountInfoEndpoint() {
 			nil,
 		)
 		if s.NoError(err) {
-			s.NotEmpty(res.Data.DelegatedPool)
-			s.NotEmpty(res.Data.Reserves.String())
-			s.NotEmpty(res.Data.Treasury.String())
+			s.Equal("pool12fclephansjkz0qn339w7mu9jwef2ty439as08avaw7fuyk56j6", res.Data.DelegatedPool.String())
+			s.True(res.Data.Reserves.Decimal.Equal(koios.ZeroLovelace.Decimal))
 			s.True(res.Data.Rewards.IsPositive())
 			s.True(res.Data.RewardsAvailable.IsPositive())
-			s.NotEmpty(res.Data.Status)
+			s.Equal("registered", res.Data.Status)
 			s.True(res.Data.TotalBalance.IsPositive())
+			s.True(res.Data.Treasury.Equal(koios.ZeroLovelace.Decimal))
 			s.True(res.Data.UTxO.IsPositive())
 			s.True(res.Data.Withdrawals.IsPositive())
 		}
+	}
+
+	res2, err2 := s.api.GetAccountInfo(
+		context.Background(),
+		koios.Address(""),
+		nil,
+	)
+	if s.Error(err2) && s.NotNil(res2) {
+		s.ErrorIs(res2.Error, koios.ErrNoAddress)
 	}
 }
 
@@ -84,7 +94,7 @@ func (s *accountTestSuite) TestAccountRewardsEndpoint() {
 
 		res, err := s.api.GetAccountRewards(
 			context.Background(),
-			koios.StakeAddress(spec.Request.Query.Get("_address")),
+			koios.StakeAddress(spec.Request.Query.Get("_stake_address")),
 			&epoch,
 			nil,
 		)
@@ -94,8 +104,18 @@ func (s *accountTestSuite) TestAccountRewardsEndpoint() {
 			s.Greater(res.Data[0].EarnedEpoch, koios.EpochNo(0))
 			s.NotEmpty(res.Data[0].PoolID)
 			s.Greater(res.Data[0].SpendableEpoch, koios.EpochNo(0))
-			s.NotEmpty(res.Data[0].Type)
+			s.Equal("leader", res.Data[0].Type)
 		}
+	}
+
+	res2, err2 := s.api.GetAccountRewards(
+		context.Background(),
+		koios.StakeAddress(""),
+		nil,
+		nil,
+	)
+	if s.Error(err2) && s.NotNil(res2) {
+		s.ErrorIs(res2.Error, koios.ErrNoAddress)
 	}
 }
 
@@ -104,13 +124,23 @@ func (s *accountTestSuite) TestAccountUpdatesEndpoint() {
 	if s.NotNil(spec) {
 		res, err := s.api.GetAccountUpdates(
 			context.Background(),
-			koios.StakeAddress(spec.Request.Query.Get("_address")),
+			koios.StakeAddress(spec.Request.Query.Get("_stake_address")),
 			nil,
 		)
 		if s.NoError(err) {
 			s.NotEmpty(res.Data[0].ActionType)
 			s.NotEmpty(res.Data[0].TxHash)
+			s.Len(res.Data, 3)
 		}
+	}
+
+	res2, err2 := s.api.GetAccountUpdates(
+		context.Background(),
+		koios.StakeAddress(""),
+		nil,
+	)
+	if s.Error(err2) && s.NotNil(res2) {
+		s.ErrorIs(res2.Error, koios.ErrNoAddress)
 	}
 }
 
@@ -125,6 +155,20 @@ func (s *accountTestSuite) TestAccountAddressesEndpoint() {
 		if s.NoError(err) {
 			s.Greater(len(res.Data), 0)
 		}
+		s.Equal(
+			koios.Address(
+				"addr1qxeal3u4jlknqpmpkswyqmq58ggzrytu6v5rg73p64eppaxgvhcs6e4zud6jg267l8c940yggr2pxssestmzcdwwf7lsswrvnt",
+			),
+			res.Data[0],
+		)
+	}
+	res2, err2 := s.api.GetAccountAddresses(
+		context.Background(),
+		koios.StakeAddress(""),
+		nil,
+	)
+	if s.Error(err2) && s.NotNil(res2) {
+		s.ErrorIs(res2.Error, koios.ErrNoAddress)
 	}
 }
 
@@ -137,10 +181,19 @@ func (s *accountTestSuite) TestAccountAssetsEndpoint() {
 			nil,
 		)
 		if s.NoError(err) && s.Greater(len(res.Data), 0) {
-			s.NotEmpty(res.Data[0].Name)
-			s.NotEmpty(res.Data[0].PolicyID)
-			s.True(res.Data[0].Quantity.IsPositive())
+			s.Equal("DONTSPAM", res.Data[0].Name)
+			s.Equal("d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", res.Data[0].PolicyID.String())
+			s.True(res.Data[0].Quantity.Decimal.Equal(decimal.New(9900000, 0)))
 		}
+	}
+
+	res2, err2 := s.api.GetAccountAssets(
+		context.Background(),
+		koios.StakeAddress(""),
+		nil,
+	)
+	if s.Error(err2) && s.NotNil(res2) {
+		s.ErrorIs(res2.Error, koios.ErrNoAddress)
 	}
 }
 
@@ -154,9 +207,113 @@ func (s *accountTestSuite) TestAccountHistoryEndpoint() {
 		)
 		if s.NoError(err) {
 			s.True(res.Data[0].ActiveStake.IsPositive())
-			s.Greater(res.Data[0].Epoch, koios.EpochNo(0))
-			s.NotEmpty(res.Data[0].PoolID)
-			s.NotEmpty(res.Data[0].StakeAddress)
+			s.Equal(koios.EpochNo(213), res.Data[0].Epoch)
+			s.Equal("pool12fclephansjkz0qn339w7mu9jwef2ty439as08avaw7fuyk56j6", res.Data[0].PoolID.String())
+			s.NotEmpty("stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz", res.Data[0].StakeAddress.String())
 		}
+	}
+
+	res2, err2 := s.api.GetAccountHistory(
+		context.Background(),
+		koios.StakeAddress(""),
+		nil,
+	)
+	if s.Error(err2) && s.NotNil(res2) {
+		s.ErrorIs(res2.Error, koios.ErrNoAddress)
+	}
+}
+
+// nolint: funlen
+func (s *accountTestSuite) TestAccountErrors() {
+	stakeaddr := "stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"
+	opts := s.api.NewRequestOptions()
+	opts.QueryAdd("test-http", "400")
+
+	res1, err1 := s.api.GetAccountList(context.Background(), opts)
+	if s.Error(err1) && s.NotNil(res1) {
+		s.Nil(res1.Data)
+		s.Equal("http error: 400 Bad Request", res1.Error.Message)
+		s.Equal(koios.ErrorCode("400"), res1.Error.Code)
+		s.Equal(400, res1.Error.Code.Int())
+		s.ErrorIs(res1.Error, koios.ErrResponse)
+	}
+
+	res2, err2 := s.api.GetAccountInfo(
+		context.Background(),
+		koios.Address(stakeaddr),
+		opts.Clone(),
+	)
+	if s.Error(err2) && s.NotNil(res2) {
+		s.Nil(res2.Data)
+		s.Equal("http error: 400 Bad Request", res2.Error.Message)
+		s.Equal(koios.ErrorCode("400"), res2.Error.Code)
+		s.Equal(400, res2.Error.Code.Int())
+		s.ErrorIs(res2.Error, koios.ErrResponse)
+	}
+
+	res3, err3 := s.api.GetAccountRewards(
+		context.Background(),
+		koios.StakeAddress(stakeaddr),
+		nil,
+		opts.Clone(),
+	)
+	if s.Error(err3) && s.NotNil(res3) {
+		s.Nil(res3.Data)
+		s.Equal("http error: 400 Bad Request", res3.Error.Message)
+		s.Equal(koios.ErrorCode("400"), res3.Error.Code)
+		s.Equal(400, res3.Error.Code.Int())
+		s.ErrorIs(res3.Error, koios.ErrResponse)
+	}
+
+	res4, err4 := s.api.GetAccountUpdates(
+		context.Background(),
+		koios.StakeAddress(stakeaddr),
+		opts.Clone(),
+	)
+	if s.Error(err4) && s.NotNil(res4) {
+		s.Nil(res4.Data)
+		s.Equal("http error: 400 Bad Request", res4.Error.Message)
+		s.Equal(koios.ErrorCode("400"), res4.Error.Code)
+		s.Equal(400, res4.Error.Code.Int())
+		s.ErrorIs(res4.Error, koios.ErrResponse)
+	}
+
+	res5, err5 := s.api.GetAccountAddresses(
+		context.Background(),
+		koios.StakeAddress(stakeaddr),
+		opts.Clone(),
+	)
+	if s.Error(err5) && s.NotNil(res5) {
+		s.Nil(res5.Data)
+		s.Equal("http error: 400 Bad Request", res5.Error.Message)
+		s.Equal(koios.ErrorCode("400"), res5.Error.Code)
+		s.Equal(400, res5.Error.Code.Int())
+		s.ErrorIs(res5.Error, koios.ErrResponse)
+	}
+
+	res6, err6 := s.api.GetAccountAssets(
+		context.Background(),
+		koios.StakeAddress(stakeaddr),
+		opts.Clone(),
+	)
+	if s.Error(err6) && s.NotNil(res6) {
+		s.Nil(res6.Data)
+		s.Equal("http error: 400 Bad Request", res6.Error.Message)
+		s.Equal(koios.ErrorCode("400"), res6.Error.Code)
+		s.Equal(400, res6.Error.Code.Int())
+		s.ErrorIs(res6.Error, koios.ErrResponse)
+	}
+
+	res7, err7 := s.api.GetAccountHistory(
+		context.Background(),
+		koios.StakeAddress(stakeaddr),
+		opts.Clone(),
+	)
+	if s.Error(err7) && s.NotNil(res7) {
+		s.Nil(res7.Data)
+		s.Equal("http error: 400 Bad Request", res7.Error.Message)
+		s.Equal(koios.ErrorCode("400"), res7.Error.Code)
+		s.Equal(400, res7.Error.Code.Int())
+		s.ErrorIs(res7.Error, koios.ErrResponse)
 	}
 }

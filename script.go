@@ -50,7 +50,7 @@ type (
 		TxHash TxHash `json:"tx_hash"`
 
 		// TxIndex The index of the redeemer pointer in the transaction.
-		TxIndex int `json:"tx_index"`
+		TxIndex uint32 `json:"tx_index"`
 
 		// The budget in Memory to run a script.
 		UnitMem int `json:"unit_mem"`

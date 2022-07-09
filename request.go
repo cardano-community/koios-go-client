@@ -64,10 +64,7 @@ func (ro *RequestOptions) HeadersApply(h http.Header) {
 }
 
 // Clone the request options for usaing it with other request.
-func (ro *RequestOptions) Clone() (*RequestOptions, error) {
-	if ro.locked {
-		return nil, ErrReqOptsAlreadyUsed
-	}
+func (ro *RequestOptions) Clone() *RequestOptions {
 	opts := &RequestOptions{
 		headers:  ro.headers.Clone(),
 		page:     ro.page,
@@ -79,7 +76,7 @@ func (ro *RequestOptions) Clone() (*RequestOptions, error) {
 	for k, v := range ro.query {
 		q[k] = v
 	}
-	return opts, nil
+	return opts
 }
 
 // lock the request options.

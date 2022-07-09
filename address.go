@@ -26,13 +26,16 @@ type (
 	// Address defines type for _address.
 	Address string
 
+	// StakeAddress is Cardano staking address (reward account, bech32 encoded).
+	StakeAddress Address
+
 	// AddressUTxO UTxO attached to address.
 	AddressUTxO struct {
 		// Hash of Transaction for input UTxO.
 		TxHash TxHash `json:"tx_hash"`
 
 		// Index of input UTxO on the mentioned address used for input.
-		TxIndex int `json:"tx_index"`
+		TxIndex uint32 `json:"tx_index"`
 
 		// Balance on the selected input transaction.
 		Value Lovelace `json:"value"`
@@ -83,9 +86,46 @@ type (
 	}
 )
 
+// Valid validates address and returns false and error
+// if address is invalid otherwise it returns true, nil.
+func (a Address) Valid() (bool, error) {
+	if len(a) == 0 {
+		return false, ErrNoAddress
+	}
+	return true, nil
+}
+
+// String returns StakeAddress as string.
+func (a Address) String() string {
+	return string(a)
+}
+
+// Bytes returns address bytes.
+func (a Address) Bytes() []byte {
+	return []byte(a)
+}
+
+// Valid validates address and returns false and error
+// if address is invalid otherwise it returns true, nil.
+func (a StakeAddress) Valid() (bool, error) {
+	if len(a) == 0 {
+		return false, ErrNoAddress
+	}
+	return true, nil
+}
+
+// String returns StakeAddress as string.
+func (a StakeAddress) String() string {
+	return string(a)
+}
+
+// Bytes returns address bytes.
+func (a StakeAddress) Bytes() []byte {
+	return []byte(a)
+}
+
 // GetAddressInfo returns address info - balance,
 // associated stake address (if any) and UTxO set.
-
 func (c *Client) GetAddressInfo(
 	ctx context.Context,
 	addr Address,
@@ -213,13 +253,4 @@ func (c *Client) GetCredentialTxs(
 	res.applyError(nil, err)
 
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-}
-
-// String returns of address.
-func (a Address) String() string {
-	return string(a)
-}
-
-func (a Address) Bytes() []byte {
-	return []byte(a)
 }
