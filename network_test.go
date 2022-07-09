@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/cardano-community/koios-go-client/v2"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -64,7 +65,7 @@ func (s *networkTestSuite) TestNetworkGenesiEndpoint() {
 		s.False(res.Data.Slotlength.IsZero())
 		s.False(res.Data.Slotsperkesperiod.IsZero())
 		s.False(res.Data.Systemstart.IsZero())
-		s.Equal(koios.NewLovelace(45000000000000000, 0), res.Data.Maxlovelacesupply)
+		s.Equal(decimal.New(45000000000000000, 0), res.Data.Maxlovelacesupply)
 	}
 }
 

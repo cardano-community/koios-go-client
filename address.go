@@ -20,6 +20,8 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -38,7 +40,7 @@ type (
 		TxIndex uint32 `json:"tx_index"`
 
 		// Balance on the selected input transaction.
-		Value Lovelace `json:"value"`
+		Value decimal.Decimal `json:"value"`
 
 		// An array of assets contained on UTxO.
 		AssetList []Asset `json:"asset_list"`
@@ -47,7 +49,7 @@ type (
 	// AddressInfo esponse for `/address_info`.
 	AddressInfo struct {
 		// Balance ADA Lovelace balance of address
-		Balance Lovelace `json:"balance"`
+		Balance decimal.Decimal `json:"balance"`
 
 		// StakeAddress associated with address
 		StakeAddress StakeAddress `json:"stake_address,omitempty"`

@@ -64,12 +64,12 @@ func (s *accountTestSuite) TestAccountInfoEndpoint() {
 		)
 		if s.NoError(err) {
 			s.Equal("pool12fclephansjkz0qn339w7mu9jwef2ty439as08avaw7fuyk56j6", res.Data.DelegatedPool.String())
-			s.True(res.Data.Reserves.Decimal.Equal(koios.ZeroLovelace.Decimal))
+			s.True(res.Data.Reserves.Equal(koios.ZeroLovelace))
 			s.True(res.Data.Rewards.IsPositive())
 			s.True(res.Data.RewardsAvailable.IsPositive())
 			s.Equal("registered", res.Data.Status)
 			s.True(res.Data.TotalBalance.IsPositive())
-			s.True(res.Data.Treasury.Equal(koios.ZeroLovelace.Decimal))
+			s.True(res.Data.Treasury.Equal(koios.ZeroLovelace))
 			s.True(res.Data.UTxO.IsPositive())
 			s.True(res.Data.Withdrawals.IsPositive())
 		}
@@ -183,7 +183,7 @@ func (s *accountTestSuite) TestAccountAssetsEndpoint() {
 		if s.NoError(err) && s.Greater(len(res.Data), 0) {
 			s.Equal("DONTSPAM", res.Data[0].Name)
 			s.Equal("d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", res.Data[0].PolicyID.String())
-			s.True(res.Data[0].Quantity.Decimal.Equal(decimal.New(9900000, 0)))
+			s.True(res.Data[0].Quantity.Equal(decimal.New(9900000, 0)))
 		}
 	}
 

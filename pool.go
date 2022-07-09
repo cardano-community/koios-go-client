@@ -20,6 +20,8 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -86,13 +88,13 @@ type (
 		ActiveEpoch EpochNo `json:"active_epoch_no"`
 
 		// ActiveStake Pool active stake.
-		ActiveStake Lovelace `json:"active_stake"`
+		ActiveStake decimal.Decimal `json:"active_stake"`
 
 		// Total pool blocks on chain
 		BlockCount uint64 `json:"block_count"`
 
 		// FixedCost Pool fixed cost per epoch
-		FixedCost Lovelace `json:"fixed_cost"`
+		FixedCost decimal.Decimal `json:"fixed_cost"`
 
 		// LiveDelegators Pool live delegator count
 		LiveDelegators uint64 `json:"live_delegators"`
@@ -101,10 +103,10 @@ type (
 		LiveSaturation float32 `json:"live_saturation"`
 
 		// LiveStake Pool live stake
-		LiveStake Lovelace `json:"live_stake"`
+		LiveStake decimal.Decimal `json:"live_stake"`
 
 		// LivePledge Pool live pledge
-		LivePledge Lovelace `json:"live_pledge"`
+		LivePledge decimal.Decimal `json:"live_pledge"`
 
 		// Margin (decimal format)
 		Margin float32 `json:"margin"`
@@ -128,7 +130,7 @@ type (
 		Owners []StakeAddress `json:"owners"`
 
 		// Pledge pledge in lovelace
-		Pledge Lovelace `json:"pledge"`
+		Pledge decimal.Decimal `json:"pledge"`
 
 		// ID (bech32 format)
 		ID PoolID `json:"pool_id_bech32"`
@@ -176,7 +178,7 @@ type (
 		// BlockCount uint64 `json:"block_count"`
 
 		// FixedCost Pool fixed cost per epoch
-		FixedCost Lovelace `json:"fixed_cost"`
+		FixedCost decimal.Decimal `json:"fixed_cost"`
 
 		// // LiveDelegators Pool live delegator count
 		// LiveDelegators uint64 `json:"live_delegators"`
@@ -209,7 +211,7 @@ type (
 		Owners []StakeAddress `json:"owners"`
 
 		// Pledge pledge in lovelace.
-		Pledge Lovelace `json:"pledge"`
+		Pledge decimal.Decimal `json:"pledge"`
 
 		// Pool status (registered | retiring | retired).
 		Status string `json:"pool_status"`
@@ -229,9 +231,9 @@ type (
 
 	// PoolDelegator info.
 	PoolDelegator struct {
-		StakeAddress StakeAddress `json:"stake_address"`
-		Amount       Lovelace     `json:"amount"`
-		Epoch        EpochNo      `json:"epoch_no"`
+		StakeAddress StakeAddress    `json:"stake_address"`
+		Amount       decimal.Decimal `json:"amount"`
+		Epoch        EpochNo         `json:"epoch_no"`
 	}
 
 	// PoolRelays list item.
@@ -267,16 +269,16 @@ type (
 		// Epoch number.
 		Epoch EpochNo `json:"epoch_no"`
 		// ActiveStake Pool active stake.
-		ActiveStake    Lovelace `json:"active_stake"`
-		ActiveStakePCT float64  `json:"active_stake_pct"`
-		SaturationPCT  float64  `json:"saturation_pct"`
-		BlockCNT       int      `json:"block_cnt"`
-		DelegatorCNT   int      `json:"delegator_cnt"`
-		Margin         float64  `json:"margin"`
-		FixedCost      Lovelace `json:"fixed_cost"`
-		PoolFees       Lovelace `json:"pool_fees"`
-		DelegRewards   Lovelace `json:"deleg_rewards"`
-		EpochROS       float64  `json:"epoch_ros"`
+		ActiveStake    decimal.Decimal `json:"active_stake"`
+		ActiveStakePCT float64         `json:"active_stake_pct"`
+		SaturationPCT  float64         `json:"saturation_pct"`
+		BlockCNT       int             `json:"block_cnt"`
+		DelegatorCNT   int             `json:"delegator_cnt"`
+		Margin         float64         `json:"margin"`
+		FixedCost      decimal.Decimal `json:"fixed_cost"`
+		PoolFees       decimal.Decimal `json:"pool_fees"`
+		DelegRewards   decimal.Decimal `json:"deleg_rewards"`
+		EpochROS       float64         `json:"epoch_ros"`
 	}
 
 	// PoolListResponse represents response from `/pool_list` endpoint.

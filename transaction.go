@@ -25,6 +25,7 @@ import (
 	"io"
 
 	"github.com/fxamacker/cbor/v2"
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -67,7 +68,7 @@ type (
 		TxIndex uint32 `json:"tx_index"`
 
 		// Balance on the selected input transaction.
-		Value Lovelace `json:"value"`
+		Value decimal.Decimal `json:"value"`
 	}
 
 	// TxOutput an transaxtion output.
@@ -88,7 +89,7 @@ type (
 		TxIndex uint32 `json:"tx_index"`
 
 		// Total sum on the output address.
-		Value Lovelace `json:"value"`
+		Value decimal.Decimal `json:"value"`
 	}
 
 	// TxInfoMetadata metadata in transaction info.
@@ -103,7 +104,7 @@ type (
 	// TxsWithdrawal withdrawal record in transaction.
 	TxsWithdrawal struct {
 		// Amount is withdrawal amount in lovelaces.
-		Amount Lovelace `json:"amount,omitempty"`
+		Amount decimal.Decimal `json:"amount,omitempty"`
 		// StakeAddress fo withdrawal.
 		StakeAddress StakeAddress `json:"stake_addr,omitempty"`
 	}
@@ -137,14 +138,14 @@ type (
 		TxSize uint32 `json:"tx_size,omitempty"`
 
 		// TotalOutput is total sum of all transaction outputs (in lovelaces).
-		TotalOutput Lovelace `json:"total_output,omitempty"`
+		TotalOutput decimal.Decimal `json:"total_output,omitempty"`
 
 		// Fee is total transaction fee (in lovelaces).
-		Fee Lovelace `json:"fee,omitempty" cbor:"2,keyasint"`
+		Fee decimal.Decimal `json:"fee,omitempty" cbor:"2,keyasint"`
 
 		// Deposit is total deposits included in transaction (for example,
 		// if it is registering a pool/key).
-		Deposit Lovelace `json:"deposit,omitempty"`
+		Deposit decimal.Decimal `json:"deposit,omitempty"`
 
 		// InvalidAfter is slot number after which transaction cannot be validated.
 		InvalidAfter uint64 `json:"invalid_after,omitempty" cbor:"3,keyasint,omitempty"`
@@ -457,9 +458,9 @@ func NewTransaction() *TX {
 			TxTimestamp:   "",
 			TxBlockIndex:  0,
 			TxSize:        0,
-			TotalOutput:   NewLovelaceFromInt(0),
-			Fee:           NewLovelaceFromInt(0),
-			Deposit:       NewLovelaceFromInt(0),
+			TotalOutput:   decimal.Zero,
+			Fee:           decimal.Zero,
+			Deposit:       decimal.Zero,
 			InvalidAfter:  0,
 			InvalidBefore: 0,
 			AssetsMinted:  nil,
