@@ -18,6 +18,8 @@ package koios
 
 import (
 	"context"
+
+	"github.com/shopspring/decimal"
 )
 
 // introduces breaking change since v1.3.0
@@ -35,7 +37,7 @@ type (
 		// Input: asset balance on the selected input transaction.
 		// Output: sum of assets for output UTxO.
 		// Mint: sum of minted assets (negative on burn).
-		Quantity Lovelace `json:"quantity"`
+		Quantity decimal.Decimal `json:"quantity"`
 	}
 
 	// TokenRegistryMetadata metadata registered on the Cardano Token Registry.
@@ -90,7 +92,7 @@ type (
 		PolicyID PolicyID `json:"policy_id,omitempty"`
 
 		// TotalSupply of Asset
-		TotalSupply Lovelace `json:"total_supply"`
+		TotalSupply decimal.Decimal `json:"total_supply"`
 
 		// CreationTime of Asset
 		CreationTime Time `json:"creation_time"`
@@ -134,8 +136,8 @@ type (
 
 	// AssetHolder payment addresses holding the given token (including balance).
 	AssetHolder struct {
-		PaymentAddress Address  `json:"payment_address"`
-		Quantity       Lovelace `json:"quantity"`
+		PaymentAddress Address         `json:"payment_address"`
+		Quantity       decimal.Decimal `json:"quantity"`
 	}
 
 	// AssetAddressListResponse represents response from `/asset_address_list` endpoint.
@@ -176,8 +178,8 @@ type (
 
 	// AssetMintTX holds specific mint tx hash and amount.
 	AssetMintTX struct {
-		TxHash   TxHash   `json:"tx_hash"`
-		Quantity Lovelace `json:"quantity"`
+		TxHash   TxHash          `json:"tx_hash"`
+		Quantity decimal.Decimal `json:"quantity"`
 	}
 
 	// AssetHistory holds given asset mint/burn tx's.
