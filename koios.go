@@ -79,7 +79,10 @@ var (
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
 	ErrUTxOInputAlreadyUsed     = errors.New("UTxO already used")
 
-	ZeroLovelace = NewLovelace(0, 1) //nolint: gochecknoglobals
+	// ZeroLovelace is alias decimal.Zero
+	ZeroLovelace = decimal.Zero.Copy() //1nolint: gochecknoglobals
+	// ZeroCoin is alias decimal.Zero
+	ZeroCoin = decimal.Zero.Copy() //nolint: gochecknoglobals
 )
 
 // introduces breaking change since v1.3.0
@@ -121,17 +124,6 @@ type (
 	// Time extends time to fix time format anomalies turing Unmarshal and Marshal.
 	Time struct {
 		time.Time
-	}
-
-	// Lovelace defines type for ADA lovelaces. This library uses forked snapshot
-	// of github.com/shopspring/decimal package to provide. JSON and XML
-	// serialization/deserialization and make it ease to work with calculations
-	// and deciimal precisions of ADA lovelace and native assets.
-	//
-	// For API of decimal package see
-	// https://pkg.go.dev/github.com/shopspring/decimal
-	Lovelace struct {
-		decimal.Decimal
 	}
 
 	// PaymentAddr info.

@@ -29,7 +29,7 @@ type (
 	// EpochInfo defines model for epoch_info.
 	EpochInfo struct {
 		// Rewards accumulated as of given epoch (in lovelaces)
-		ActiveStake Lovelace `json:"active_stake"`
+		ActiveStake decimal.Decimal `json:"active_stake"`
 
 		// Number of blocks created in epoch
 		BlkCount int64 `json:"blk_count"`
@@ -38,7 +38,7 @@ type (
 		Epoch EpochNo `json:"epoch_no"`
 
 		// Total fees incurred by transactions in epoch
-		Fees Lovelace `json:"fees"`
+		Fees decimal.Decimal `json:"fees"`
 
 		// Timestamp for first block created in epoch
 		FirstBlockTime Time `json:"first_block_time"`
@@ -47,7 +47,7 @@ type (
 		LastBlockTime Time `json:"last_block_time"`
 
 		// Total output value across all transactions in epoch
-		OutSum Lovelace `json:"out_sum"`
+		OutSum decimal.Decimal `json:"out_sum"`
 
 		// Number of transactions submitted in epoch
 		TxCount int64 `json:"tx_count"`
@@ -71,7 +71,7 @@ type (
 		BlockHash BlockHash `json:"block_hash"`
 
 		// The cost per UTxO word
-		CoinsPerUtxoSize Lovelace `json:"coins_per_utxo_size"`
+		CoinsPerUtxoWord decimal.Decimal `json:"coins_per_utxo_word"`
 
 		// The percentage of the tx fee which must be provided as collateral
 		// when including non-native scripts
@@ -94,7 +94,7 @@ type (
 		Influence float64 `json:"influence"`
 
 		// The amount (in lovelace) required for a deposit to register a stake address
-		KeyDeposit Lovelace `json:"key_deposit"`
+		KeyDeposit decimal.Decimal `json:"key_deposit"`
 
 		// The maximum block header size (in bytes)
 		MaxBhSize int `json:"max_bh_size"`
@@ -134,10 +134,10 @@ type (
 		MinFeeB decimal.Decimal `json:"min_fee_b"`
 
 		// The minimum pool cost
-		MinPoolCost Lovelace `json:"min_pool_cost"`
+		MinPoolCost decimal.Decimal `json:"min_pool_cost"`
 
 		// The minimum value of a UTxO entry
-		MinUtxoValue Lovelace `json:"min_utxo_value"`
+		MinUtxoValue decimal.Decimal `json:"min_utxo_value"`
 
 		// The monetary expansion rate
 		MonetaryExpandRate float64 `json:"monetary_expand_rate"`
@@ -149,13 +149,13 @@ type (
 		OptimalPoolCount int `json:"optimal_pool_count"`
 
 		// The amount (in lovelace) required for a deposit to register a stake pool
-		PoolDeposit Lovelace `json:"pool_deposit"`
+		PoolDeposit decimal.Decimal `json:"pool_deposit"`
 
 		// The per word cost of script memory usage
-		PriceMem Lovelace `json:"price_mem"`
+		PriceMem decimal.Decimal `json:"price_mem"`
 
 		// The cost of script execution step usage
-		PriceStep Lovelace `json:"price_step"`
+		PriceStep decimal.Decimal `json:"price_step"`
 
 		// The protocol major version
 		ProtocolMajor int `json:"protocol_major"`

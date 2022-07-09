@@ -18,6 +18,8 @@ package koios
 
 import (
 	"context"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -40,7 +42,7 @@ type (
 
 		// The budget in fees to run a script - the fees depend on the
 		// ExUnits and the current prices.
-		Fee Lovelace `json:"fee,omitempty"`
+		Fee decimal.Decimal `json:"fee,omitempty"`
 
 		// What kind pf validation this redeemer is used for,
 		// it can be one of 'spend', 'mint', 'cert', 'reward'.

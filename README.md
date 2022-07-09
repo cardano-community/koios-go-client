@@ -45,7 +45,7 @@ import (
 - [Usage](#usage)
   - [Basic usage](#basic-usage)
   - [Concurrency using goroutines](#concurrency-using-goroutines)
-- [Lovelace (math on ada, assets and tokens).](#lovelace-math-on-ada-assets-and-tokens)
+- [Lovelace / Coin (math on ada, assets and tokens).](#lovelace--coin-math-on-ada-assets-and-tokens)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
   - [Got a Question or Problem?](#got-a-question-or-problem)
@@ -167,9 +167,10 @@ func main() {
 }
 ```
 
-## Lovelace (math on ada, assets and tokens).
+## Lovelace / Coin (math on ada, assets and tokens).
 
-Library uses for most cases to represent lovelace using [`Lovelace`](https://pkg.go.dev/github.com/cardano-community/koios-go-client#Lovelace) data type.
+Library uses [`decimal.Decimal`](https://pkg.go.dev/badge/github.com/shopspring/decimal) data type to represent lovelace and coin values.  
+Which provides arbitrary-precision fixed-point decimal numbers in go.
 
 **For decimal package API see**
 
