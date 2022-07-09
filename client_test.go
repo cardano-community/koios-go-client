@@ -25,7 +25,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cardano-community/koios-go-client"
+	"github.com/cardano-community/koios-go-client/v2"
 	"github.com/stretchr/testify/suite"
 )
 

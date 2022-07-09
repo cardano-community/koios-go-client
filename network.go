@@ -195,8 +195,8 @@ func (c *Client) GetTotals(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
-func (g *Genesis) AlonzoGenesisMap() (map[string]interface{}, error) {
-	var data map[string]interface{}
+func (g *Genesis) AlonzoGenesisMap() (map[string]any, error) {
+	var data map[string]any
 	if err := json.Unmarshal([]byte(g.Alonzogenesis), &data); err != nil {
 		return nil, err
 	}
