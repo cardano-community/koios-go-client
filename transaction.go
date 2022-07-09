@@ -94,7 +94,7 @@ type (
 	// TxInfoMetadata metadata in transaction info.
 	TxInfoMetadata struct {
 		// JSON containing details about metadata within transaction.
-		JSON map[string]interface{} `json:"json"`
+		JSON map[string]any `json:"json"`
 
 		// Key is metadata (index).
 		Key string `json:"key"`
@@ -199,7 +199,7 @@ type (
 		// TxHash is hash of transaction.
 		TxHash TxHash `json:"tx_hash"`
 		// Metadata present with-in a transaction (if any)
-		Metadata map[string]interface{} `json:"metadata"`
+		Metadata map[string]any `json:"metadata"`
 	}
 
 	// SubmitSignedTxResponse represents response from `/submittx` endpoint.
@@ -514,10 +514,5 @@ func (out *TxOutput) MarshalCBOR() ([]byte, error) {
 	if len(out.PaymentAddr.Bech32) == 0 {
 		return nil, fmt.Errorf("cbor: %w", ErrNoAddress)
 	}
-
-	// handle assets
-	//   if len(o.Assets) > 0 {
-	// 		return cbor.Marshal([]interface{}{o.Address.Bytes(), []interface{}{o.Amount, o.Assets}})
-	// 	}
 	return cbor.Marshal([]interface{}{out.PaymentAddr.Bech32.Bytes(), out.Value.IntPart()})
 }
