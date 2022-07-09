@@ -21,9 +21,57 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
+
+type (
+	ErrorCode string
+
+	// ResponseError represents api error messages.
+	ResponseError struct {
+		error
+
+		// Hint of the error reported by server.
+		Hint string `json:"hint,omitempty"`
+
+		// Details of the error reported by server.
+		Details string `json:"details,omitempty"`
+
+		// Code is error code reported by server.
+		Code ErrorCode `json:"code,omitempty"`
+
+		// Message is error message reported by server.
+		Message string `json:"message,omitempty"`
+	}
+)
+
+func ErrorCodeFromInt(code int) ErrorCode {
+	return ErrorCode(strconv.Itoa(code))
+}
+
+// String returns error code as string.
+func (c ErrorCode) String() string {
+	return string(c)
+}
+
+// Int returns error code as integer if
+// strconv.Atoi is able to parse it, otherwise it returns 0.
+func (c ErrorCode) Int() int {
+	i, _ := strconv.Atoi(string(c))
+	return i
+}
+
+// Error return underlying error string.
+func (e *ResponseError) Error() string {
+	return e.Message
+}
+
+// Error return underlying error string.
+func (e *ResponseError) Unwrap() error {
+	return e.error
+}
 
 // ReadResponseBody is reading http.Response aand closing it after read.
 func ReadResponseBody(rsp *http.Response) (body []byte, err error) {
@@ -60,7 +108,9 @@ func (r *Response) applyError(body []byte, err error) {
 	}
 
 	if r.Error == nil {
-		r.Error = &ResponseError{}
+		r.Error = &ResponseError{
+			error: err,
+		}
 	}
 	if len(body) != 0 {
 		berr := json.Unmarshal(body, r.Error)
@@ -83,6 +133,9 @@ func (r *Response) ready() {
 	}
 	r.Stats.ReqDur = time.Since(r.Stats.ReqStartedAt)
 	r.Stats.ReqDurStr = fmt.Sprint(r.Stats.ReqDur)
+	if r.Error != nil && len(r.Error.Code) == 0 {
+		r.Error.Code = ErrorCodeFromInt(r.StatusCode)
+	}
 }
 
 func (r *Response) applyRsp(rsp *http.Response) {

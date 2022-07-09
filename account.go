@@ -145,8 +145,8 @@ func (c *Client) GetAccountInfo(
 	opts *RequestOptions,
 ) (res *AccountInfoResponse, err error) {
 	res = &AccountInfoResponse{}
-	if len(addr) == 0 {
-		err = ErrNoAddress
+
+	if _, err = addr.Valid(); err != nil {
 		res.applyError(nil, err)
 		return
 	}
@@ -180,6 +180,11 @@ func (c *Client) GetAccountRewards(
 ) (res *AccountRewardsResponse, err error) {
 	res = &AccountRewardsResponse{}
 
+	if _, err = addr.Valid(); err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
@@ -206,6 +211,17 @@ func (c *Client) GetAccountUpdates(
 ) (res *AccountUpdatesResponse, err error) {
 	res = &AccountUpdatesResponse{}
 
+	if _, err = addr.Valid(); err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
+	if len(addr) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
@@ -226,6 +242,12 @@ func (c *Client) GetAccountAddresses(
 	opts *RequestOptions,
 ) (res *AccountAddressesResponse, err error) {
 	res = &AccountAddressesResponse{}
+
+	if _, err = addr.Valid(); err != nil {
+		res.applyError(nil, err)
+		return res, err
+	}
+
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
@@ -233,7 +255,7 @@ func (c *Client) GetAccountAddresses(
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/account_addresses", nil, opts)
 	if err != nil {
-		return
+		return res, err
 	}
 	addrs := []struct {
 		Addr Address `json:"address"`
@@ -246,7 +268,7 @@ func (c *Client) GetAccountAddresses(
 			res.Data = append(res.Data, a.Addr)
 		}
 	}
-	return
+	return res, err
 }
 
 // GetAccountAssets retruns all the native asset balance of an account.
@@ -256,6 +278,12 @@ func (c *Client) GetAccountAssets(
 	opts *RequestOptions,
 ) (res *AccountAssetsResponse, err error) {
 	res = &AccountAssetsResponse{}
+
+	if _, err = addr.Valid(); err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
@@ -276,6 +304,12 @@ func (c *Client) GetAccountHistory(
 	opts *RequestOptions,
 ) (res *AccountHistoryResponse, err error) {
 	res = &AccountHistoryResponse{}
+
+	if _, err = addr.Valid(); err != nil {
+		res.applyError(nil, err)
+		return
+	}
+
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}

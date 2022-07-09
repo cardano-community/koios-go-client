@@ -70,14 +70,14 @@ func (s *clientTestSuite) Test404s() {
 	res, err := s.api.GetGenesis(context.Background(), nil)
 	s.Error(err)
 	s.Nil(res.Data)
-	s.Equal("got unexpected response: 404 Not Found", res.Error.Message)
+	s.Equal("http error: 404 Not Found", res.Error.Message)
 	s.Equal(http.StatusNotFound, res.StatusCode)
 
 	// errors with stats should be same
 	res2, err := s.api.GetGenesis(context.Background(), nil)
 	s.Error(err)
 	s.Nil(res2.Data)
-	s.Equal("got unexpected response: 404 Not Found", res2.Error.Message)
+	s.Equal("http error: 404 Not Found", res2.Error.Message)
 	s.Equal(http.StatusNotFound, res2.StatusCode)
 }
 
@@ -102,8 +102,8 @@ func (s *clientTestSuite) TestHTTP() {
 		opts.HeadersAdd("X-Custom-Header", "header-val")
 		opts.QueryAdd("prop", "val")
 		opts.HeadersApply(extheaders)
-		opts2, o2err := opts.Clone()
-		s.NoError(o2err)
+		opts2 := opts.Clone()
+		s.NotNil(opts2)
 		opts3 := s.api.NewRequestOptions()
 
 		res, err := s.api.GET(context.Background(), "/tip", opts2)
@@ -130,8 +130,7 @@ func (s *clientTestSuite) TestHTTP() {
 			res21.Body.Close()
 		}
 		s.ErrorIs(err21, koios.ErrReqOptsAlreadyUsed)
-		_, o4err := opts3.Clone()
-		s.ErrorIs(o4err, koios.ErrReqOptsAlreadyUsed)
+		s.NotNil(opts3.Clone())
 
 		opts4 := s.api.NewRequestOptions()
 		opts4.QueryApply(spec.Request.Query)
@@ -142,7 +141,7 @@ func (s *clientTestSuite) TestHTTP() {
 		res3 := &koios.Response{}
 		defer func() { _ = rsp3.Body.Close() }()
 		s.EqualError(koios.ReadAndUnmarshalResponse(rsp3, res3, nil), "got non json response: ")
-		s.EqualError(err3, "got unexpected response: 404 Not Found")
+		s.EqualError(err3, "http error: 404 Not Found")
 		s.Equal(rsp3.Header.Get("Content-Type"), "text/plain; charset=utf-8")
 	}
 }
