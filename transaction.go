@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/shopspring/decimal"
@@ -402,7 +403,7 @@ func (c *Client) SubmitSignedTx(
 		return res, err
 	}
 	body, err := ReadResponseBody(rsp)
-	res.Data = TxHash(body)
+	res.Data = TxHash(strings.Trim(string(body), "\""))
 	return res, err
 }
 
@@ -458,9 +459,9 @@ func NewTransaction() *TX {
 			TxTimestamp:   "",
 			TxBlockIndex:  0,
 			TxSize:        0,
-			TotalOutput:   decimal.Zero,
-			Fee:           decimal.Zero,
-			Deposit:       decimal.Zero,
+			TotalOutput:   ZeroLovelace,
+			Fee:           ZeroLovelace,
+			Deposit:       ZeroLovelace,
 			InvalidAfter:  0,
 			InvalidBefore: 0,
 			AssetsMinted:  nil,
