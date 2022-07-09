@@ -24,6 +24,23 @@ import (
 	"golang.org/x/time/rate"
 )
 
+type (
+	// RequestOptions for the request.
+	RequestOptions struct {
+		page     uint
+		pageSize uint
+		locked   bool
+		query    url.Values
+		headers  http.Header
+	}
+
+	// Option is callback function to apply
+	// configurations options of API Client.
+	Option struct {
+		apply func(*Client) error
+	}
+)
+
 // Host returns option apply func which can be used to change the
 // baseurl hostname https://<host>/api/v0/
 func Host(host string) Option {

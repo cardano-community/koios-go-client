@@ -110,6 +110,16 @@ func (s *endpointsTestSuite) SetupSuite() {
 
 func (s *endpointsTestSuite) newHandleFunc(spec internal.APITestSpec) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Has("test-http") {
+			switch r.URL.Query().Get("test-http") {
+			case "400":
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("[]"))
+			default:
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte("[]"))
+			}
+		}
 		if r.Method != spec.Request.Method && r.Method != "HEAD" {
 			http.Error(w, "Method Not Allowed.", http.StatusMethodNotAllowed)
 			return

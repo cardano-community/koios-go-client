@@ -72,7 +72,7 @@ var (
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoPoolID                 = errors.New("missing pool id")
-	ErrResponse                 = errors.New("got unexpected response")
+	ErrResponse                 = errors.New("http error")
 	ErrSchema                   = errors.New("scheme must be http or https")
 	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
@@ -89,12 +89,6 @@ type (
 		url             *url.URL
 		client          *http.Client
 		commonHeaders   http.Header
-	}
-
-	// Option is callback function to apply
-	// configurations options of API Client.
-	Option struct {
-		apply func(*Client) error
 	}
 
 	// PaymentCredential type def.
@@ -120,9 +114,6 @@ type (
 
 	// ScriptHash defines type for _script_hash.
 	ScriptHash string
-
-	// StakeAddress is Cardano staking address (reward account, bech32 encoded).
-	StakeAddress string
 
 	// Time extends time to fix time format anomalies turing Unmarshal and Marshal.
 	Time struct {
@@ -194,15 +185,6 @@ type (
 		Stats *RequestStats `json:"stats,omitempty"`
 	}
 
-	// RequestOptions for the request.
-	RequestOptions struct {
-		page     uint
-		pageSize uint
-		locked   bool
-		query    url.Values
-		headers  http.Header
-	}
-
 	// RequestStats represent collected request stats if collecting
 	// request stats is enabled.
 	RequestStats struct {
@@ -227,21 +209,6 @@ type (
 
 		// ReqDurStr String representation of ReqDur.
 		ReqDurStr string `json:"req_dur_str,omitempty"`
-	}
-
-	// ResponseError represents api error messages.
-	ResponseError struct {
-		// Hint of the error reported by server.
-		Hint string `json:"hint,omitempty"`
-
-		// Details of the error reported by server.
-		Details string `json:"details,omitempty"`
-
-		// Code is error code reported by server.
-		Code string `json:"code,omitempty"`
-
-		// Message is error message reported by server.
-		Message string `json:"message,omitempty"`
 	}
 )
 
@@ -341,11 +308,6 @@ func (v PolicyID) String() string {
 
 // String returns ScriptHash as string.
 func (v ScriptHash) String() string {
-	return string(v)
-}
-
-// String returns StakeAddress as string.
-func (v StakeAddress) String() string {
 	return string(v)
 }
 
