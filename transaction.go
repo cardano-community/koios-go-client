@@ -32,7 +32,7 @@ type (
 		// BlockHeight is block number on chain where transaction was included.
 		BlockHeight int `json:"block_height"`
 		// BlockTime is time of the block.
-		BlockTime string `json:"block_time"`
+		BlockTime Time `json:"block_time"`
 	}
 
 	// UTxO model holds inputs and outputs for given UTxO.
@@ -132,7 +132,7 @@ type (
 		AbsoluteSlot int `json:"absolute_slot"`
 
 		// TxTimestamp is timestamp when block containing transaction was created.
-		TxTimestamp string `json:"tx_timestamp"`
+		TxTimestamp Time `json:"tx_timestamp"`
 
 		// TxBlockIndex is index of transaction within block.
 		TxBlockIndex int `json:"tx_block_index"`
