@@ -29,6 +29,7 @@ import (
 	"net/http"
 	"net/url"
 	"runtime"
+	"strconv"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -355,6 +356,10 @@ func (v StakeAddress) String() string {
 
 func (t *Time) UnmarshalJSON(b []byte) error {
 	str := string(b)
+	if ts, err := strconv.Atoi(str); err == nil {
+		t.Time = time.Unix(int64(ts), 0)
+		return nil
+	}
 	p, err := time.Parse("\""+time.RFC3339+"\"", str)
 	if err != nil {
 		p, err = time.Parse("\"2006-01-02T15:04:05\"", str)
