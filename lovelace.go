@@ -17,9 +17,6 @@
 package koios
 
 import (
-	"math/big"
-	"regexp"
-
 	"github.com/shopspring/decimal"
 )
 
@@ -32,31 +29,21 @@ func NewLovelaceFromString(value string) (Lovelace, error) {
 	return Lovelace{Decimal: val}, err
 }
 
-func NewLovelaceFromBigInt(value *big.Int, exp int32) Lovelace {
-	return Lovelace{Decimal: decimal.NewFromBigInt(value, exp)}
-}
+// func (l *Lovelace) UnmarshalJSON(decimalBytes []byte) error {
+// 	dec := &decimal.Decimal{}
+// 	err := dec.UnmarshalJSON(decimalBytes)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	*l, err = NewFromString(dec.String())
+// 	return err
+// }
 
-func NewLovelaceFromFloat(value float64) Lovelace {
-	return Lovelace{Decimal: decimal.NewFromFloat(value)}
-}
-
-func NewLovelaceFromFloat32(value float32) Lovelace {
-	return Lovelace{Decimal: decimal.NewFromFloat32(value)}
-}
-
-func NewLovelaceFromFloatWithExponent(value float64, exp int32) Lovelace {
-	return Lovelace{Decimal: decimal.NewFromFloatWithExponent(value, exp)}
-}
-
-func NewLovelaceFromFormattedString(value string, replRegexp *regexp.Regexp) (Lovelace, error) {
-	val, err := decimal.NewFromFormattedString(value, replRegexp)
-	return Lovelace{Decimal: val}, err
-}
-
-func NewLovelaceFromInt(value int64) Lovelace {
-	return Lovelace{Decimal: decimal.NewFromInt(value)}
-}
-
-func NewLovelaceFromInt32(value int32) Lovelace {
-	return Lovelace{Decimal: decimal.NewFromInt32(value)}
-}
+// func NewLovelaceFromBigInt(value *big.Int, exp int32) Lovelace
+// func NewLovelaceFromFloat(value float64) Lovelace
+// func NewLovelaceFromFloat32(value float32) Lovelace
+// func NewLovelaceFromFloatWithExponent(value float64, exp int32) Lovelace
+// func NewLovelaceFromFormattedString(value string, replRegexp *regexp.Regexp) (Lovelace, error)
+// func NewLovelaceFromInt(value int64) Lovelace
+// func NewLovelaceFromInt32(value int32) Lovelace
+// func NewLovelaceFromString(value string) (Lovelace, error)
