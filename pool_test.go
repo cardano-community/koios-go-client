@@ -27,6 +27,8 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+// introduces breaking change since v1.3.0
+
 // In order for 'go test' to run this suite, we need to create
 // a normal test function and pass our suite to suite.Run.
 func TestPoolSuite(t *testing.T) {

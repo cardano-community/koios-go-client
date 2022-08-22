@@ -35,6 +35,8 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+// introduces breaking change since v1.3.0
+
 type endpointsTestSuite struct {
 	suite.Suite
 	specNames []string

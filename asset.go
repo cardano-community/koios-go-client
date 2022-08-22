@@ -20,6 +20,8 @@ import (
 	"context"
 )
 
+// introduces breaking change since v1.3.0
+
 type (
 	// Asset represents Cardano Asset.
 	Asset struct {

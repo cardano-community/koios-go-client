@@ -23,6 +23,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// introduces breaking change since v1.3.0
+
 type (
 	// Tip defines model for tip.
 	Tip struct {

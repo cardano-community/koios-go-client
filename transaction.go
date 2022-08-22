@@ -25,6 +25,8 @@ import (
 	"io"
 )
 
+// introduces breaking change since v1.3.0
+
 type (
 	TX struct {
 		/// TxHash is hash of transaction.

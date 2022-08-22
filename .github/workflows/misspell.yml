@@ -1,3 +1,4 @@
+# misspell
 name: misspell
 on:
   push:

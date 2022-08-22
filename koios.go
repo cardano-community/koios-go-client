@@ -78,6 +78,8 @@ var (
 	ZeroLovelace                = NewLovelace(0, 1) //nolint: gochecknoglobals
 )
 
+// introduces breaking change since v1.3.0
+
 type (
 	// Client is api client instance.
 	Client struct {

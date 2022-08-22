@@ -22,6 +22,8 @@ import (
 	"io"
 )
 
+// introduces breaking change since v1.3.0
+
 type (
 
 	// PoolListItem defines model for pool list item.
