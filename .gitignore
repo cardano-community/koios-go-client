@@ -13,6 +13,7 @@
 testdata/**.json
 covprofile.coverprofile
 coverage.txt
+go.work
 
 ################################################################################
 # DIRECTORIES to ignore

@@ -127,6 +127,6 @@ func (s *endpointsTestSuite) newHandleFunc(spec internal.APITestSpec) func(w htt
 			http.Error(w, "failed to marshal response", spec.Response.Code)
 			return
 		}
-		w.Write(res)
+		_, _ = w.Write(res)
 	}
 }
