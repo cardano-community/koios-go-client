@@ -32,7 +32,8 @@ type (
 		// BlockHeight is block number on chain where transaction was included.
 		BlockHeight int `json:"block_height"`
 		// BlockTime is time of the block.
-		BlockTime Time `json:"block_time"`
+		BlockTime Time    `json:"block_time"`
+		Epoch     EpochNo `json:"epoch_no,omitempty"`
 	}
 
 	// UTxO model holds inputs and outputs for given UTxO.

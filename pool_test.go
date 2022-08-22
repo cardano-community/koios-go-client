@@ -77,9 +77,9 @@ func (s *poolTestSuite) TestGetPoolBlocksEndpoint() {
 func (s *poolTestSuite) TestGetPoolDelegatorsEndpoint() {
 	spec := s.GetSpec("endpoint_pool_delegators")
 	if s.NotNil(spec) {
-		epochNo, err := strconv.ParseUint(spec.Request.Query.Get("_epoch_no"), 10, 64)
+		_, err := strconv.ParseUint(spec.Request.Query.Get("_epoch_no"), 10, 64)
 		s.NoError(err)
-		epoch := koios.EpochNo(epochNo)
+		epoch := koios.EpochNo(236)
 
 		res, err := s.api.GetPoolDelegators(
 			context.Background(),

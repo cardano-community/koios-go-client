@@ -102,11 +102,10 @@ func (s *assetTestSuite) TestGetAssetPolicyInfoEndpoint() {
 			nil,
 		)
 		if s.NoError(err) {
-			s.NotEmpty(res.Data.PolicyID)
-			s.NotEmpty(res.Data.Assets[0].Name)
-			s.NotEmpty(res.Data.Assets[0].NameASCII)
-			s.False(res.Data.Assets[0].CreationTime.IsZero())
-			s.True(res.Data.Assets[0].TotalSupply.IsPositive())
+			s.NotEmpty(res.Data[0].Name)
+			s.NotEmpty(res.Data[0].NameASCII)
+			s.False(res.Data[0].CreationTime.IsZero())
+			s.True(res.Data[0].TotalSupply.IsPositive())
 		}
 	}
 }
@@ -139,9 +138,7 @@ func (s *assetTestSuite) TestGetAssetTxsEndpoint() {
 			nil,
 		)
 		if s.NoError(err) {
-			s.Equal(res.Data.PolicyID, koios.PolicyID(spec.Request.Query.Get("_asset_policy")))
-			s.Equal(res.Data.AssetName, koios.AssetName(spec.Request.Query.Get("_asset_name")))
-			s.Greater(len(res.Data.TxHashes), 0)
+			s.Greater(len(res.Data), 0)
 		}
 	}
 }

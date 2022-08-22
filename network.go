@@ -19,7 +19,6 @@ package koios
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	"github.com/shopspring/decimal"
 )
@@ -34,7 +33,7 @@ type (
 		BlockNo int `json:"block_no"`
 
 		// Timestamp for when the block was created
-		BlockTime string `json:"block_time"`
+		BlockTime Time `json:"block_time"`
 
 		// EpochNo number
 		EpochNo int `json:"epoch_no"`
@@ -94,7 +93,7 @@ type (
 		Slotsperkesperiod decimal.Decimal `json:"slotsperkesperiod"`
 
 		// Timestamp for first block (genesis) on chain.
-		Systemstart time.Time `json:"systemstart"`
+		Systemstart Time `json:"systemstart"`
 
 		// Number of BFT members that need to approve
 		// (via vote) a Protocol Update Proposal.

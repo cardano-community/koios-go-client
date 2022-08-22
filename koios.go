@@ -251,11 +251,13 @@ type (
 // Call to New without options is same as call with default options.
 // e.g.
 // api, err := koios.New(
-// 	koios.Host(koios.MainnetHost),
-// 	koios.APIVersion(koios.DefaultAPIVersion),
-// 	koios.Port(koios.DefaultPort),
-// 	koios.Schema(koios.DefaultSchema),
-// 	koios.HttpClient(koios.DefaultHttpClient),
+//
+//	koios.Host(koios.MainnetHost),
+//	koios.APIVersion(koios.DefaultAPIVersion),
+//	koios.Port(koios.DefaultPort),
+//	koios.Schema(koios.DefaultSchema),
+//	koios.HttpClient(koios.DefaultHttpClient),
+//
 // ).
 func New(opts ...Option) (*Client, error) {
 	c := &Client{
@@ -356,8 +358,8 @@ func (v StakeAddress) String() string {
 
 func (t *Time) UnmarshalJSON(b []byte) error {
 	str := string(b)
-	if ts, err := strconv.Atoi(str); err == nil {
-		t.Time = time.Unix(int64(ts), 0)
+	if ts, err := strconv.ParseInt(str, 10, 0); err == nil {
+		t.Time = time.Unix(ts, 0)
 		return nil
 	}
 	p, err := time.Parse("\""+time.RFC3339+"\"", str)

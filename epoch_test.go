@@ -104,7 +104,7 @@ func (s *epochTestSuite) TestEpochParamsEndpoint() {
 			s.Greater(res.Data[0].MaxValSize, float32(0))
 			s.Greater(res.Data[0].CollateralPercent, int64(0))
 			s.Greater(res.Data[0].MaxCollateralInputs, 0)
-			s.True(res.Data[0].CoinsPerUtxoWord.IsPositive())
+			s.True(res.Data[0].CoinsPerUtxoSize.IsPositive(), res.Data[0].CoinsPerUtxoSize)
 		}
 	}
 }

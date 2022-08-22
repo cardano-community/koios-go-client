@@ -158,7 +158,7 @@ type (
 		TxHash TxHash `json:"tx_hash"`
 
 		// Time time of the block.
-		BlockTime string `json:"block_time"`
+		BlockTime Time `json:"block_time"`
 
 		// ID (bech32 format)
 		ID PoolID `json:"pool_id_bech32"`
@@ -231,7 +231,7 @@ type (
 	PoolDelegator struct {
 		StakeAddress StakeAddress `json:"stake_address"`
 		Amount       Lovelace     `json:"amount"`
-		Epoch        EpochNo      `json:"epoch_no"`
+		Epoch        EpochNo      `json:"active_epoch_no"`
 	}
 
 	// PoolRelays list item.

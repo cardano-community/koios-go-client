@@ -68,7 +68,7 @@ type (
 		BlockHash BlockHash `json:"block_hash"`
 
 		// The cost per UTxO word
-		CoinsPerUtxoWord Lovelace `json:"coins_per_utxo_word"`
+		CoinsPerUtxoSize Lovelace `json:"coins_per_utxo_size"`
 
 		// The percentage of the tx fee which must be provided as collateral
 		// when including non-native scripts

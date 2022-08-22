@@ -79,7 +79,7 @@ type (
 		Fingerprint string `json:"fingerprint"`
 
 		// MintingTxMetadata minting Tx JSON payload if it can be decoded as JSON
-		MintingTxMetadata *TxInfoMetadata `json:"minting_tx_metadata"`
+		MintingTxMetadata []TxInfoMetadata `json:"minting_tx_metadata"`
 
 		// Asset metadata registered on the Cardano Token Registry
 		TokenRegistryMetadata *TokenRegistryMetadata `json:"token_registry_metadata"`
@@ -101,18 +101,6 @@ type (
 
 		// MintingTxHash mint tx
 		MintingTxHash TxHash `json:"minting_tx_hash"`
-	}
-
-	// AssetTxs Txs info for the given asset (latest first).
-	AssetTxs struct {
-		// AssetName (hex)
-		AssetName AssetName `json:"asset_name"`
-
-		// PoliciID Asset Policy ID (hex)
-		PolicyID PolicyID `json:"policy_id"`
-
-		// TxHashes List of Tx hashes
-		TxHashes []TxHash `json:"tx_hashes"`
 	}
 
 	// AssetListItem used to represent response from /asset_list`.
@@ -157,19 +145,13 @@ type (
 	// AssetTxsResponse represents response from `/asset_txs` endpoint.
 	AssetTxsResponse struct {
 		Response
-		Data *AssetTxs `json:"response"`
-	}
-
-	// AssetPolicyInfo is response body for `/asset_policy_info` endpoint.
-	AssetPolicyInfo struct {
-		PolicyID PolicyID    `json:"policy_id"`
-		Assets   []AssetInfo `json:"assets"`
+		Data []TX `json:"response"`
 	}
 
 	// AssetPolicyInfoResponse represents response from `/asset_policy_info` endpoint.
 	AssetPolicyInfoResponse struct {
 		Response
-		Data *AssetPolicyInfo `json:"response"`
+		Data []AssetInfo `json:"response"`
 	}
 
 	// AssetMintTX holds specific mint tx hash and amount.
@@ -308,12 +290,9 @@ func (c *Client) GetAssetTxs(
 	if err != nil {
 		return
 	}
-	atxs := []AssetTxs{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
-	if len(atxs) == 1 {
-		res.Data = &atxs[0]
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
 	return
 }
 
@@ -334,12 +313,8 @@ func (c *Client) GetAssetPolicyInfo(
 	if err != nil {
 		return
 	}
-	info := []AssetPolicyInfo{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 
-	if len(info) == 1 {
-		res.Data = &info[0]
-	}
 	return
 }
 
