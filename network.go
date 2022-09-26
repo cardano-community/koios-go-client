@@ -35,7 +35,7 @@ type (
 		BlockNo int `json:"block_no"`
 
 		// Timestamp for when the block was created
-		BlockTime Time `json:"block_time"`
+		BlockTime Timestamp `json:"block_time"`
 
 		// EpochNo number
 		EpochNo EpochNo `json:"epoch_no"`
@@ -44,13 +44,13 @@ type (
 		EpochSlot int `json:"epoch_slot"`
 
 		// Block Hash in hex
-		Hash BlockHash `json:"hash"`
+		BlockHash BlockHash `json:"hash"`
 	}
 
 	// TipResponse response of /tip.
 	TipResponse struct {
 		Response
-		Data *Tip `json:"data"`
+		Data Tip `json:"data"`
 	}
 
 	// Genesis defines model for genesis.
@@ -64,7 +64,7 @@ type (
 		Alonzogenesis string `json:"alonzogenesis"`
 
 		// Number of slots in an epoch.
-		Epochlength decimal.Decimal `json:"epochlength"`
+		EpochLength decimal.Decimal `json:"epochlength"`
 
 		// Number of KES key evolutions that will automatically occur before a KES
 		// (hot) key is expired. This parameter is for security of a pool,
@@ -72,20 +72,20 @@ type (
 		Maxkesrevolutions decimal.Decimal `json:"maxkesrevolutions"`
 
 		// Maximum smallest units (lovelaces) supply for the blockchain.
-		Maxlovelacesupply decimal.Decimal `json:"maxlovelacesupply"`
+		MaxLovelaceSupply decimal.Decimal `json:"maxlovelacesupply"`
 
 		// Network ID used at various CLI identification to distinguish between
 		// Mainnet and other networks.
-		Networkid string `json:"networkid"`
+		NetworkID string `json:"networkid"`
 
 		// Unique network identifier for chain.
-		Networkmagic string `json:"networkmagic"`
+		NetworkMagic decimal.Decimal `json:"networkmagic"`
 
 		// A unit (k) used to divide epochs to determine stability window
 		// (used in security checks like ensuring atleast 1 block was
 		// created in 3*k/f period, or to finalize next epoch's nonce
 		// at 4*k/f slots before end of epoch).
-		Securityparam string `json:"securityparam"`
+		Securityparam decimal.Decimal `json:"securityparam"`
 
 		// Duration of a single slot (in seconds).
 		Slotlength decimal.Decimal `json:"slotlength"`
@@ -95,7 +95,7 @@ type (
 		Slotsperkesperiod decimal.Decimal `json:"slotsperkesperiod"`
 
 		// Timestamp for first block (genesis) on chain.
-		Systemstart Time `json:"systemstart"`
+		Systemstart Timestamp `json:"systemstart"`
 
 		// Number of BFT members that need to approve
 		// (via vote) a Protocol Update Proposal.
@@ -105,7 +105,7 @@ type (
 	// GenesisResponse response of /genesis.
 	GenesisResponse struct {
 		Response
-		Data *Genesis `json:"data"`
+		Data Genesis `json:"data"`
 	}
 
 	// Totals defines model for totals.
@@ -151,7 +151,7 @@ func (c *Client) GetTip(
 	tips := []Tip{}
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &tips)
 	if len(tips) == 1 {
-		res.Data = &tips[0]
+		res.Data = tips[0]
 	}
 	return res, err
 }
@@ -169,7 +169,7 @@ func (c *Client) GetGenesis(
 	genesisres := []Genesis{}
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &genesisres)
 	if len(genesisres) == 1 {
-		res.Data = &genesisres[0]
+		res.Data = genesisres[0]
 	}
 	return res, err
 }

@@ -41,6 +41,14 @@ func networkEndpointSpecs() []internal.APITestSpec {
 			},
 		},
 		{
+			Network:  "guildnet",
+			Filename: "network_endpoint_tip",
+			Endpoint: "/tip",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+			},
+		},
+		{
 			Network:  "mainnet",
 			Filename: "network_endpoint_genesis",
 			Endpoint: "/genesis",
@@ -50,6 +58,14 @@ func networkEndpointSpecs() []internal.APITestSpec {
 		},
 		{
 			Network:  "testnet",
+			Filename: "network_endpoint_genesis",
+			Endpoint: "/genesis",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+			},
+		},
+		{
+			Network:  "guildnet",
 			Filename: "network_endpoint_genesis",
 			Endpoint: "/genesis",
 			Request: internal.APITestRequestSpec{
@@ -75,6 +91,17 @@ func networkEndpointSpecs() []internal.APITestSpec {
 				Method: "GET",
 				Query: url.Values{
 					"_epoch_no": []string{TestnetEpoch},
+				},
+			},
+		},
+		{
+			Network:  "guildnet",
+			Filename: "network_endpoint_totals",
+			Endpoint: "/totals",
+			Request: internal.APITestRequestSpec{
+				Method: "GET",
+				Query: url.Values{
+					"_epoch_no": []string{GuildnetEpoch},
 				},
 			},
 		},

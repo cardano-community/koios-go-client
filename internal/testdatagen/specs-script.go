@@ -17,66 +17,64 @@
 package main
 
 import (
-	"net/url"
-
 	"github.com/cardano-community/koios-go-client/v2/internal"
 )
 
 func scriptsEndpointSpecs() []internal.APITestSpec {
 	return []internal.APITestSpec{
-		{
-			Network:  "mainnet",
-			Filename: "scripts_endpoint_native_script_list",
-			Endpoint: "/native_script_list",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "scripts_endpoint_native_script_list",
-			Endpoint: "/native_script_list",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "scripts_endpoint_plutus_script_list",
-			Endpoint: "/plutus_script_list",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "scripts_endpoint_plutus_script_list",
-			Endpoint: "/plutus_script_list",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "scripts_endpoint_script_redeemers",
-			Endpoint: "/script_redeemers",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_script_hash": []string{"d8480dc869b94b80e81ec91b0abe307279311fe0e7001a9488f61ff8"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "scripts_endpoint_script_redeemers",
-			Endpoint: "/script_redeemers",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_script_hash": []string{"9a3910acc1e1d49a25eb5798d987739a63f65eb48a78462ffae21e6f"},
-				},
-			},
-		},
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "scripts_endpoint_native_script_list",
+		// 	Endpoint: "/native_script_list",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "scripts_endpoint_native_script_list",
+		// 	Endpoint: "/native_script_list",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "scripts_endpoint_plutus_script_list",
+		// 	Endpoint: "/plutus_script_list",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "scripts_endpoint_plutus_script_list",
+		// 	Endpoint: "/plutus_script_list",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "scripts_endpoint_script_redeemers",
+		// 	Endpoint: "/script_redeemers",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_script_hash": []string{"d8480dc869b94b80e81ec91b0abe307279311fe0e7001a9488f61ff8"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "scripts_endpoint_script_redeemers",
+		// 	Endpoint: "/script_redeemers",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_script_hash": []string{"9a3910acc1e1d49a25eb5798d987739a63f65eb48a78462ffae21e6f"},
+		// 		},
+		// 	},
+		// },
 	}
 }
