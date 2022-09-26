@@ -31,9 +31,9 @@ import (
 func TestNetworkSuite(t *testing.T) {
 	testsuite := &networkTestSuite{}
 	testsuite.LoadSpecs([]string{
-		"endpoint_network_tip",
-		"endpoint_network_genesis",
-		"endpoint_network_totals",
+		"network_endpoint_tip",
+		"network_endpoint_genesis",
+		"network_endpoint_totals",
 	})
 
 	suite.Run(t, testsuite)
@@ -44,56 +44,122 @@ type networkTestSuite struct {
 }
 
 func (s *networkTestSuite) TestNetworkTipEndpoint() {
-	res, err := s.api.GetTip(context.Background(), nil)
-	if s.NoError(err) {
-		s.Greater(res.Data.AbsSlot, 0)
-		s.Greater(res.Data.BlockNo, 0)
-		s.Greater(res.Data.EpochNo, 0)
-		s.Greater(res.Data.EpochSlot, 0)
-		s.NotEmpty(res.Data.Hash)
-		s.NotZero(res.Data.BlockTime)
+	for _, network := range s.networks {
+		s.Run(network, func() {
+			res, err := s.Client(network).GetTip(context.Background(), nil)
+			if s.NoError(err) {
+				s.Greater(res.Data.AbsSlot, uint64(0))
+				s.Greater(res.Data.BlockNo, uint64(0))
+				s.Greater(res.Data.EpochNo, uint64(0))
+				s.Greater(res.Data.EpochSlot, uint64(0))
+				s.NotEmpty(res.Data.BlockHash)
+				s.NotZero(res.Data.BlockTime)
+			}
+		})
 	}
 }
 
 func (s *networkTestSuite) TestNetworkGenesiEndpoint() {
-	res, err := s.api.GetGenesis(context.Background(), nil)
-	if s.NoError(err) {
-		s.False(res.Data.Activeslotcoeff.IsZero())
-		s.False(res.Data.Activeslotcoeff.IsZero())
-		s.False(res.Data.Epochlength.IsZero())
-		s.False(res.Data.Maxkesrevolutions.IsZero())
-		s.False(res.Data.Slotlength.IsZero())
-		s.False(res.Data.Slotsperkesperiod.IsZero())
-		s.False(res.Data.Systemstart.IsZero())
-		s.Equal(decimal.New(45000000000000000, 0), res.Data.Maxlovelacesupply)
+	for _, network := range s.networks {
+		s.Run(network, func() {
+			res, err := s.Client(network).GetGenesis(context.Background(), nil)
+			if s.NoError(err) {
+				s.True(res.Data.NetworkMagic.IsPositive())
+				s.Greater(res.Data.EpochLength, 0)
+				s.Equal(decimal.NewFromInt(1), res.Data.Slotlength)
+				s.Equal(decimal.NewFromInt(45000000000000000), res.Data.MaxLovelaceSupply)
+				s.False(res.Data.Systemstart.IsZero())
+				s.Equal(decimal.NewFromFloat(0.05), res.Data.Activeslotcoeff)
+				s.Equal(decimal.NewFromInt(129600), res.Data.Slotsperkesperiod)
+				s.Equal(decimal.NewFromInt(62), res.Data.Maxkesrevolutions)
+				s.NotEmpty(res.Data.Alonzogenesis)
+
+				kv, err := res.Data.AlonzoGenesisMap()
+				if s.NoError(err) {
+					s.Len(kv, 8)
+				}
+
+				if network == "guildnet" {
+					s.Equal(decimal.NewFromInt(36), res.Data.Securityparam)
+				} else {
+					s.Equal(decimal.NewFromInt(2160), res.Data.Securityparam)
+				}
+			}
+		})
 	}
 }
 
 func (s *networkTestSuite) TestNetworkTotalsEndpoint() {
-	spec := s.GetSpec("endpoint_network_totals")
-	if s.NotNil(spec) {
-		epochNo, err := strconv.ParseUint(spec.Request.Query.Get("_epoch_no"), 10, 64)
-		s.NoError(err)
-		epoch := koios.EpochNo(epochNo)
+	specfile := "network_endpoint_totals"
+	for _, network := range s.networks {
+		s.Run(network, func() {
+			// actual test
+			spec := s.GetSpec(specfile, network)
+			if s.NotNil(spec) {
+				epochNo, err := strconv.ParseUint(spec.Request.Query.Get("_epoch_no"), 10, 64)
+				s.NoError(err)
+				epoch := koios.EpochNo(epochNo)
+				res, err := s.Client(network).GetTotals(context.Background(), &epoch, nil)
+				if s.NoError(err) {
+					s.Equal(epoch, res.Data[0].Epoch)
+					s.False(res.Data[0].Circulation.IsZero())
+					s.False(res.Data[0].Reserves.IsZero())
+					s.False(res.Data[0].Reward.IsZero())
+					s.False(res.Data[0].Supply.IsZero())
+					s.False(res.Data[0].Treasury.IsZero())
+				}
 
-		res, err := s.api.GetTotals(context.Background(), &epoch, nil)
-		if s.NoError(err) {
-			s.Equal(epoch, res.Data[0].Epoch)
-			s.False(res.Data[0].Circulation.IsZero())
-			s.False(res.Data[0].Reserves.IsZero())
-			s.False(res.Data[0].Reward.IsZero())
-			s.False(res.Data[0].Supply.IsZero())
-			s.False(res.Data[0].Treasury.IsZero())
-		}
+				res2, err := s.Client(network).GetTotals(context.Background(), nil, nil)
+				if s.NoError(err) {
+					s.Equal(epoch, res2.Data[0].Epoch)
+					s.False(res2.Data[0].Circulation.IsZero())
+					s.False(res2.Data[0].Reserves.IsZero())
+					s.False(res2.Data[0].Reward.IsZero())
+					s.False(res2.Data[0].Supply.IsZero())
+					s.False(res2.Data[0].Treasury.IsZero())
+				}
+			}
+		})
+	}
+}
 
-		res2, err := s.api.GetTotals(context.Background(), nil, nil)
-		if s.NoError(err) {
-			s.Equal(epoch, res2.Data[0].Epoch)
-			s.False(res2.Data[0].Circulation.IsZero())
-			s.False(res2.Data[0].Reserves.IsZero())
-			s.False(res2.Data[0].Reward.IsZero())
-			s.False(res2.Data[0].Supply.IsZero())
-			s.False(res2.Data[0].Treasury.IsZero())
-		}
+func (s *networkTestSuite) TestNetworkErrors() {
+	for _, network := range s.networks {
+		opts := s.Client(network).NewRequestOptions()
+		opts.QueryAdd("test-http", "400")
+
+		s.Run("GetTip", func() {
+			res, err := s.Client(network).GetTip(context.Background(), opts.Clone())
+			if s.Error(err) && s.NotNil(res) {
+				s.Nil(res.Data)
+				s.KoiosHttpError(res.Response)
+			}
+		})
+
+		s.Run("GetGenesis", func() {
+			res, err := s.Client(network).GetGenesis(context.Background(), opts.Clone())
+			if s.Error(err) && s.NotNil(res) {
+				s.Nil(res.Data)
+				s.KoiosHttpError(res.Response)
+			}
+		})
+
+		s.Run("GetTotals", func() {
+			res, err := s.Client(network).GetTotals(context.Background(), nil, opts.Clone())
+			if s.Error(err) && s.NotNil(res) {
+				s.Nil(res.Data)
+				s.KoiosHttpError(res.Response)
+			}
+		})
+	}
+}
+
+func (s *networkTestSuite) TestAlonzoGenesisMapUnmarshal() {
+	res, err := s.Client("mainnet").GetGenesis(context.Background(), nil)
+	if s.NoError(err) {
+		res.Data.Alonzogenesis += "-" // invalidate json
+		kv, err := res.Data.AlonzoGenesisMap()
+		s.Error(err)
+		s.Nil(kv)
 	}
 }

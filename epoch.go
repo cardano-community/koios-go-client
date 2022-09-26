@@ -26,6 +26,9 @@ import (
 // introduces breaking change since v1.3.0
 
 type (
+	// EpochNo defines type for _epoch_no.
+	EpochNo uint64
+
 	// EpochInfo defines model for epoch_info.
 	EpochInfo struct {
 		// Rewards accumulated as of given epoch (in lovelaces)
@@ -41,10 +44,10 @@ type (
 		Fees decimal.Decimal `json:"fees"`
 
 		// Timestamp for first block created in epoch
-		FirstBlockTime Time `json:"first_block_time"`
+		FirstBlockTime Timestamp `json:"first_block_time"`
 
 		// Timestamp for last block created in epoch
-		LastBlockTime Time `json:"last_block_time"`
+		LastBlockTime Timestamp `json:"last_block_time"`
 
 		// Total output value across all transactions in epoch
 		OutSum decimal.Decimal `json:"out_sum"`
@@ -53,10 +56,10 @@ type (
 		TxCount int64 `json:"tx_count"`
 
 		// EndTime of epoch
-		EndTime Time `json:"end_time"`
+		EndTime Timestamp `json:"end_time"`
 
 		// StartTime of epoch
-		StartTime Time `json:"start_time"`
+		StartTime Timestamp `json:"start_time"`
 	}
 
 	// EpochInfoResponse response of /epoch_info.

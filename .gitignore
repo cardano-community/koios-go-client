@@ -10,8 +10,7 @@
 *~
 **/*.sw[mnop]
 .env
-testdata/mainnet/**.json
-testdata/testnet/**.json
+testdata/**/**.json
 covprofile.coverprofile
 coverage.txt
 go.work

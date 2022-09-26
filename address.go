@@ -32,19 +32,19 @@ type (
 	StakeAddress Address
 
 	// AddressUTxO UTxO attached to address.
-	AddressUTxO struct {
-		// Hash of Transaction for input UTxO.
-		TxHash TxHash `json:"tx_hash"`
+	// AddressUTxO struct {
+	// 	// Hash of Transaction for input UTxO.
+	// 	TxHash TxHash `json:"tx_hash"`
 
-		// Index of input UTxO on the mentioned address used for input.
-		TxIndex uint32 `json:"tx_index"`
+	// 	// Index of input UTxO on the mentioned address used for input.
+	// 	TxIndex uint32 `json:"tx_index"`
 
-		// Balance on the selected input transaction.
-		Value decimal.Decimal `json:"value"`
+	// 	// Balance on the selected input transaction.
+	// 	Value decimal.Decimal `json:"value"`
 
-		// An array of assets contained on UTxO.
-		AssetList []Asset `json:"asset_list"`
-	}
+	// 	// An array of assets contained on UTxO.
+	// 	AssetList []Asset `json:"asset_list"`
+	// }
 
 	// AddressInfo esponse for `/address_info`.
 	AddressInfo struct {
@@ -54,7 +54,7 @@ type (
 		// StakeAddress associated with address
 		StakeAddress StakeAddress `json:"stake_address,omitempty"`
 
-		UTxOs []AddressUTxO `json:"utxo_set"`
+		UTxOs []UTxO `json:"utxo_set"`
 	}
 
 	// AddressInfoResponse represents response from `/address_info` endpoint.
@@ -64,9 +64,9 @@ type (
 	}
 
 	AddressTx struct {
-		TxHash      TxHash `json:"tx_hash"`
-		BlockTime   Time   `json:"block_time"`
-		BlockHeight uint64 `json:"block_height"`
+		TxHash      TxHash    `json:"tx_hash"`
+		BlockTime   Timestamp `json:"block_time"`
+		BlockHeight uint64    `json:"block_height"`
 	}
 
 	// AddressTxsResponse represents response from `/address_txs` endpoint.

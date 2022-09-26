@@ -24,23 +24,21 @@
 package koios // imports as package "koios"
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"runtime"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/shopspring/decimal"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"golang.org/x/time/rate"
 )
 
 // MainnetHost       : is primay and default api host.
-// GuildHost         : is Guild network host.
+// GuildnetHost      : is Guild network host.
 // TestnetHost       : is api host for testnet.
 // DefaultAPIVersion : is openapi spec version e.g. /v0.
 // DefaultPort       : default port used by api client.
@@ -51,7 +49,7 @@ import (
 const (
 	MainnetHost              = "api.koios.rest"
 	MainnetHostEU            = "eu-api.koios.rest"
-	GuildHost                = "guild.koios.rest"
+	GuildnetHost             = "guild.koios.rest"
 	TestnetHost              = "testnet.koios.rest"
 	DefaultAPIVersion        = "v0"
 	DefaultPort       uint16 = 443
@@ -79,24 +77,15 @@ var (
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
 	ErrUTxOInputAlreadyUsed     = errors.New("UTxO already used")
 
-	// ZeroLovelace is alias decimal.Zero
-	ZeroLovelace = decimal.Zero.Copy() //1nolint: gochecknoglobals
-	// ZeroCoin is alias decimal.Zero
+	// ZeroLovelace is alias decimal.Zero.
+	ZeroLovelace = decimal.Zero.Copy() //nolint: gochecknoglobals
+	// ZeroCoin is alias decimal.Zero.
 	ZeroCoin = decimal.Zero.Copy() //nolint: gochecknoglobals
 )
 
 // introduces breaking change since v1.3.0
 
 type (
-	// Client is api client instance.
-	Client struct {
-		r               *rate.Limiter
-		reqStatsEnabled bool
-		url             *url.URL
-		client          *http.Client
-		commonHeaders   http.Header
-	}
-
 	// PaymentCredential type def.
 	PaymentCredential string
 
@@ -109,9 +98,6 @@ type (
 	// TxHash defines type for tx_hash.
 	TxHash string
 
-	// EpochNo defines type for _epoch_no.
-	EpochNo uint64
-
 	// PoolID type def.
 	PoolID string
 
@@ -121,8 +107,10 @@ type (
 	// ScriptHash defines type for _script_hash.
 	ScriptHash string
 
-	// Time extends time to fix time format anomalies turing Unmarshal and Marshal.
-	Time struct {
+	// Timestamp extends time to work with unix timestamps and
+	// fix time format anomalies when Unmarshaling and Marshaling
+	// Koios API times.
+	Timestamp struct {
 		time.Time
 	}
 
@@ -255,8 +243,10 @@ func New(opts ...Option) (*Client, error) {
 		_ = RateLimit(DefaultRateLimit).apply(c)
 	}
 
-	// Sets default origin if option was not provided.
-	_ = Origin(DefaultOrigin).apply(c)
+	if c.commonHeaders.Get("Origin") == "" {
+		// Sets default origin if option was not provided.
+		_ = Origin(DefaultOrigin).apply(c)
+	}
 
 	// If HttpClient option was not provided
 	// use default http.Client
@@ -308,16 +298,23 @@ func (v ScriptHash) String() string {
 	return string(v)
 }
 
-func (t *Time) UnmarshalJSON(b []byte) error {
-	str := string(b)
-	if ts, err := strconv.ParseInt(str, 10, 0); err == nil {
-		t.Time = time.Unix(ts, 0)
-		return nil
-	}
-	p, err := time.Parse("\""+time.RFC3339+"\"", str)
+func (t *Timestamp) UnmarshalJSON(b []byte) error {
+	var timestamp decimal.Decimal
+	err := json.Unmarshal(b, &timestamp)
 	if err != nil {
-		p, err = time.Parse("\"2006-01-02T15:04:05\"", str)
+		str := string(b)
+		p, err := time.Parse("\""+time.RFC3339+"\"", str)
+		if err != nil {
+			p, err = time.Parse("\"2006-01-02T15:04:05\"", str)
+		}
+		t.Time = p
+		return err
 	}
-	t.Time = p
+	t.Time = time.Unix(timestamp.BigInt().Int64(), 0)
 	return err
+}
+
+// MarshalJSON turns our time.Time back into an int.
+func (t Timestamp) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("%d", (t.Time.Unix()))), nil
 }

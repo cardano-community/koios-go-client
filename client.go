@@ -26,6 +26,19 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"golang.org/x/time/rate"
+)
+
+type (
+	// Client is api client instance.
+	Client struct {
+		r               *rate.Limiter
+		reqStatsEnabled bool
+		url             *url.URL
+		client          *http.Client
+		commonHeaders   http.Header
+	}
 )
 
 // WithOptions returns new light clone of client with modified options applied.
@@ -90,6 +103,11 @@ func (c *Client) GET(
 // BaseURL returns currently used base url e.g. https://api.koios.rest/api/v0
 func (c *Client) BaseURL() string {
 	return c.url.String()
+}
+
+// ServerURL returns currently used server url e.g. https://api.koios.rest/
+func (c *Client) ServerURL() *url.URL {
+	return c.url.ResolveReference(&url.URL{Path: "/"})
 }
 
 func (c *Client) NewRequestOptions() *RequestOptions {

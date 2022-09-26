@@ -43,8 +43,8 @@ type (
 		// Size of block.
 		Size int `json:"block_size"`
 
-		// Time time of the block.
-		Time Time `json:"block_time"`
+		// Time of the block.
+		Time Timestamp `json:"block_time"`
 
 		// TxCount transactions count in block.
 		TxCount int `json:"tx_count"`
