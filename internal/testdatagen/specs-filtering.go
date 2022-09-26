@@ -17,119 +17,116 @@
 package main
 
 import (
-	"net/http"
-	"net/url"
-
 	"github.com/cardano-community/koios-go-client/v2/internal"
 )
 
 func filtersSpecs() []internal.APITestSpec {
 	return []internal.APITestSpec{
-		{
-			Network:  "mainnet",
-			Filename: "filtering_vertical",
-			Endpoint: "/blocks",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"select": []string{"epoch,epoch_slot,block_height"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "filtering_vertical",
-			Endpoint: "/blocks",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"select": []string{"epoch,epoch_slot,block_height"},
-				},
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "filtering_horizontal",
-			Endpoint: "/blocks",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"epoch":      []string{"eq.250"},
-					"epoch_slot": []string{"lt.180"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "filtering_horizontal",
-			Endpoint: "/blocks",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"epoch":      []string{"eq.250"},
-					"epoch_slot": []string{"lt.180"},
-				},
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "filtering_pagination_page_1",
-			Endpoint: "/blocks",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"select": []string{"epoch,epoch_slot,block_height"},
-					"order":  []string{"block_height.asc"},
-				},
-				Header: http.Header{
-					"Range": []string{"0-9"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "filtering_pagination_page_1",
-			Endpoint: "/blocks",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"select": []string{"epoch,epoch_slot,block_height"},
-					"order":  []string{"block_height.asc"},
-				},
-				Header: http.Header{
-					"Range": []string{"0-9"},
-				},
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "filtering_pagination_page_2",
-			Endpoint: "/blocks",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"select": []string{"epoch,epoch_slot,block_height"},
-					"order":  []string{"block_height.asc"},
-				},
-				Header: http.Header{
-					"Range": []string{"10-19"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "filtering_pagination_page_2",
-			Endpoint: "/blocks",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"select": []string{"epoch,epoch_slot,block_height"},
-					"order":  []string{"block_height.asc"},
-				},
-				Header: http.Header{
-					"Range": []string{"10-19"},
-				},
-			},
-		},
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "filtering_vertical",
+		// 	Endpoint: "/blocks",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"select": []string{"epoch,epoch_slot,block_height"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "filtering_vertical",
+		// 	Endpoint: "/blocks",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"select": []string{"epoch,epoch_slot,block_height"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "filtering_horizontal",
+		// 	Endpoint: "/blocks",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"epoch":      []string{"eq.250"},
+		// 			"epoch_slot": []string{"lt.180"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "filtering_horizontal",
+		// 	Endpoint: "/blocks",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"epoch":      []string{"eq.250"},
+		// 			"epoch_slot": []string{"lt.180"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "filtering_pagination_page_1",
+		// 	Endpoint: "/blocks",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"select": []string{"epoch,epoch_slot,block_height"},
+		// 			"order":  []string{"block_height.asc"},
+		// 		},
+		// 		Header: http.Header{
+		// 			"Range": []string{"0-9"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "filtering_pagination_page_1",
+		// 	Endpoint: "/blocks",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"select": []string{"epoch,epoch_slot,block_height"},
+		// 			"order":  []string{"block_height.asc"},
+		// 		},
+		// 		Header: http.Header{
+		// 			"Range": []string{"0-9"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "filtering_pagination_page_2",
+		// 	Endpoint: "/blocks",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"select": []string{"epoch,epoch_slot,block_height"},
+		// 			"order":  []string{"block_height.asc"},
+		// 		},
+		// 		Header: http.Header{
+		// 			"Range": []string{"10-19"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "filtering_pagination_page_2",
+		// 	Endpoint: "/blocks",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"select": []string{"epoch,epoch_slot,block_height"},
+		// 			"order":  []string{"block_height.asc"},
+		// 		},
+		// 		Header: http.Header{
+		// 			"Range": []string{"10-19"},
+		// 		},
+		// 	},
+		// },
 	}
 }

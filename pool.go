@@ -34,7 +34,7 @@ type (
 		PoolID PoolID `json:"pool_id_bech32"`
 
 		// Ticker of Pool.
-		Ticker *string `json:"ticker,omitempty"`
+		Ticker string `json:"ticker,omitempty"`
 	}
 
 	// PoolMetaJSON pool meadata json.
@@ -162,7 +162,7 @@ type (
 		TxHash TxHash `json:"tx_hash"`
 
 		// Time time of the block.
-		BlockTime Time `json:"block_time"`
+		BlockTime Timestamp `json:"block_time"`
 
 		// ID (bech32 format)
 		ID PoolID `json:"pool_id_bech32"`
@@ -257,7 +257,7 @@ type (
 		Height uint64 `json:"block_height"`
 
 		// Time time of the block.
-		Time Time `json:"block_time"`
+		Time Timestamp `json:"block_time"`
 
 		// Epoch number.
 		Epoch EpochNo `json:"epoch_no"`

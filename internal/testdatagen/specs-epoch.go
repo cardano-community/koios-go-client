@@ -17,56 +17,54 @@
 package main
 
 import (
-	"net/url"
-
 	"github.com/cardano-community/koios-go-client/v2/internal"
 )
 
 func epochEndpointSpecs() []internal.APITestSpec {
 	return []internal.APITestSpec{
-		{
-			Network:  "mainnet",
-			Filename: "epoch_info",
-			Endpoint: "/epoch_info",
-			Request: internal.APITestRequestSpec{
-				Query: url.Values{
-					"_epoch_no": []string{MainnetEpoch},
-				},
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "epoch_endpoint_epoch_info",
-			Endpoint: "/epoch_info",
-			Request: internal.APITestRequestSpec{
-				Query: url.Values{
-					"_epoch_no": []string{TestnetEpoch},
-				},
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "epoch_endpoint_epoch_params",
-			Endpoint: "/epoch_params",
-			Request: internal.APITestRequestSpec{
-				Query: url.Values{
-					"_epoch_no": []string{MainnetEpoch},
-				},
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "epoch_endpoint_epoch_params",
-			Endpoint: "/epoch_params",
-			Request: internal.APITestRequestSpec{
-				Query: url.Values{
-					"_epoch_no": []string{TestnetEpoch},
-				},
-				Method: "GET",
-			},
-		},
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "epoch_info",
+		// 	Endpoint: "/epoch_info",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Query: url.Values{
+		// 			"_epoch_no": []string{MainnetEpoch},
+		// 		},
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "epoch_endpoint_epoch_info",
+		// 	Endpoint: "/epoch_info",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Query: url.Values{
+		// 			"_epoch_no": []string{TestnetEpoch},
+		// 		},
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "epoch_endpoint_epoch_params",
+		// 	Endpoint: "/epoch_params",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Query: url.Values{
+		// 			"_epoch_no": []string{MainnetEpoch},
+		// 		},
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "epoch_endpoint_epoch_params",
+		// 	Endpoint: "/epoch_params",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Query: url.Values{
+		// 			"_epoch_no": []string{TestnetEpoch},
+		// 		},
+		// 		Method: "GET",
+		// 	},
+		// },
 	}
 }

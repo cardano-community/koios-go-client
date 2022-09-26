@@ -92,3 +92,4 @@ tasks:
     cmds:
       - go run . unpack ../../testdata/mainnet {{.CLI_ARGS}}
       - go run . unpack ../../testdata/testnet {{.CLI_ARGS}}
+      - go run . unpack ../../testdata/guildnet {{.CLI_ARGS}}

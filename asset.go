@@ -30,6 +30,8 @@ type (
 		// Asset Name (hex).
 		Name string `json:"asset_name"`
 
+		Fingerprint string `json:"fingerprint"`
+
 		// Asset Policy ID (hex).
 		PolicyID PolicyID `json:"policy_id"`
 
@@ -83,7 +85,8 @@ type (
 		Fingerprint string `json:"fingerprint"`
 
 		// MintingTxMetadata minting Tx JSON payload if it can be decoded as JSON
-		MintingTxMetadata []TxInfoMetadata `json:"minting_tx_metadata"`
+		// MintingTxMetadata *TxInfoMetadata `json:"minting_tx_metadata"`
+		MintingTxMetadata any `json:"minting_tx_metadata"`
 
 		// Asset metadata registered on the Cardano Token Registry
 		TokenRegistryMetadata *TokenRegistryMetadata `json:"token_registry_metadata"`
@@ -95,7 +98,7 @@ type (
 		TotalSupply decimal.Decimal `json:"total_supply"`
 
 		// CreationTime of Asset
-		CreationTime Time `json:"creation_time"`
+		CreationTime Timestamp `json:"creation_time"`
 
 		// MintCnt count of mint transactions
 		MintCnt int `json:"mint_cnt"`

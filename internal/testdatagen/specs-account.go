@@ -17,162 +17,160 @@
 package main
 
 import (
-	"net/url"
-
 	"github.com/cardano-community/koios-go-client/v2/internal"
 )
 
 func accountEndpointSpecs() []internal.APITestSpec {
 	return []internal.APITestSpec{
-		{
-			Network:  "mainnet",
-			Filename: "account_endpoint_account_list",
-			Endpoint: "/account_list",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "account_endpoint_account_list",
-			Endpoint: "/account_list",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "account_endpoint_account_info",
-			Endpoint: "/account_info",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "account_endpoint_account_info",
-			Endpoint: "/account_info",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_address": []string{"addr_test1qqn5x72yymml6aka0cmkew3jynqgld7xlnwtlsen9ln5tfll0dw5r75vk42mv3ykq8vyjeaanvpytg79xqzymqy5acmqqhx2n7"},
-				},
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "account_endpoint_account_rewards",
-			Endpoint: "/account_rewards",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_stake_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
-					"_epoch_no":      []string{"320"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "account_endpoint_account_rewards",
-			Endpoint: "/account_rewards",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_stake_address": []string{"stake_test1uqqzl36c3vk850wk22yqgum9l0upy0y8588hcvsjq9m6j4cxw3qau"},
-					"_epoch_no":      []string{"185"},
-				},
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "account_endpoint_account_updates",
-			Endpoint: "/account_updates",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_stake_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "account_endpoint_account_updates",
-			Endpoint: "/account_updates",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_stake_address": []string{"stake_test1uqqzl36c3vk850wk22yqgum9l0upy0y8588hcvsjq9m6j4cxw3qau"},
-				},
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "account_endpoint_account_addresses",
-			Endpoint: "/account_addresses",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "account_endpoint_account_addresses",
-			Endpoint: "/account_addresses",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_address": []string{"addr_test1qqn5x72yymml6aka0cmkew3jynqgld7xlnwtlsen9ln5tfll0dw5r75vk42mv3ykq8vyjeaanvpytg79xqzymqy5acmqqhx2n7"},
-				},
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "account_endpoint_account_assets",
-			Endpoint: "/account_assets",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "account_endpoint_account_assets",
-			Endpoint: "/account_assets",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_address": []string{"addr_test1qqn5x72yymml6aka0cmkew3jynqgld7xlnwtlsen9ln5tfll0dw5r75vk42mv3ykq8vyjeaanvpytg79xqzymqy5acmqqhx2n7"},
-				},
-			},
-		},
-		{
-			Network:  "mainnet",
-			Filename: "account_endpoint_account_history",
-			Endpoint: "/account_history",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
-				},
-			},
-		},
-		{
-			Network:  "testnet",
-			Filename: "account_endpoint_account_history",
-			Endpoint: "/account_history",
-			Request: internal.APITestRequestSpec{
-				Method: "GET",
-				Query: url.Values{
-					"_address": []string{"addr_test1qqn5x72yymml6aka0cmkew3jynqgld7xlnwtlsen9ln5tfll0dw5r75vk42mv3ykq8vyjeaanvpytg79xqzymqy5acmqqhx2n7"},
-				},
-			},
-		},
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "account_endpoint_account_list",
+		// 	Endpoint: "/account_list",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "account_endpoint_account_list",
+		// 	Endpoint: "/account_list",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "account_endpoint_account_info",
+		// 	Endpoint: "/account_info",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "account_endpoint_account_info",
+		// 	Endpoint: "/account_info",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_address": []string{"addr_test1qqn5x72yymml6aka0cmkew3jynqgld7xlnwtlsen9ln5tfll0dw5r75vk42mv3ykq8vyjeaanvpytg79xqzymqy5acmqqhx2n7"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "account_endpoint_account_rewards",
+		// 	Endpoint: "/account_rewards",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_stake_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
+		// 			"_epoch_no":      []string{"320"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "account_endpoint_account_rewards",
+		// 	Endpoint: "/account_rewards",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_stake_address": []string{"stake_test1uqqzl36c3vk850wk22yqgum9l0upy0y8588hcvsjq9m6j4cxw3qau"},
+		// 			"_epoch_no":      []string{"185"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "account_endpoint_account_updates",
+		// 	Endpoint: "/account_updates",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_stake_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "account_endpoint_account_updates",
+		// 	Endpoint: "/account_updates",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_stake_address": []string{"stake_test1uqqzl36c3vk850wk22yqgum9l0upy0y8588hcvsjq9m6j4cxw3qau"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "account_endpoint_account_addresses",
+		// 	Endpoint: "/account_addresses",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "account_endpoint_account_addresses",
+		// 	Endpoint: "/account_addresses",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_address": []string{"addr_test1qqn5x72yymml6aka0cmkew3jynqgld7xlnwtlsen9ln5tfll0dw5r75vk42mv3ykq8vyjeaanvpytg79xqzymqy5acmqqhx2n7"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "account_endpoint_account_assets",
+		// 	Endpoint: "/account_assets",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "account_endpoint_account_assets",
+		// 	Endpoint: "/account_assets",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_address": []string{"addr_test1qqn5x72yymml6aka0cmkew3jynqgld7xlnwtlsen9ln5tfll0dw5r75vk42mv3ykq8vyjeaanvpytg79xqzymqy5acmqqhx2n7"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "mainnet",
+		// 	Filename: "account_endpoint_account_history",
+		// 	Endpoint: "/account_history",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_address": []string{"stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz"},
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	Network:  "testnet",
+		// 	Filename: "account_endpoint_account_history",
+		// 	Endpoint: "/account_history",
+		// 	Request: internal.APITestRequestSpec{
+		// 		Method: "GET",
+		// 		Query: url.Values{
+		// 			"_address": []string{"addr_test1qqn5x72yymml6aka0cmkew3jynqgld7xlnwtlsen9ln5tfll0dw5r75vk42mv3ykq8vyjeaanvpytg79xqzymqy5acmqqhx2n7"},
+		// 		},
+		// 	},
+		// },
 	}
 }

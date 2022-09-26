@@ -37,7 +37,7 @@ type (
 	}
 
 	// UTxO model holds inputs and outputs for given UTxO.
-	UTxO struct {
+	EUTxO struct {
 		/// TxHash is hash of transaction.
 		TxHash TxHash `json:"tx_hash,omitempty"`
 
@@ -55,27 +55,15 @@ type (
 
 	// TxInput an transaxtion input.
 	TxInput struct {
-		// An array of assets contained on input UTxO.
-		AssetList []Asset `json:"asset_list,omitempty"`
-
-		// input UTxO.
-		PaymentAddr PaymentAddr `json:"payment_addr,omitempty"`
-
-		// StakeAddress for transaction's input UTxO.
-		StakeAddress StakeAddress `json:"stake_addr,omitempty"`
-
-		// Hash of Transaction for input UTxO.
-		TxHash TxHash `json:"tx_hash"`
-
-		// Index of input UTxO on the mentioned address used for input.
-		TxIndex uint32 `json:"tx_index"`
-
-		// Balance on the selected input transaction.
-		Value decimal.Decimal `json:"value"`
+		UTxO
 	}
 
 	// TxOutput an transaxtion output.
 	TxOutput struct {
+		UTxO
+	}
+
+	UTxO struct {
 		// An array of assets to be included in output UTxO.
 		AssetList []Asset `json:"asset_list,omitempty"`
 
@@ -91,8 +79,15 @@ type (
 		// Index of output UTxO.
 		TxIndex uint32 `json:"tx_index"`
 
+		BlockHeight uint32    `json:"block_height,omitempty"`
+		BlockTime   Timestamp `json:"block_time,omitempty"`
+
 		// Total sum on the output address.
 		Value decimal.Decimal `json:"value"`
+
+		DatumHash       any `json:"datum_hash,omitempty"`
+		InlineDatum     any `json:"inline_datum,omitempty"`
+		ReferenceScript any `json:"reference_script,omitempty"`
 	}
 
 	// TxInfoMetadata metadata in transaction info.
@@ -114,7 +109,7 @@ type (
 
 	// TxInfo transaction info.
 	TxInfo struct {
-		UTxO
+		EUTxO
 
 		// BlockHash is hash of the block in which transaction was included.
 		BlockHash BlockHash `json:"block_hash,omitempty"`
@@ -132,7 +127,7 @@ type (
 		AbsoluteSlot uint64 `json:"absolute_slot,omitempty"`
 
 		// TxTimestamp is timestamp when block containing transaction was created.
-		TxTimestamp string `json:"tx_timestamp,omitempty"`
+		TxTimestamp Timestamp `json:"tx_timestamp,omitempty"`
 
 		// TxBlockIndex is index of transaction within block.
 		TxBlockIndex uint32 `json:"tx_block_index,omitempty"`
@@ -164,7 +159,7 @@ type (
 		Collaterals []TxInput `json:"collaterals,omitempty"`
 
 		// Metadata present with-in a transaction (if any)
-		Metadata []TxInfoMetadata `json:"metadata,omitempty"`
+		Metadata any `json:"metadata,omitempty"`
 
 		// Array of withdrawals with-in a transaction (if any)
 		Withdrawals []TxsWithdrawal `json:"withdrawals,omitempty"`
@@ -448,7 +443,7 @@ func (c *Client) GetTxsStatuses(
 func NewTransaction() *TX {
 	return &TX{
 		TxInfo{
-			UTxO: UTxO{
+			EUTxO: EUTxO{
 				TxHash:  "",
 				Inputs:  nil,
 				Outputs: nil,
@@ -458,7 +453,7 @@ func NewTransaction() *TX {
 			Epoch:         EpochNo(0),
 			EpochSlot:     0,
 			AbsoluteSlot:  0,
-			TxTimestamp:   "",
+			TxTimestamp:   Timestamp{},
 			TxBlockIndex:  0,
 			TxSize:        0,
 			TotalOutput:   ZeroLovelace,
@@ -489,7 +484,7 @@ func txHashesPL(txs []TxHash) io.Reader {
 
 // AddUTxO adds utxo inputs and otputs to transaction
 // Useful when composing batch transaction.
-func (tx *TX) AddUTxO(utxo UTxO) error {
+func (tx *TX) AddUTxO(utxo EUTxO) error {
 	for _, in := range utxo.Inputs {
 		// check that UTxO inputs are not already used
 		for _, tin := range tx.Inputs {

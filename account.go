@@ -143,7 +143,7 @@ func (c *Client) GetAccountList(
 
 func (c *Client) GetAccountInfo(
 	ctx context.Context,
-	addr Address,
+	addr StakeAddress,
 	opts *RequestOptions,
 ) (res *AccountInfoResponse, err error) {
 	res = &AccountInfoResponse{}
@@ -214,12 +214,6 @@ func (c *Client) GetAccountUpdates(
 	res = &AccountUpdatesResponse{}
 
 	if _, err = addr.Valid(); err != nil {
-		res.applyError(nil, err)
-		return
-	}
-
-	if len(addr) == 0 {
-		err = ErrNoAddress
 		res.applyError(nil, err)
 		return
 	}
