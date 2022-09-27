@@ -176,7 +176,7 @@ type (
 	// AssetPolicyInfoResponse represents response from `/asset_policy_info` endpoint.
 	AssetPolicyInfoResponse struct {
 		Response
-		Data []AssetInfo `json:"response"`
+		Data *AssetPolicyInfo `json:"response"`
 	}
 
 	// AssetMintTX holds specific mint tx hash and amount.
