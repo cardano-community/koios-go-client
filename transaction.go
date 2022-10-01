@@ -390,8 +390,8 @@ func (c *Client) SubmitSignedTx(
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
-	opts.HeadersSet("Content-Type", "application/cbor")
-	opts.HeadersSet("Content-Length", fmt.Sprint(len(cborb)))
+	opts.HeaderSet("Content-Type", "application/cbor")
+	opts.HeaderSet("Content-Length", fmt.Sprint(len(cborb)))
 
 	rsp, err := c.request(ctx, &res.Response, method, "/submittx", bytes.NewBuffer(cborb), opts)
 	if err != nil {
