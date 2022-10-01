@@ -44,7 +44,7 @@ type (
 		EpochSlot Slot `json:"epoch_slot"`
 
 		// Block Hash in hex
-		BlockHash BlockHash `json:"hash"`
+		Hash BlockHash `json:"hash"`
 	}
 
 	// TipResponse response of /tip.
