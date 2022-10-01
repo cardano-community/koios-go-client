@@ -1,4 +1,4 @@
-name: live-endpoints
+name: linux
 
 on:
   push:
