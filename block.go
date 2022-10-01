@@ -23,6 +23,7 @@ import (
 )
 
 type (
+	BlockNo int
 	// Block defines model for block.
 	Block struct {
 		// Hash block hash

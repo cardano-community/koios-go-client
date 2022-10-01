@@ -29,10 +29,10 @@ type (
 	// Tip defines model for tip.
 	Tip struct {
 		// Absolute Slot number (slots not divided into epochs)
-		AbsSlot int `json:"abs_slot"`
+		AbsSlot Slot `json:"abs_slot"`
 
 		// Block Height number on chain
-		BlockNo int `json:"block_no"`
+		BlockNo BlockNo `json:"block_no"`
 
 		// Timestamp for when the block was created
 		BlockTime Timestamp `json:"block_time"`
@@ -41,7 +41,7 @@ type (
 		EpochNo EpochNo `json:"epoch_no"`
 
 		// Slot number within Epoch
-		EpochSlot int `json:"epoch_slot"`
+		EpochSlot Slot `json:"epoch_slot"`
 
 		// Block Hash in hex
 		BlockHash BlockHash `json:"hash"`

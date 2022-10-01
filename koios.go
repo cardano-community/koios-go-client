@@ -10,11 +10,11 @@
 package koios // imports as package "koios"
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,7 +35,7 @@ import (
 const (
 	MainnetHost              = "api.koios.rest"
 	MainnetHostEU            = "eu-api.koios.rest"
-	GuildnetHost             = "guild.koios.rest"
+	GuildHost                = "guild.koios.rest"
 	TestnetHost              = "testnet.koios.rest"
 	DefaultAPIVersion        = "v0"
 	DefaultPort       uint16 = 443
@@ -72,6 +72,8 @@ var (
 // introduces breaking change since v1.3.0
 
 type (
+	Slot int
+
 	// PaymentCredential type def.
 	PaymentCredential string
 
@@ -285,22 +287,15 @@ func (v ScriptHash) String() string {
 }
 
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
-	var timestamp decimal.Decimal
-	err := json.Unmarshal(b, &timestamp)
+	q, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
-		str := string(b)
-		p, err := time.Parse("\""+time.RFC3339+"\"", str)
-		if err != nil {
-			p, err = time.Parse("\"2006-01-02T15:04:05\"", str)
-		}
-		t.Time = p
 		return err
 	}
-	t.Time = time.Unix(timestamp.BigInt().Int64(), 0)
+	t.Time = time.Unix(q, 0)
 	return err
 }
 
 // MarshalJSON turns our time.Time back into an int.
 func (t Timestamp) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("%d", (t.Time.Unix()))), nil
+	return []byte(strconv.FormatInt(t.Time.Unix(), 10)), nil
 }
