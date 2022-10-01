@@ -25,7 +25,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/fxamacker/cbor/v2"
 	"github.com/shopspring/decimal"
 )
 
@@ -439,37 +438,6 @@ func (c *Client) GetTxsStatuses(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
-// NewTxWithAutoFee.
-func NewTransaction() *TX {
-	return &TX{
-		TxInfo{
-			EUTxO: EUTxO{
-				TxHash:  "",
-				Inputs:  nil,
-				Outputs: nil,
-			},
-			BlockHash:     BlockHash(""),
-			BlockHeight:   0,
-			Epoch:         EpochNo(0),
-			EpochSlot:     0,
-			AbsoluteSlot:  0,
-			TxTimestamp:   Timestamp{},
-			TxBlockIndex:  0,
-			TxSize:        0,
-			TotalOutput:   ZeroLovelace,
-			Fee:           ZeroLovelace,
-			Deposit:       ZeroLovelace,
-			InvalidAfter:  0,
-			InvalidBefore: 0,
-			AssetsMinted:  nil,
-			Collaterals:   nil,
-			Metadata:      nil,
-			Withdrawals:   nil,
-			Certificates:  nil,
-		},
-	}
-}
-
 func txHashesPL(txs []TxHash) io.Reader {
 	var payload = struct {
 		TxHashes []TxHash `json:"_tx_hashes"`
@@ -480,38 +448,4 @@ func txHashesPL(txs []TxHash) io.Reader {
 		defer w.Close()
 	}()
 	return rpipe
-}
-
-// AddUTxO adds utxo inputs and otputs to transaction
-// Useful when composing batch transaction.
-func (tx *TX) AddUTxO(utxo EUTxO) error {
-	for _, in := range utxo.Inputs {
-		// check that UTxO inputs are not already used
-		for _, tin := range tx.Inputs {
-			if in.TxHash == tin.TxHash && in.TxIndex == tin.TxIndex {
-				return fmt.Errorf("%w: %s#%d", ErrUTxOInputAlreadyUsed, in.TxHash, in.TxIndex)
-			}
-		}
-		tx.Inputs = append(tx.Inputs, in)
-	}
-
-	tx.Outputs = append(tx.Outputs, utxo.Outputs...)
-
-	return nil
-}
-
-// CalculateSharedFee calculates fee and shares fee between transaction outputs.
-// Optionally you can provide destination addresses which will not share the fee.
-// e.g
-// most cases you would exclude your own address so that only
-// external receivers pay the fee. Useful when using this lib in faucet.
-func (tx *TX) CalculateSharedFee(params EpochParams, exclude ...Address) error {
-	return nil
-}
-
-func (out *TxOutput) MarshalCBOR() ([]byte, error) {
-	if len(out.PaymentAddr.Bech32) == 0 {
-		return nil, fmt.Errorf("cbor: %w", ErrNoAddress)
-	}
-	return cbor.Marshal([]interface{}{out.PaymentAddr.Bech32.Bytes(), out.Value.IntPart()})
 }

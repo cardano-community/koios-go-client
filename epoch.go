@@ -27,7 +27,7 @@ import (
 
 type (
 	// EpochNo defines type for _epoch_no.
-	EpochNo uint64
+	EpochNo int
 
 	// EpochInfo defines model for epoch_info.
 	EpochInfo struct {
