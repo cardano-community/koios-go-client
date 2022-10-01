@@ -23,6 +23,11 @@ import (
 	"github.com/cardano-community/koios-go-client/v2"
 )
 
+// TestingT is an interface wrapper around *testing.T
+type TestingT interface {
+	Errorf(format string, args ...any)
+}
+
 func getClient() (*koios.Client, error) {
 	var host string
 	switch os.Getenv("KOIOS_NETWORK") {
