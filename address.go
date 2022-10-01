@@ -44,7 +44,7 @@ type (
 
 	// 	// An array of assets contained on UTxO.
 	// 	AssetList []Asset `json:"asset_list"`
-	// }
+	// }.
 
 	// AddressInfo esponse for `/address_info`.
 	AddressInfo struct {

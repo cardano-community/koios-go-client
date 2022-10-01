@@ -5,8 +5,8 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at:
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
-//   or LICENSE file in repository root.
+//	http://www.apache.org/licenses/LICENSE-2.0
+//	or LICENSE file in repository root.
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,15 @@ import (
 	"net/http"
 	"net/url"
 )
+
+// RequestOptions for the request.
+type RequestOptions struct {
+	page     uint
+	pageSize uint
+	locked   bool
+	query    url.Values
+	headers  http.Header
+}
 
 // QuerySet sets the key to value in request query.
 // It replaces any existing values.
@@ -45,26 +54,26 @@ func (ro *RequestOptions) QueryApply(h url.Values) {
 
 // HeadersSet sets the key to value in request headers.
 // It replaces any existing values.
-func (ro *RequestOptions) HeadersSet(key, val string) {
+func (ro *RequestOptions) HeaderSet(key, val string) {
 	ro.headers.Set(key, val)
 }
 
 // HeadersAdd adds the value to request headers by key.
 // It appends to any existing values associated with key.
-func (ro *RequestOptions) HeadersAdd(key, val string) {
+func (ro *RequestOptions) HeaderAdd(key, val string) {
 	ro.headers.Add(key, val)
 }
 
 // HeadersApply sets all values from provided header.
-func (ro *RequestOptions) HeadersApply(h http.Header) {
+func (ro *RequestOptions) HeaderApply(h http.Header) {
 	for k, vv := range h {
 		for _, v := range vv {
-			ro.HeadersSet(k, v)
+			ro.HeaderSet(k, v)
 		}
 	}
 }
 
-// Clone the request options for usaing it with other request.
+// Clone the request options for using it with other request.
 func (ro *RequestOptions) Clone() *RequestOptions {
 	opts := &RequestOptions{
 		headers:  ro.headers.Clone(),
@@ -80,6 +89,16 @@ func (ro *RequestOptions) Clone() *RequestOptions {
 	return opts
 }
 
+// SetPageSize for request modifies range header to satisfy requested page size.
+func (ro *RequestOptions) SetPageSize(size uint) {
+	ro.pageSize = size
+}
+
+// SetCurrentPage modifies range header of the request to satisfy current page requested.
+func (ro *RequestOptions) SetCurrentPage(page uint) {
+	ro.page = page
+}
+
 // lock the request options.
 func (ro *RequestOptions) lock() error {
 	if ro.locked {
@@ -92,14 +111,4 @@ func (ro *RequestOptions) lock() error {
 		ro.headers.Set("Range", fmt.Sprintf("%d-%d", s, e))
 	}
 	return nil
-}
-
-// PageSize for request sets size of Range header.
-func (ro *RequestOptions) PageSize(size uint) {
-	ro.pageSize = size
-}
-
-// Page modifies Range header starting point.
-func (ro *RequestOptions) Page(page uint) {
-	ro.page = page
 }
