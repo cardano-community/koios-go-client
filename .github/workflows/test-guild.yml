@@ -16,6 +16,8 @@ jobs:
       matrix:
         test:
          - TestNetworkTip
+         - TestNetworkGenesis
+         - TestNetworkTotals
     defaults:
       run:
         working-directory: internal/testsuite
