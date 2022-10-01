@@ -31,14 +31,14 @@ type (
 
 	// EpochInfo defines model for epoch_info.
 	EpochInfo struct {
-		// Rewards accumulated as of given epoch (in lovelaces)
-		ActiveStake decimal.Decimal `json:"active_stake"`
+		// Epoch number
+		EpochNo EpochNo `json:"epoch_no"`
+
+		// OutSum total output value across all transactions in epoch.
+		OutSum decimal.Decimal `json:"out_sum"`
 
 		// Number of blocks created in epoch
-		BlkCount int64 `json:"blk_count"`
-
-		// Epoch number
-		Epoch EpochNo `json:"epoch_no"`
+		BlkCount int `json:"blk_count"`
 
 		// Total fees incurred by transactions in epoch
 		Fees decimal.Decimal `json:"fees"`
@@ -49,17 +49,24 @@ type (
 		// Timestamp for last block created in epoch
 		LastBlockTime Timestamp `json:"last_block_time"`
 
-		// Total output value across all transactions in epoch
-		OutSum decimal.Decimal `json:"out_sum"`
-
 		// Number of transactions submitted in epoch
-		TxCount int64 `json:"tx_count"`
+		TxCount int `json:"tx_count"`
 
 		// EndTime of epoch
 		EndTime Timestamp `json:"end_time"`
 
 		// StartTime of epoch
 		StartTime Timestamp `json:"start_time"`
+
+		// ActiveStake Total active stake in epoch stake snapshot
+		// (null for pre-Shelley epochs)
+		ActiveStake decimal.Decimal `json:"active_stake,omitempty"`
+
+		// TotalRewards earned in epoch (null for pre-Shelley epochs)
+		TotalRewards decimal.Decimal `json:"total_rewards,omitempty"`
+
+		// AvgBlkReward Average block reward for epoch (null for pre-Shelley epochs)
+		AvgBlkReward decimal.Decimal `json:"avg_blk_reward,omitempty"`
 	}
 
 	// EpochInfoResponse response of /epoch_info.
@@ -74,11 +81,11 @@ type (
 		BlockHash BlockHash `json:"block_hash"`
 
 		// The cost per UTxO word
-		CoinsPerUtxoWord decimal.Decimal `json:"coins_per_utxo_word"`
+		CoinsPerUtxoSize decimal.Decimal `json:"coins_per_utxo_size"`
 
 		// The percentage of the tx fee which must be provided as collateral
 		// when including non-native scripts
-		CollateralPercent int64 `json:"collateral_percent"`
+		CollateralPercent int `json:"collateral_percent"`
 
 		// The per language cost models
 		CostModels string `json:"cost_models"`
@@ -88,10 +95,10 @@ type (
 
 		// The hash of 32-byte string of extra random-ness added into
 		// the protocol's entropy pool
-		Entropy string `json:"entropy"`
+		ExtraEntropy string `json:"extra_entropy"`
 
 		// Epoch number
-		Epoch EpochNo `json:"epoch_no"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// The pledge influence on pool rewards
 		Influence float64 `json:"influence"`
@@ -128,7 +135,7 @@ type (
 		MaxTxSize int `json:"max_tx_size"`
 
 		// The maximum Val size
-		MaxValSize float32 `json:"max_val_size"`
+		MaxValSize float64 `json:"max_val_size"`
 
 		// The 'a' parameter to calculate the minimum transaction fee
 		MinFeeA decimal.Decimal `json:"min_fee_a"`
@@ -174,6 +181,21 @@ type (
 	EpochParamsResponse struct {
 		Response
 		Data []EpochParams `json:"data"`
+	}
+
+	BlockProtocol struct {
+		// The protocol major version
+		ProtoMajor int `json:"proto_major"`
+
+		// The protocol minor version
+		ProtoMinor int `json:"proto_minor"`
+
+		Blocks int `json:"blocks"`
+	}
+
+	EpochBlockProtocolsResponse struct {
+		Response
+		Data []BlockProtocol `json:"data"`
 	}
 )
 
@@ -223,6 +245,33 @@ func (c *Client) GetEpochParams(
 
 	if len(res.Data) == 0 {
 		return nil, fmt.Errorf("%w: could not get epoch params %s", ErrResponse, epoch)
+	}
+	return
+}
+
+// GetEpochBlockProtocols returns the information about block protocol distribution in epoch.
+func (c *Client) GetEpochBlockProtocols(
+	ctx context.Context,
+	epoch *EpochNo,
+	opts *RequestOptions,
+) (res *EpochBlockProtocolsResponse, err error) {
+	res = &EpochBlockProtocolsResponse{}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	if epoch != nil {
+		opts.QuerySet("_epoch_no", epoch.String())
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/epoch_block_protocols", nil, opts)
+	if err != nil {
+		return
+	}
+
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
+	if len(res.Data) == 0 {
+		return nil, fmt.Errorf("%w: could not get epoch block protocols %s", ErrResponse, epoch)
 	}
 	return
 }

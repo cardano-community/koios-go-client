@@ -18,9 +18,21 @@ jobs:
          - TestNetworkTip
          - TestNetworkGenesis
          - TestNetworkTotals
-    defaults:
-      run:
-        working-directory: internal/testsuite
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - uses: actions/checkout@v3
+      - run: go test -run  ${{ matrix.test }} .
+
+  epoch:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test:
+         - TestEpochInfo
+         - TestEpochParams
+         - TestEpochBlockProtocols
     steps:
       - uses: actions/setup-go@v3
         with:
