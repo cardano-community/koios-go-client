@@ -1,0 +1,27 @@
+name: guild
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  KOIOS_NETWORK: guild
+
+jobs:
+  network:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test:
+         - TestNetworkTip
+    defaults:
+      run:
+        working-directory: internal/testsuite
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - uses: actions/checkout@v3
+      - run: go test -run  ${{ matrix.test }} .
