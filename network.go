@@ -58,10 +58,10 @@ type (
 		// Active Slot Co-Efficient (f) - determines the _probability_ of number of
 		// slots in epoch that are expected to have blocks
 		// (so mainnet, this would be: 432000 * 0.05 = 21600 estimated blocks).
-		Activeslotcoeff decimal.Decimal `json:"activeslotcoeff"`
+		ActiveSlotCoeff decimal.Decimal `json:"activeslotcoeff"`
 
 		// A JSON dump of Alonzo Genesis.
-		Alonzogenesis string `json:"alonzogenesis"`
+		AlonzoGenesis string `json:"alonzogenesis"`
 
 		// Number of slots in an epoch.
 		EpochLength decimal.Decimal `json:"epochlength"`
@@ -69,7 +69,7 @@ type (
 		// Number of KES key evolutions that will automatically occur before a KES
 		// (hot) key is expired. This parameter is for security of a pool,
 		// in case an operator had access to his hot(online) machine compromised.
-		Maxkesrevolutions decimal.Decimal `json:"maxkesrevolutions"`
+		MaxKesRevolutions decimal.Decimal `json:"maxkesrevolutions"`
 
 		// Maximum smallest units (lovelaces) supply for the blockchain.
 		MaxLovelaceSupply decimal.Decimal `json:"maxlovelacesupply"`
@@ -85,21 +85,21 @@ type (
 		// (used in security checks like ensuring atleast 1 block was
 		// created in 3*k/f period, or to finalize next epoch's nonce
 		// at 4*k/f slots before end of epoch).
-		Securityparam decimal.Decimal `json:"securityparam"`
+		SecurityParam decimal.Decimal `json:"securityparam"`
 
 		// Duration of a single slot (in seconds).
-		Slotlength decimal.Decimal `json:"slotlength"`
+		SlotLength decimal.Decimal `json:"slotlength"`
 
 		// Number of slots that represent a single KES period
 		// (a unit used for validation of KES key evolutions).
-		Slotsperkesperiod decimal.Decimal `json:"slotsperkesperiod"`
+		SlotsPerKesPeriod decimal.Decimal `json:"slotsperkesperiod"`
 
 		// Timestamp for first block (genesis) on chain.
-		Systemstart Timestamp `json:"systemstart"`
+		SystemStart Timestamp `json:"systemstart"`
 
 		// Number of BFT members that need to approve
 		// (via vote) a Protocol Update Proposal.
-		Updatequorum string `json:"updatequorum"`
+		UpdateQuorum decimal.Decimal `json:"updatequorum"`
 	}
 
 	// GenesisResponse response of /genesis.
@@ -115,7 +115,7 @@ type (
 		Circulation decimal.Decimal `json:"circulation"`
 
 		// Epoch number.
-		Epoch EpochNo `json:"epoch_no"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// Total Reserves yet to be unlocked on chain.
 		Reserves decimal.Decimal `json:"reserves"`
@@ -197,7 +197,7 @@ func (c *Client) GetTotals(
 
 func (g *Genesis) AlonzoGenesisMap() (map[string]any, error) {
 	var data map[string]any
-	if err := json.Unmarshal([]byte(g.Alonzogenesis), &data); err != nil {
+	if err := json.Unmarshal([]byte(g.AlonzoGenesis), &data); err != nil {
 		return nil, err
 	}
 	return data, nil
