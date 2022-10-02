@@ -47,10 +47,10 @@ type (
 		Outputs []UTxO `json:"outputs" cbor:"1,keyasint"`
 	}
 
-	// TxMetalabel defines model for tx_metalabels.
+	// TxMetalabel
 	TxMetalabel struct {
 		// A distinct known metalabel
-		Metalabel string `json:"metalabel"`
+		Key string `json:"key"`
 	}
 
 	UTxO struct {

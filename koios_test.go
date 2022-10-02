@@ -163,7 +163,7 @@ func assertUTxO(t TestingT, utxo koios.UTxO, tag string) {
 
 func assertAsset(t TestingT, asset koios.Asset, tag string) {
 	// assertNotEmpty(t, asset.Name, fmt.Sprintf("%s.asset_name", tag))
-	assertNotEmpty(t, asset.Fingerprint, fmt.Sprintf("%s.fingerprint", tag))
+	// assertNotEmpty(t, asset.Fingerprint, fmt.Sprintf("%s.fingerprint", tag))
 	assertNotEmpty(t, asset.PolicyID, fmt.Sprintf("%s.policy_id", tag))
 	assertIsPositive(t, asset.Quantity, fmt.Sprintf("%s.quantity", tag))
 }

@@ -151,3 +151,26 @@ func txMetadataTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
 		assertTxMetadata(t, listitem.Metadata, fmt.Sprintf("tx[%s].metadata", listitem.TxHash))
 	}
 }
+
+func TestTxMetaLabels(t *testing.T) {
+	client, err := getClient()
+	if !assert.NoError(t, err) {
+		return
+	}
+	txMetaLabelsTest(t, client)
+}
+
+func txMetaLabelsTest(t TestingT, client *koios.Client) {
+	opts := client.NewRequestOptions()
+	opts.SetPageSize(10)
+
+	res, err := client.GetTxMetaLabels(context.Background(), opts)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	assertEqual(t, 10, len(res.Data), "GetTxMetaLabels")
+	for _, label := range res.Data {
+		assertNotEmpty(t, label.Key, "empty label")
+	}
+}
