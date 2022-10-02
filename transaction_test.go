@@ -174,3 +174,22 @@ func txMetaLabelsTest(t TestingT, client *koios.Client) {
 		assertNotEmpty(t, label.Key, "empty label")
 	}
 }
+
+func TestTxStatus(t *testing.T) {
+	client, err := getClient()
+	if !assert.NoError(t, err) {
+		return
+	}
+	txStatusTest(t, networkTxHashes(), client)
+}
+
+func txStatusTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
+	res, err := client.GetTxsStatuses(context.Background(), hashes, nil)
+	if !assert.NoError(t, err) {
+		return
+	}
+	for i, status := range res.Data {
+		assertNotEmpty(t, status.TxHash, fmt.Sprintf("status[%d].status", i))
+		assertGreater(t, status.Confirmations, 0, fmt.Sprintf("status[%d].confirmations", i))
+	}
+}
