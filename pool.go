@@ -340,7 +340,7 @@ type (
 )
 
 // GetPoolList returns the list of all currently registered/retiring (not retired) pools.
-func (c *Client) GetPoolList(
+func (c *Client) GetPools(
 	ctx context.Context,
 	opts *RequestOptions,
 ) (res *PoolListResponse, err error) {

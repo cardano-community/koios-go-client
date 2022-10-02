@@ -18,6 +18,8 @@ package koios
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/shopspring/decimal"
 )
@@ -76,20 +78,20 @@ type (
 	// AssetInfo info about the asset.
 	AssetInfo struct {
 		// Asset Name (hex).
-		Name AssetName `json:"asset_name"`
+		AssetName AssetName `json:"asset_name"`
 
 		// Asset Name (ASCII)
-		NameASCII string `json:"asset_name_ascii"`
+		AssetNameASCII string `json:"asset_name_ascii"`
 
 		// The CIP14 fingerprint of the asset
 		Fingerprint string `json:"fingerprint"`
 
 		// MintingTxMetadata minting Tx JSON payload if it can be decoded as JSON
 		// MintingTxMetadata *TxInfoMetadata `json:"minting_tx_metadata"`
-		MintingTxMetadata any `json:"minting_tx_metadata"`
+		MintingTxMetadata *json.RawMessage `json:"minting_tx_metadata,omitempty"`
 
 		// Asset metadata registered on the Cardano Token Registry
-		TokenRegistryMetadata *TokenRegistryMetadata `json:"token_registry_metadata"`
+		TokenRegistryMetadata *TokenRegistryMetadata `json:"token_registry_metadata,omitempty"`
 
 		// Asset Policy ID (hex).
 		PolicyID PolicyID `json:"policy_id,omitempty"`
@@ -158,31 +160,27 @@ type (
 	// AssetSummaryResponse represents response from `/asset_summary` endpoint.
 	AssetSummaryResponse struct {
 		Response
-		Data *AssetSummary `json:"data"`
+		Data []AssetSummary `json:"data"`
 	}
 
 	// AssetTxsResponse represents response from `/asset_txs` endpoint.
 	AssetTxsResponse struct {
 		Response
-		Data []TX `json:"data"`
-	}
-
-	// AssetPolicyInfo is response body for `/asset_policy_info` endpoint.
-	AssetPolicyInfo struct {
-		PolicyID PolicyID    `json:"policy_id"`
-		Assets   []AssetInfo `json:"assets"`
+		Data []AddressTx `json:"data"`
 	}
 
 	// AssetPolicyInfoResponse represents response from `/asset_policy_info` endpoint.
 	AssetPolicyInfoResponse struct {
 		Response
-		Data *AssetPolicyInfo `json:"data"`
+		Data []AssetInfo `json:"data"`
 	}
 
 	// AssetMintTX holds specific mint tx hash and amount.
 	AssetMintTX struct {
-		TxHash   TxHash          `json:"tx_hash"`
-		Quantity decimal.Decimal `json:"quantity"`
+		TxHash    TxHash          `json:"tx_hash"`
+		Quantity  decimal.Decimal `json:"quantity"`
+		BlockTime Timestamp       `json:"block_time"`
+		Metadata  TxMetadata      `json:"metadata,omitempty"`
 	}
 
 	// AssetHistory holds given asset mint/burn tx's.
@@ -200,7 +198,7 @@ type (
 )
 
 // GetAssetList returns the list of all native assets (paginated).
-func (c *Client) GetAssetList(
+func (c *Client) GetAssets(
 	ctx context.Context,
 	opts *RequestOptions,
 ) (res *AssetListResponse, err error) {
@@ -214,10 +212,10 @@ func (c *Client) GetAssetList(
 }
 
 // GetAssetAddressList returns the list of all addresses holding a given asset.
-func (c *Client) GetAssetAddressList(
+func (c *Client) GetAssetAddresses(
 	ctx context.Context,
 	policy PolicyID,
-	name AssetName,
+	assetName AssetName,
 	opts *RequestOptions,
 ) (res *AssetAddressListResponse, err error) {
 	res = &AssetAddressListResponse{}
@@ -226,7 +224,7 @@ func (c *Client) GetAssetAddressList(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_asset_policy", policy.String())
-	opts.QuerySet("_asset_name", name.String())
+	opts.QuerySet("_asset_name", assetName.String())
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, opts)
 	if err != nil {
@@ -287,12 +285,9 @@ func (c *Client) GetAssetSummary(
 	if err != nil {
 		return
 	}
-	summary := []AssetSummary{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &summary)
 
-	if len(summary) == 1 {
-		res.Data = &summary[0]
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
 	return
 }
 
@@ -301,6 +296,7 @@ func (c *Client) GetAssetTxs(
 	ctx context.Context,
 	policy PolicyID,
 	name AssetName,
+	h int,
 	opts *RequestOptions,
 ) (res *AssetTxsResponse, err error) {
 	res = &AssetTxsResponse{}
@@ -309,18 +305,20 @@ func (c *Client) GetAssetTxs(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_asset_policy", policy.String())
-	opts.QuerySet("_asset_name", name.String())
+	if len(name) > 0 {
+		opts.QuerySet("_asset_name", name.String())
+	}
+	if h > 0 {
+		opts.QuerySet("_after_block_height", fmt.Sprint(h))
 
+	}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, opts)
 	if err != nil {
 		return
 	}
-	atxs := []TX{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &atxs)
 
-	if len(atxs) > 0 {
-		res.Data = atxs
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
 	return
 }
 
@@ -341,14 +339,11 @@ func (c *Client) GetAssetPolicyInfo(
 	if err != nil {
 		return
 	}
-	info := &AssetPolicyInfo{
-		PolicyID: policy,
-		Assets:   nil,
-	}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info.Assets)
 
-	if len(info.Assets) == 1 {
-		res.Data = info
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
+	for i := range res.Data {
+		res.Data[i].PolicyID = policy
 	}
 	return
 }
@@ -365,7 +360,9 @@ func (c *Client) GetAssetHistory(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_asset_policy", policy.String())
-	opts.QuerySet("_asset_name", name.String())
+	if len(name) > 0 {
+		opts.QuerySet("_asset_name", name.String())
+	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_history", nil, opts)
 	if err != nil {

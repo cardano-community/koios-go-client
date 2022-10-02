@@ -160,7 +160,7 @@ type (
 )
 
 // GetAccountList returns a list of all accounts.
-func (c *Client) GetAccountList(
+func (c *Client) GetAccounts(
 	ctx context.Context,
 	opts *RequestOptions,
 ) (res *AccountListResponse, err error) {
