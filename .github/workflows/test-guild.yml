@@ -224,3 +224,28 @@ jobs:
           files: ./coverage.txt
           env_vars: KOIOS_NETWORK
           fail_ci_if_error: true
+  scripts:
+    runs-on: ubuntu-latest
+    needs:
+      # just to limit concurrent check groups to 3
+      - address
+    strategy:
+      matrix:
+        test:
+         - NativeScriptList
+         - PlutusScriptList
+         - ScriptRedeemers
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - uses: actions/checkout@v3
+      - run: go test -v -covermode atomic -coverprofile coverage.txt -run  Test${{ matrix.test }}
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
+          name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
+          files: ./coverage.txt
+          env_vars: KOIOS_NETWORK
+          fail_ci_if_error: true
