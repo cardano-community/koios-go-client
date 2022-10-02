@@ -26,19 +26,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAccountList(t *testing.T) {
+func TestAccounts(t *testing.T) {
 	client, err := getClient()
 	if !assert.NoError(t, err) {
 		return
 	}
-	accountListTest(t, client)
+	accountsTest(t, client)
 }
 
-func accountListTest(t TestingT, client *koios.Client) {
+func accountsTest(t TestingT, client *koios.Client) {
 
 	opts := client.NewRequestOptions()
 	opts.SetPageSize(10)
-	res, err := client.GetAccountList(context.Background(), opts)
+	res, err := client.GetAccounts(context.Background(), opts)
 	if !assert.NoError(t, err) {
 		return
 	}

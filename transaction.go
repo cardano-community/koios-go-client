@@ -185,7 +185,7 @@ type (
 
 	TxMetadataOf struct {
 		TxHash   TxHash     `json:"tx_hash"`
-		Metadata TxMetadata `json:"metadata"`
+		Metadata TxMetadata `json:"metadata,omitempty"`
 	}
 
 	// SubmitSignedTxResponse represents response from `/submittx` endpoint.
@@ -453,11 +453,20 @@ type metaArrayItem struct {
 }
 
 func (m *TxMetadata) UnmarshalJSON(b []byte) error {
+	if len(b) == 0 {
+		return nil
+	}
 	// tx_info
 	// payload is most likely array
 	var array []metaArrayItem
 	if err2 := json.Unmarshal(b, &array); err2 != nil {
 		return fmt.Errorf("unmarshal metadata: %w", err2)
+	}
+	if len(array) == 0 {
+		return nil
+	}
+	if len(array) == 1 && len(array[0].Key) == 0 {
+		return nil
 	}
 	(*m) = make(TxMetadata)
 	for _, meta := range array {
@@ -472,6 +481,9 @@ type metaListItem struct {
 }
 
 func (m *TxMetadataOf) UnmarshalJSON(b []byte) error {
+	if len(b) == 0 {
+		return nil
+	}
 	var data metaListItem
 	if err := json.Unmarshal(b, &data); err != nil {
 		return fmt.Errorf("unmarshal metadata list: %w", err)

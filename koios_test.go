@@ -151,6 +151,18 @@ func networkAccounts() []koios.Address {
 	return accs
 }
 
+func networkPolicyAsset() (koios.PolicyID, koios.AssetName, int) {
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		return "313534a537bc476c86ff7c57ec511bd7f24a9d15654091b24e9c606e", "41484c636f696e", 63487
+	case "testnet":
+		return "000327a9e427a3a3256eb6212ae26b7f53f7969b8e62d37ea9138a7b", "54735465737431", 63487
+	default:
+		// mainnet
+		return "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", "444f4e545350414d", 63487
+	}
+}
+
 func getClient() (client *koios.Client, err error) {
 	net, ok := os.LookupEnv("KOIOS_NETWORK")
 	if !ok {
@@ -178,6 +190,11 @@ func assertEqual[V comparable](t TestingT, want, got V, tag string) bool {
 func assertIsPositive(t TestingT, in decimal.Decimal, tag string) bool {
 	msg := fmt.Sprintf("%s: should be positive got  %s", tag, in.String())
 	return assert.True(t, in.IsPositive(), msg)
+}
+
+func assertCoinNotZero(t TestingT, in decimal.Decimal, tag string) bool {
+	msg := fmt.Sprintf("%s: should not be 0", tag)
+	return assert.True(t, !in.IsZero(), msg)
 }
 
 func assertGreater[V any](t TestingT, count, min V, tag string) bool {
@@ -243,6 +260,9 @@ func assertAsset(t TestingT, asset koios.Asset, tag string) {
 }
 
 func assertTxMetadata(t TestingT, metadata koios.TxMetadata, tag string) {
+	if len(metadata) == 0 {
+		return
+	}
 	for key, json := range metadata {
 		assertNotEmpty(t, key, fmt.Sprintf("%s[%s]", tag, key))
 		assertNotEmpty(t, json, fmt.Sprintf("%s[%s]", tag, json))

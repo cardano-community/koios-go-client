@@ -114,7 +114,7 @@ type (
 
 // GetNativeScriptList returns list of all existing native script hashes
 // along with their creation transaction hashes.
-func (c *Client) GetNativeScriptList(
+func (c *Client) GetNativeScripts(
 	ctx context.Context,
 	opts *RequestOptions,
 ) (res *NativeScriptListResponse, err error) {
@@ -129,7 +129,7 @@ func (c *Client) GetNativeScriptList(
 
 // GetPlutusScriptList returns all existing Plutus script
 // hashes along with their creation transaction hashes.
-func (c *Client) GetPlutusScriptList(
+func (c *Client) GetPlutusScripts(
 	ctx context.Context,
 	opts *RequestOptions,
 ) (res *PlutusScriptListResponse, err error) {
