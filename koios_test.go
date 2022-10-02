@@ -81,6 +81,18 @@ func networkTxHashes() []koios.TxHash {
 	}
 	return hash
 }
+func networkPoolID() koios.PoolID {
+
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		return "pool1xc9eywck4e20tydz4yvh5vfe0ep8whawvwz8wqkc9k046a2ypp4"
+	case "testnet":
+		return "pool102llj7e7a0mmxssjvjkv2d6lppuh6cz6q9xwc3tsksn0jqwz9eh"
+	default:
+		// mainnet
+		return "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"
+	}
+}
 
 func networkAddresses() []koios.Address {
 	var addrs []koios.Address
