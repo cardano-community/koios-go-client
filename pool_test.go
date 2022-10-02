@@ -303,9 +303,11 @@ func poolMetadataTest(t TestingT, client *koios.Client, poolID koios.PoolID) {
 		assertNotEmpty(t, meta.PoolID, "pool_id_bech32")
 		assertNotEmpty(t, meta.MetaURL, "meta_url")
 		assertNotEmpty(t, meta.MetaHash, "meta_hash")
-		assertNotEmpty(t, meta.MetaJSON.Name, "meta_json.name")
-		assertNotEmpty(t, meta.MetaJSON.Ticker, "meta_json.ticker")
-		assertNotEmpty(t, meta.MetaJSON.Homepage, "meta_json.homepage")
-		assertNotEmpty(t, meta.MetaJSON.Description, "meta_json.description")
+		if meta.MetaJSON != nil {
+			assertNotEmpty(t, meta.MetaJSON.Name, "meta_json.name")
+			assertNotEmpty(t, meta.MetaJSON.Ticker, "meta_json.ticker")
+			assertNotEmpty(t, meta.MetaJSON.Homepage, "meta_json.homepage")
+			assertNotEmpty(t, meta.MetaJSON.Description, "meta_json.description")
+		}
 	}
 }

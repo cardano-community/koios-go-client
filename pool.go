@@ -63,7 +63,7 @@ type (
 		MetaHash string `json:"meta_hash"`
 
 		// MetaJson pool meta json
-		MetaJSON PoolMetaJSON `json:"meta_json"`
+		MetaJSON *PoolMetaJSON `json:"meta_json,omitempty"`
 	}
 
 	// Relay defines model for pool relay.
