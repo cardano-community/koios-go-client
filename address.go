@@ -19,6 +19,7 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"github.com/shopspring/decimal"
@@ -89,11 +90,11 @@ type (
 	}
 
 	AddressCollection struct {
-		PolicyID     PolicyID                 `json:"policy_id"`
-		PolicyAssets []AddressCollectionAsset `json:"assets"`
+		PolicyID PolicyID       `json:"policy_id"`
+		Assets   []AddressAsset `json:"assets"`
 	}
 
-	AddressCollectionAsset struct {
+	AddressAsset struct {
 		AssetName      AssetName       `json:"asset_name"`
 		AssetNameASCII string          `json:"asset_name_ascii"`
 		Balance        decimal.Decimal `json:"balance"`
@@ -215,6 +216,8 @@ func (c *Client) GetAddressAssets(
 	}
 	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
+	} else {
+		return nil, fmt.Errorf("%w: no assets on address %s", ErrNoData, addr)
 	}
 	return
 }
@@ -235,8 +238,13 @@ func (c *Client) GetAddressesAssets(
 	if err != nil {
 		return res, err
 	}
-
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	if err != nil {
+		return res, err
+	}
+	if len(res.Data) == 0 {
+		return nil, fmt.Errorf("%w: no assets on %d addresses", ErrNoData, len(addrs))
+	}
 	return res, err
 }
 

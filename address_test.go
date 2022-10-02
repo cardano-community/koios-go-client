@@ -33,8 +33,8 @@ func TestAddressInfo(t *testing.T) {
 	addressInfoTest(t, networkAddresses(), client)
 }
 
-func addressInfoTest(t TestingT, hashes []koios.Address, client *koios.Client) {
-	res, err := client.GetAddressesInfo(context.Background(), hashes, nil)
+func addressInfoTest(t TestingT, addrs []koios.Address, client *koios.Client) {
+	res, err := client.GetAddressesInfo(context.Background(), addrs, nil)
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -90,7 +90,7 @@ func addressAssetsTest(t TestingT, addrs []koios.Address, client *koios.Client) 
 		for i, col := range addrcol.Collections {
 			label := fmt.Sprintf("address[%s].assets[%d]", addrcol.Address, i)
 			assertNotEmpty(t, col.PolicyID, label+".ploicy_id")
-			for j, asset := range col.PolicyAssets {
+			for j, asset := range col.Assets {
 				label2 := fmt.Sprintf("%s.assets[%d]", label, j)
 				assertNotEmpty(t, asset.AssetName, label2+"asset_name")
 				assertNotEmpty(t, asset.AssetNameASCII, label2+"asset_name_ascii")

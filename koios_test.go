@@ -128,6 +128,29 @@ func networkPaymentCredentials() []koios.PaymentCredential {
 	return creds
 }
 
+func networkAccounts() []koios.Address {
+	var accs []koios.Address
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		accs = []koios.Address{
+			"stake_test17zt9x005zkd2usz2vhvktyzqsuwz25gmgnaqdka5hcj9m2qfg2py2",
+			"stake_test1uzzm95hs7dzw23ftj3cly3rgm64crqxet7g46k6y5kcy3zcs3mpjd",
+		}
+	case "testnet":
+		accs = []koios.Address{
+			"stake_test1uqrw9tjymlm8wrwq7jk68n6v7fs9qz8z0tkdkve26dylmfc2ux2hj",
+			"stake_test1uq7g7kqeucnqfweqzgxk3dw34e8zg4swnc7nagysug2mm4cm77jrx",
+		}
+	default:
+		// mainnet
+		accs = []koios.Address{
+			"stake1uyfmzu5qqy70a8kq4c8rw09q0w0ktfcxppwujejnsh6tyrg5c774g",
+			"stake1uydhlh7f2kkw9eazct5zyzlrvj32gjnkmt2v5qf6t8rut4qwch8ey",
+		}
+	}
+	return accs
+}
+
 func getClient() (client *koios.Client, err error) {
 	net, ok := os.LookupEnv("KOIOS_NETWORK")
 	if !ok {
