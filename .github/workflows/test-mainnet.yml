@@ -92,6 +92,7 @@ jobs:
          - TxUTxO
          - TxMetadata
          - TxMetaLabels
+         - TxStatus
     steps:
       - uses: actions/setup-go@v3
         with:
