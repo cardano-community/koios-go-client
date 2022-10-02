@@ -279,3 +279,11 @@ func assertPlutusContracts(t TestingT, contracts []koios.PlutusContract, tag str
 		assert.True(t, contract.ValidContract, 0, fmt.Sprintf("%s[%d].valid_contract", tag, i))
 	}
 }
+
+func githubActionWarning(title, msg string) {
+	fmt.Printf(
+		"::warning title=%s::%q\n",
+		title,
+		msg,
+	)
+}

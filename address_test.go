@@ -81,7 +81,12 @@ func TestAddressAssets(t *testing.T) {
 
 func addressAssetsTest(t TestingT, addrs []koios.Address, client *koios.Client) {
 	res, err := client.GetAddressesAssets(context.Background(), addrs, nil)
-	if !assert.NoError(t, err) {
+	if err != nil {
+		if assert.ErrorIs(t, err, koios.ErrNoData) {
+			githubActionWarning("AddressAssets", err.Error())
+			return
+		}
+		assert.NoError(t, err)
 		return
 	}
 
@@ -92,8 +97,10 @@ func addressAssetsTest(t TestingT, addrs []koios.Address, client *koios.Client) 
 			assertNotEmpty(t, col.PolicyID, label+".ploicy_id")
 			for j, asset := range col.Assets {
 				label2 := fmt.Sprintf("%s.assets[%d]", label, j)
-				assertNotEmpty(t, asset.AssetName, label2+"asset_name")
-				assertNotEmpty(t, asset.AssetNameASCII, label2+"asset_name_ascii")
+				if len(asset.AssetName) > 0 {
+					assertNotEmpty(t, asset.AssetName, label2+"asset_name")
+					assertNotEmpty(t, asset.AssetNameASCII, label2+"asset_name_ascii")
+				}
 				assertIsPositive(t, asset.Balance, label2+"balance")
 			}
 		}
@@ -114,7 +121,7 @@ func credentialTxsTest(t TestingT, creds []koios.PaymentCredential, client *koio
 		return
 	}
 
-	assertGreater(t, len(res.Data), 10, "expected transactions list")
+	assertGreater(t, len(res.Data), 2, "expected transactions list")
 	for i, tx := range res.Data {
 		assertNotEmpty(t, tx.TxHash, fmt.Sprintf("tx[%d].tx_hash", i))
 		assertNotEmpty(t, tx.EpochNo, fmt.Sprintf("tx[%d].epoch_no", i))

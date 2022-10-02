@@ -169,7 +169,7 @@ func txMetaLabelsTest(t TestingT, client *koios.Client) {
 		return
 	}
 
-	assertEqual(t, 10, len(res.Data), "GetTxMetaLabels")
+	assertGreater(t, len(res.Data), 2, "GetTxMetaLabels")
 	for _, label := range res.Data {
 		assertNotEmpty(t, label.Key, "empty label")
 	}
