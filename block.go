@@ -211,20 +211,21 @@ func blockHashesPL(bhash []BlockHash) io.Reader {
 	return rpipe
 }
 
-// // handle api json tags Block.epoch and Block.epoch_no.
-// func (block *Block) UnmarshalJSON(b []byte) error {
-// 	type B Block
-// 	if err := json.Unmarshal(b, (*B)(block)); err != nil {
-// 		return err
-// 	}
-// 	if block.EpochNo == 0 {
-// 		var fix = struct {
-// 			Epoch EpochNo `json:"epoch_no"`
-// 		}{}
-// 		if err := json.Unmarshal(b, &fix); err != nil {
-// 			return err
-// 		}
-// 		block.Epoch = fix.Epoch
-// 	}
-// 	return nil
-// }
+// handle api json tags Block.epoch and Block.epoch_no.
+// SEE: https://github.com/cardano-community/koios-artifacts/issues/102
+func (block *Block) UnmarshalJSON(b []byte) error {
+	type B Block
+	if err := json.Unmarshal(b, (*B)(block)); err != nil {
+		return err
+	}
+	if block.EpochNo == 0 {
+		var fix = struct {
+			EpochNo EpochNo `json:"epoch"`
+		}{}
+		if err := json.Unmarshal(b, &fix); err != nil {
+			return err
+		}
+		block.EpochNo = fix.EpochNo
+	}
+	return nil
+}
