@@ -129,7 +129,7 @@ type (
 		OpCertCounter int `json:"op_cert_counter"`
 
 		// Owners of the pool
-		Owners []StakeAddress `json:"owners"`
+		Owners []Address `json:"owners"`
 
 		// Pledge pledge in lovelace
 		Pledge decimal.Decimal `json:"pledge"`
@@ -147,7 +147,7 @@ type (
 		RetiringEpoch *EpochNo `json:"retiring_epoch"`
 
 		// Pool reward address
-		RewardAddr StakeAddress `json:"reward_addr"`
+		RewardAddr Address `json:"reward_addr"`
 
 		// Pool VRF key hash
 		VrfKeyHash string `json:"vrf_key_hash"`
@@ -210,7 +210,7 @@ type (
 		// OpCertCounter int `json:"op_cert_counter"`
 
 		// Owners of the pool.
-		Owners []StakeAddress `json:"owners"`
+		Owners []Address `json:"owners"`
 
 		// Pledge pledge in lovelace.
 		Pledge decimal.Decimal `json:"pledge"`
@@ -222,7 +222,7 @@ type (
 		RetiringEpoch *EpochNo `json:"retiring_epoch"`
 
 		// Pool reward address.
-		RewardAddr StakeAddress `json:"reward_addr"`
+		RewardAddr Address `json:"reward_addr"`
 
 		// Pool VRF key hash.
 		VrfKeyHash string `json:"vrf_key_hash"`
@@ -233,7 +233,7 @@ type (
 
 	// PoolDelegator info.
 	PoolDelegator struct {
-		StakeAddress StakeAddress    `json:"stake_address"`
+		StakeAddress Address         `json:"stake_address"`
 		Amount       decimal.Decimal `json:"amount"`
 		Epoch        EpochNo         `json:"epoch_no"`
 	}

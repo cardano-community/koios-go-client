@@ -42,7 +42,7 @@ func networkTipTest(t TestingT, client *koios.Client) {
 	assertGreater(t, tip.Data.EpochNo, koios.EpochNo(230), "epoch_no")
 	assertGreater(t, tip.Data.EpochSlot, koios.Slot(1), "epoch_slot")
 	assertNotEmpty(t, tip.Data.Hash, "hash")
-	assertTimeNotZero(t, tip.Data.BlockTime.Time, "block_time")
+	assertTimeNotZero(t, tip.Data.BlockTime, "block_time")
 }
 
 func TestNetworkGenesis(t *testing.T) {
@@ -63,7 +63,7 @@ func networkGenesisTest(t TestingT, client *koios.Client) {
 	assertIsPositive(t, res.Data.EpochLength, "epochlength")
 	assertIsPositive(t, res.Data.SlotLength, "slotlength")
 	assertIsPositive(t, res.Data.MaxLovelaceSupply, "maxlovelacesupply")
-	assertTimeNotZero(t, res.Data.SystemStart.Time, "systemstart")
+	assertTimeNotZero(t, res.Data.SystemStart, "systemstart")
 	assertIsPositive(t, res.Data.ActiveSlotCoeff, "activeslotcoeff")
 	assertIsPositive(t, res.Data.SlotsPerKesPeriod, "slotsperkesperiod")
 	assertIsPositive(t, res.Data.MaxKesRevolutions, "maxkesrevolutions")

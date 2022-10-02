@@ -18,6 +18,7 @@ package koios
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/shopspring/decimal"
 )
@@ -61,8 +62,16 @@ type (
 		UnitSteps int `json:"unit_steps"`
 	}
 
-	// NativeScriptListItem item of native script list.
-	NativeScriptListItem struct {
+	PlutusContract struct {
+		Address       Address    `json:"address"`
+		ScriptHash    ScriptHash `json:"script_hash"`
+		ByteCode      string     `json:"bytecode"`
+		Size          int        `json:"size"`
+		ValidContract bool       `json:"valid_contract"`
+	}
+
+	// NativeScript item of native script list.
+	NativeScript struct {
 		// Hash of the script creation transaction
 		CreationTxHash TxHash `json:"creation_tx_hash"`
 
@@ -70,15 +79,15 @@ type (
 		ScriptHash string `json:"script_hash"`
 		Type       string `json:"type"`
 		Script     struct {
-			Type    string           `json:"type"`
-			Scripts []map[string]any `json:"scripts"`
+			Type    string            `json:"type"`
+			Scripts []json.RawMessage `json:"scripts"`
 		} `json:"script"`
 	}
 
 	// NativeScriptListResponse represents response from `/native_script_list` endpoint.
 	NativeScriptListResponse struct {
 		Response
-		Data []NativeScriptListItem `json:"response"`
+		Data []NativeScript `json:"response"`
 	}
 
 	// PlutusScriptListItem item of plutus script list.

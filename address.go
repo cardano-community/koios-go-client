@@ -28,9 +28,6 @@ type (
 	// Address defines type for _address.
 	Address string
 
-	// StakeAddress is Cardano staking address (reward account, bech32 encoded).
-	StakeAddress Address
-
 	// AddressUTxO UTxO attached to address.
 	// AddressUTxO struct {
 	// 	// Hash of Transaction for input UTxO.
@@ -52,7 +49,7 @@ type (
 		Balance decimal.Decimal `json:"balance"`
 
 		// StakeAddress associated with address
-		StakeAddress StakeAddress `json:"stake_address,omitempty"`
+		StakeAddress Address `json:"stake_address,omitempty"`
 
 		UTxOs []UTxO `json:"utxo_set"`
 	}
@@ -104,25 +101,6 @@ func (a Address) String() string {
 
 // Bytes returns address bytes.
 func (a Address) Bytes() []byte {
-	return []byte(a)
-}
-
-// Valid validates address and returns false and error
-// if address is invalid otherwise it returns true, nil.
-func (a StakeAddress) Valid() (bool, error) {
-	if len(a) == 0 {
-		return false, ErrNoAddress
-	}
-	return true, nil
-}
-
-// String returns StakeAddress as string.
-func (a StakeAddress) String() string {
-	return string(a)
-}
-
-// Bytes returns address bytes.
-func (a StakeAddress) Bytes() []byte {
 	return []byte(a)
 }
 

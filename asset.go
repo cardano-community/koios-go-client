@@ -28,9 +28,9 @@ type (
 	// Asset represents Cardano Asset.
 	Asset struct {
 		// Asset Name (hex).
-		Name string `json:"asset_name"`
+		Name string `json:"asset_name,omitempty"`
 
-		Fingerprint string `json:"fingerprint"`
+		Fingerprint string `json:"fingerprint,omitempty"`
 
 		// Asset Policy ID (hex).
 		PolicyID PolicyID `json:"policy_id"`
