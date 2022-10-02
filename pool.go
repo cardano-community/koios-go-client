@@ -69,19 +69,19 @@ type (
 	// Relay defines model for pool relay.
 	Relay struct {
 		// DNS name of the relay (nullable)
-		DNS *string `json:"dns"`
+		DNS string `json:"dns"`
 
 		// IPv4 address of the relay (nullable)
-		Ipv4 *string `json:"ipv4,"`
+		Ipv4 string `json:"ipv4,"`
 
 		// IPv6 address of the relay (nullable)
-		Ipv6 *string `json:"ipv6,"`
+		Ipv6 string `json:"ipv6,"`
 
 		// Port number of the relay (nullable)
-		Port *uint16 `json:"port"`
+		Port uint16 `json:"port"`
 
 		// DNS service name of the relay (nullable)
-		Srv *string `json:"srv"`
+		Srv string `json:"srv"`
 	}
 
 	// PoolInfo defines model for pool_info.
@@ -135,13 +135,13 @@ type (
 		Pledge decimal.Decimal `json:"pledge"`
 
 		// ID (bech32 format)
-		ID PoolID `json:"pool_id_bech32"`
+		PoolID PoolID `json:"pool_id_bech32"`
 
 		// IDHex Pool ID (Hex format)
-		IDHex string `json:"pool_id_hex"`
+		PoolIdHex string `json:"pool_id_hex"`
 
 		// Pool status (registered | retiring | retired)
-		Status string `json:"pool_status"`
+		PoolStatus string `json:"pool_status"`
 
 		// Announced retiring epoch (nullable)
 		RetiringEpoch *EpochNo `json:"retiring_epoch"`
@@ -154,6 +154,8 @@ type (
 
 		// Relays of the pool
 		Relays []Relay `json:"relays"`
+
+		Sigma float64 `json:"sigma"`
 	}
 
 	// PoolUpdateInfo response item from `/pool_updates`.
@@ -165,10 +167,10 @@ type (
 		BlockTime Timestamp `json:"block_time"`
 
 		// ID (bech32 format)
-		ID PoolID `json:"pool_id_bech32"`
+		PoolID PoolID `json:"pool_id_bech32"`
 
 		// IDHex Pool ID (Hex format)
-		IDHex string `json:"pool_id_hex"`
+		PoolIDHex string `json:"pool_id_hex"`
 
 		// ActiveEpochNo Block number on chain where transaction was included.
 		ActiveEpoch EpochNo `json:"active_epoch_no"`
@@ -216,10 +218,10 @@ type (
 		Pledge decimal.Decimal `json:"pledge"`
 
 		// Pool status (registered | retiring | retired).
-		Status string `json:"pool_status"`
+		PoolStatus string `json:"pool_status"`
 
 		// Announced retiring epoch (nullable).
-		RetiringEpoch *EpochNo `json:"retiring_epoch"`
+		RetiringEpoch *EpochNo `json:"retiring_epoch.omitempty"`
 
 		// Pool reward address.
 		RewardAddr Address `json:"reward_addr"`
@@ -228,14 +230,21 @@ type (
 		VrfKeyHash string `json:"vrf_key_hash"`
 
 		// Relays of the pool.
-		Relays []PoolRelays `json:"relays"`
+		Relays []Relay `json:"relays"`
 	}
 
 	// PoolDelegator info.
 	PoolDelegator struct {
+		StakeAddress           Address         `json:"stake_address"`
+		Amount                 decimal.Decimal `json:"amount"`
+		ActiveEpochNo          EpochNo         `json:"active_epoch_no"`
+		LatestDelegationTxHash TxHash          `json:"latest_delegation_tx_hash"`
+	}
+
+	PoolDelegatorHistory struct {
 		StakeAddress Address         `json:"stake_address"`
 		Amount       decimal.Decimal `json:"amount"`
-		Epoch        EpochNo         `json:"epoch_no"`
+		EpochNo      EpochNo         `json:"epoch_no"`
 	}
 
 	// PoolRelays list item.
@@ -248,28 +257,28 @@ type (
 	// PoolBlockInfo block info.
 	PoolBlockInfo struct {
 		// Slot is overall slot number (slots from genesis block of chain).
-		AbsSlot uint64 `json:"abs_slot"`
+		AbsSlot Slot `json:"abs_slot"`
 
 		// Hash block hash
-		Hash BlockHash `json:"block_hash"`
+		BlockHash BlockHash `json:"block_hash"`
 
 		// BlockHeight ogf the block
-		Height uint64 `json:"block_height"`
+		BlockHeight uint64 `json:"block_height"`
 
 		// Time time of the block.
-		Time Timestamp `json:"block_time"`
+		BlockTime Timestamp `json:"block_time"`
 
 		// Epoch number.
-		Epoch EpochNo `json:"epoch_no"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// EpochSlot slot number within epoch.
-		EpochSlot uint64 `json:"epoch_slot"`
+		EpochSlot Slot `json:"epoch_slot"`
 	}
 
 	// PoolHistory entry.
 	PoolHistory struct {
 		// Epoch number.
-		Epoch EpochNo `json:"epoch_no"`
+		EpochNo EpochNo `json:"epoch_no"`
 		// ActiveStake Pool active stake.
 		ActiveStake    decimal.Decimal `json:"active_stake"`
 		ActiveStakePCT float64         `json:"active_stake_pct"`
@@ -281,6 +290,19 @@ type (
 		PoolFees       decimal.Decimal `json:"pool_fees"`
 		DelegRewards   decimal.Decimal `json:"deleg_rewards"`
 		EpochROS       float64         `json:"epoch_ros"`
+	}
+
+	PoolSnapshot struct {
+		Snapshot    string          `json:"snapshot"`
+		EpochNo     EpochNo         `json:"epoch_no"`
+		Nonce       string          `json:"nonce"`
+		PoolStake   decimal.Decimal `json:"pool_stake"`
+		ActiveStake decimal.Decimal `json:"active_stake"`
+	}
+
+	PoolSnapshotResponse struct {
+		Response
+		Data []PoolSnapshot `json:"data"`
 	}
 
 	// PoolListResponse represents response from `/pool_list` endpoint.
@@ -306,6 +328,11 @@ type (
 	PoolDelegatorsResponse struct {
 		Response
 		Data []PoolDelegator `json:"data"`
+	}
+
+	PoolDelegatorsHistoryResponse struct {
+		Response
+		Data []PoolDelegatorHistory `json:"data"`
 	}
 
 	// PoolBlocksResponse represents response from `/pool_blocks` endpoint.
@@ -389,12 +416,30 @@ func (c *Client) GetPoolInfos(
 	return
 }
 
+func (c *Client) GetPoolSnapshot(
+	ctx context.Context,
+	pid PoolID,
+	opts *RequestOptions,
+) (res *PoolSnapshotResponse, err error) {
+	res = &PoolSnapshotResponse{}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_pool_bech32", pid.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_stake_snapshot", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
 // GetPoolDelegators returns information about delegators
 // by a given pool and optional epoch (current if omitted).
 func (c *Client) GetPoolDelegators(
 	ctx context.Context,
 	pid PoolID,
-	epoch *EpochNo,
 	opts *RequestOptions,
 ) (res *PoolDelegatorsResponse, err error) {
 	res = &PoolDelegatorsResponse{}
@@ -403,10 +448,32 @@ func (c *Client) GetPoolDelegators(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_pool_bech32", pid.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_delegators", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
+	return
+}
+func (c *Client) GetPoolDelegatorsHistory(
+	ctx context.Context,
+	pid PoolID,
+	epoch *EpochNo,
+	opts *RequestOptions,
+) (res *PoolDelegatorsHistoryResponse, err error) {
+	res = &PoolDelegatorsHistoryResponse{}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_pool_bech32", pid.String())
 	if epoch != nil {
 		opts.QuerySet("_epoch_no", epoch.String())
 	}
-	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_delegators", nil, opts)
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_delegators_history", nil, opts)
 	if err != nil {
 		return
 	}
