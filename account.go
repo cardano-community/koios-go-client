@@ -47,7 +47,7 @@ type (
 
 	// AccountHistoryEntry history entry list item.
 	AccountHistoryEntry struct {
-		StakeAddress StakeAddress    `json:"stake_address"`
+		StakeAddress Address         `json:"stake_address"`
 		PoolID       PoolID          `json:"pool_id"`
 		Epoch        EpochNo         `json:"epoch_no"`
 		ActiveStake  decimal.Decimal `json:"active_stake"`
@@ -74,7 +74,7 @@ type (
 	// AccountListResponse represents response from `/account_list` endpoint.
 	AccountListResponse struct {
 		Response
-		Data []StakeAddress `json:"response"`
+		Data []Address `json:"response"`
 	}
 
 	// AccountInfoResponse represents response from `/account_info` endpoint.
@@ -126,7 +126,7 @@ func (c *Client) GetAccountList(
 	}
 
 	accs := []struct {
-		ID StakeAddress `json:"id"`
+		ID Address `json:"id"`
 	}{}
 
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &accs)
@@ -143,7 +143,7 @@ func (c *Client) GetAccountList(
 
 func (c *Client) GetAccountInfo(
 	ctx context.Context,
-	addr StakeAddress,
+	addr Address,
 	opts *RequestOptions,
 ) (res *AccountInfoResponse, err error) {
 	res = &AccountInfoResponse{}
@@ -176,7 +176,7 @@ func (c *Client) GetAccountInfo(
 // for a stake address, or certain epoch if specified.
 func (c *Client) GetAccountRewards(
 	ctx context.Context,
-	addr StakeAddress,
+	addr Address,
 	epoch *EpochNo,
 	opts *RequestOptions,
 ) (res *AccountRewardsResponse, err error) {
@@ -208,7 +208,7 @@ func (c *Client) GetAccountRewards(
 // (registration, deregistration, delegation and withdrawals).
 func (c *Client) GetAccountUpdates(
 	ctx context.Context,
-	addr StakeAddress,
+	addr Address,
 	opts *RequestOptions,
 ) (res *AccountUpdatesResponse, err error) {
 	res = &AccountUpdatesResponse{}
@@ -234,7 +234,7 @@ func (c *Client) GetAccountUpdates(
 // GetAccountAddresses retruns all addresses associated with an account.
 func (c *Client) GetAccountAddresses(
 	ctx context.Context,
-	addr StakeAddress,
+	addr Address,
 	opts *RequestOptions,
 ) (res *AccountAddressesResponse, err error) {
 	res = &AccountAddressesResponse{}
@@ -270,7 +270,7 @@ func (c *Client) GetAccountAddresses(
 // GetAccountAssets retruns all the native asset balance of an account.
 func (c *Client) GetAccountAssets(
 	ctx context.Context,
-	addr StakeAddress,
+	addr Address,
 	opts *RequestOptions,
 ) (res *AccountAssetsResponse, err error) {
 	res = &AccountAssetsResponse{}
@@ -296,7 +296,7 @@ func (c *Client) GetAccountAssets(
 // GetAccountHistory retruns the staking history of an account.
 func (c *Client) GetAccountHistory(
 	ctx context.Context,
-	addr StakeAddress,
+	addr Address,
 	opts *RequestOptions,
 ) (res *AccountHistoryResponse, err error) {
 	res = &AccountHistoryResponse{}

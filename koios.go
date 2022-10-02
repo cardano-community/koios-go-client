@@ -10,6 +10,7 @@
 package koios // imports as package "koios"
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -62,6 +63,7 @@ var (
 	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
 	ErrUTxOInputAlreadyUsed     = errors.New("UTxO already used")
+	ErrNoData                   = errors.New("no data")
 
 	// ZeroLovelace is alias decimal.Zero.
 	ZeroLovelace = decimal.Zero.Copy() //nolint: gochecknoglobals
@@ -95,6 +97,8 @@ type (
 	// ScriptHash defines type for _script_hash.
 	ScriptHash string
 
+	DatumHash string
+
 	// Timestamp extends time to work with unix timestamps and
 	// fix time format anomalies when Unmarshaling and Marshaling
 	// Koios API times.
@@ -118,7 +122,7 @@ type (
 		Index int `json:"index"`
 
 		// Info is A JSON object containing information from the certificate.
-		Info map[string]any `json:"info"`
+		Info map[string]json.RawMessage `json:"info"`
 
 		// Type of certificate could be:
 		// delegation, stake_registration, stake_deregistraion, pool_update,
@@ -289,10 +293,11 @@ func (v ScriptHash) String() string {
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
 	q, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
-		return err
+		// time.IsZero = true
+		return nil
 	}
 	t.Time = time.Unix(q, 0)
-	return err
+	return nil
 }
 
 // MarshalJSON turns our time.Time back into an int.

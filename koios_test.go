@@ -20,7 +20,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/cardano-community/koios-go-client/v2"
 	"github.com/shopspring/decimal"
@@ -60,6 +59,29 @@ func networkBlockHash() koios.BlockHash {
 	return hash
 }
 
+func networkTxHashes() []koios.TxHash {
+	var hash []koios.TxHash
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		hash = []koios.TxHash{
+			"bf04578d452dd3acb7c70fbac32dc972cb69f932f804171cfb4268f5af0228e7",
+			"63b716064012f858450731cb5f960c100c6cb639ec1ec999b898c604451f116a",
+		}
+	case "testnet":
+		hash = []koios.TxHash{
+			"928052b80bfc23801da525a6bf8f805da36f22fa0fd5fec2198b0746eb82b72b",
+			"c7e96e4cd6aa9e3afbc7b32d1e8023daf4197931f1ea61d2bdfc7a2e5e017cf1",
+		}
+	default:
+		// mainnet
+		hash = []koios.TxHash{
+			"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e",
+			"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94",
+		}
+	}
+	return hash
+}
+
 func getClient() (client *koios.Client, err error) {
 	net, ok := os.LookupEnv("KOIOS_NETWORK")
 	if !ok {
@@ -79,27 +101,107 @@ func getClient() (client *koios.Client, err error) {
 	return koios.New(koios.Host(host))
 }
 
-func assertEqual[V comparable](t TestingT, want, got V, tag string) {
+func assertEqual[V comparable](t TestingT, want, got V, tag string) bool {
 	msg := fmt.Sprintf("%s: want(%v) got(%v)", tag, want, got)
-	assert.Equal(t, want, got, msg)
+	return assert.Equal(t, want, got, msg)
 }
 
-func assertIsPositive(t TestingT, in decimal.Decimal, tag string) {
-	msg := fmt.Sprintf("%s(should be positice): got  %s", tag, in.String())
-	assert.True(t, in.IsPositive(), msg)
+func assertIsPositive(t TestingT, in decimal.Decimal, tag string) bool {
+	msg := fmt.Sprintf("%s: should be positive got  %s", tag, in.String())
+	return assert.True(t, in.IsPositive(), msg)
 }
 
-func assertGreater[V any](t TestingT, want, got V, tag string) {
+func assertGreater[V any](t TestingT, want, got V, tag string) bool {
 	msg := fmt.Sprintf("%s: val(%v) should be greater than %v", tag, got, want)
-	assert.Greater(t, want, got, msg)
+	return assert.Greater(t, want, got, msg)
 }
 
-func assertNotEmpty(t TestingT, in any, tag string) {
+func assertNotEmpty(t TestingT, in any, tag string) bool {
 	msg := fmt.Sprintf("%s: in(%v)", tag, in)
-	assert.NotEmpty(t, in, msg)
+	return assert.NotEmpty(t, in, msg)
 }
 
-func assertTimeNotZero(t TestingT, in time.Time, tag string) {
+func assertTimeNotZero(t TestingT, in koios.Timestamp, tag string) bool {
 	msg := fmt.Sprintf("%s: time is empty or not parsed from return value", tag)
-	assert.False(t, in.IsZero(), msg)
+	return assert.False(t, in.Time.IsZero(), msg)
+}
+
+func assertEUTxO(t TestingT, eutxo koios.EUTxO, tag string) {
+	assertNotEmpty(t, eutxo.TxHash, fmt.Sprintf("eutxo[%s].tx_hash", eutxo.TxHash))
+	for i, utxo := range eutxo.Inputs {
+		assertUTxO(t, utxo, fmt.Sprintf("eutxo[%s].inputs[%d]", eutxo.TxHash, i))
+	}
+	for i, utxo := range eutxo.Inputs {
+		assertUTxO(t, utxo, fmt.Sprintf("eutxo[%s].outputs[%d]", eutxo.TxHash, i))
+	}
+}
+
+func assertUTxO(t TestingT, utxo koios.UTxO, tag string) {
+	assertNotEmpty(t, utxo.TxHash, fmt.Sprintf("%s.tx_hash", tag))
+	assertGreater(t, utxo.TxIndex, -1, fmt.Sprintf("%s.tx_index", tag))
+	assertNotEmpty(t, utxo.PaymentAddr.Bech32, fmt.Sprintf("%s.payment_addr.bech32", tag))
+	assertNotEmpty(t, utxo.PaymentAddr.Cred, fmt.Sprintf("%s.payment_addr.cred", tag))
+	// assertNotEmpty(t, utxo.StakeAddress, fmt.Sprintf("%s.stake_addr", tag))
+	// assertGreater(t, utxo.BlockHeight, 0, fmt.Sprintf("%s.block_height", tag))
+	// assertTimeNotZero(t, utxo.BlockTime, fmt.Sprintf("%s.block_time", tag))
+	assertIsPositive(t, utxo.Value, fmt.Sprintf("%s.value", tag))
+
+	// assertNotEmpty(t, utxo.DatumHash, fmt.Sprintf("%s.datum_hash", tag))
+
+	if utxo.InlineDatum != nil {
+		assertNotEmpty(t, "", fmt.Sprintf("%s.inline_datum", tag))
+	}
+	if utxo.ReferenceScript != nil {
+		assertNotEmpty(t, "", fmt.Sprintf("%s.reference_script", tag))
+	}
+	if len(utxo.AssetList) > 0 {
+		for i, asset := range utxo.AssetList {
+			assertAsset(t, asset, fmt.Sprintf("%s.asset_list[%d]", tag, i))
+		}
+	}
+}
+
+func assertAsset(t TestingT, asset koios.Asset, tag string) {
+	// assertNotEmpty(t, asset.Name, fmt.Sprintf("%s.asset_name", tag))
+	assertNotEmpty(t, asset.Fingerprint, fmt.Sprintf("%s.fingerprint", tag))
+	assertNotEmpty(t, asset.PolicyID, fmt.Sprintf("%s.policy_id", tag))
+	assertIsPositive(t, asset.Quantity, fmt.Sprintf("%s.quantity", tag))
+}
+
+func assertTxMetadata(t TestingT, metadata []koios.TxMetadata, tag string) {
+	for i, meta := range metadata {
+		assertNotEmpty(t, meta.Key, fmt.Sprintf("%s[%d].key", tag, i))
+		assertNotEmpty(t, meta.JSON, fmt.Sprintf("%s[%d].json", tag, i))
+	}
+}
+
+func assertCertificates(t TestingT, certs []koios.Certificate, tag string) {
+	for i, cert := range certs {
+		// assertGreater(t, cert.Index, 0, fmt.Sprintf("%s[%d].index", tag, i))
+		assertNotEmpty(t, cert.Type, fmt.Sprintf("%s[%d].type", tag, i))
+		assertNotEmpty(t, cert.Info, fmt.Sprintf("%s[%d].info", tag, i))
+	}
+}
+
+func assertNativeScripts(t TestingT, nscripts []koios.NativeScript, tag string) {
+	for i, nscript := range nscripts {
+		assertNotEmpty(t, nscript.CreationTxHash, fmt.Sprintf("%s[%d].creation_tx_hash", tag, i))
+		assertNotEmpty(t, nscript.ScriptHash, fmt.Sprintf("%s[%d].script_hash", tag, i))
+		assertNotEmpty(t, nscript.Type, fmt.Sprintf("%s[%d].type", tag, i))
+		assertNotEmpty(t, nscript.Script.Type, fmt.Sprintf("%s[%d].script.type", tag, i))
+
+		for j, script := range nscript.Script.Scripts {
+			assertNotEmpty(t, script, fmt.Sprintf("%s[%d].scripts[%d]", tag, i, j))
+		}
+	}
+}
+
+func assertPlutusContracts(t TestingT, contracts []koios.PlutusContract, tag string) {
+	for i, contract := range contracts {
+		assertNotEmpty(t, contract.Address, fmt.Sprintf("%s[%d].address", tag, i))
+		assertNotEmpty(t, contract.ScriptHash, fmt.Sprintf("%s[%d].script_hash", tag, i))
+		assertNotEmpty(t, contract.ByteCode, fmt.Sprintf("%s[%d].bytecode", tag, i))
+		assertGreater(t, contract.Size, 0, fmt.Sprintf("%s[%d].size", tag, i))
+		assert.True(t, contract.ValidContract, 0, fmt.Sprintf("%s[%d].valid_contract", tag, i))
+	}
 }

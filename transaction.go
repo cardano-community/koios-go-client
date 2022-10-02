@@ -32,6 +32,7 @@ import (
 
 type (
 	TX struct {
+		EUTxO
 		TxInfo
 	}
 
@@ -41,9 +42,9 @@ type (
 		TxHash TxHash `json:"tx_hash,omitempty"`
 
 		// Inputs An array with details about inputs used in a transaction.
-		Inputs []TxInput `json:"inputs" cbor:"0,keyasint"`
+		Inputs []UTxO `json:"inputs" cbor:"0,keyasint"`
 		// Outputs An array with details about outputs from the transaction.
-		Outputs []TxOutput `json:"outputs" cbor:"1,keyasint"`
+		Outputs []UTxO `json:"outputs" cbor:"1,keyasint"`
 	}
 
 	// TxMetalabel defines model for tx_metalabels.
@@ -52,41 +53,30 @@ type (
 		Metalabel string `json:"metalabel"`
 	}
 
-	// TxInput an transaxtion input.
-	TxInput struct {
-		UTxO
-	}
-
-	// TxOutput an transaxtion output.
-	TxOutput struct {
-		UTxO
-	}
-
 	UTxO struct {
-		// An array of assets to be included in output UTxO.
-		AssetList []Asset `json:"asset_list,omitempty"`
-
-		// where funds were sent or change to be returned.
-		PaymentAddr PaymentAddr `json:"payment_addr,omitempty"`
-
-		// StakeAddress for transaction's output UTxO.
-		StakeAddress StakeAddress `json:"stake_addr,omitempty"`
-
 		// Hash of this transaction.
 		TxHash TxHash `json:"tx_hash"`
 
 		// Index of output UTxO.
-		TxIndex uint32 `json:"tx_index"`
+		TxIndex int `json:"tx_index"`
 
-		BlockHeight uint32    `json:"block_height,omitempty"`
-		BlockTime   Timestamp `json:"block_time,omitempty"`
+		// where funds were sent or change to be returned.
+		PaymentAddr PaymentAddr `json:"payment_addr"`
+
+		// StakeAddress for transaction's output UTxO.
+		StakeAddress Address `json:"stake_addr"`
+
+		// BlockHeight int `json:"block_height"`
+		// BlockTime   Timestamp `json:"block_time"`
 
 		// Total sum on the output address.
 		Value decimal.Decimal `json:"value"`
 
-		DatumHash       any `json:"datum_hash,omitempty"`
-		InlineDatum     any `json:"inline_datum,omitempty"`
-		ReferenceScript any `json:"reference_script,omitempty"`
+		DatumHash       DatumHash `json:"datum_hash,omitempty"`
+		InlineDatum     any       `json:"inline_datum,omitempty"`
+		ReferenceScript any       `json:"reference_script,omitempty"`
+		// An array of assets to be included in output UTxO.
+		AssetList []Asset `json:"asset_list,omitempty"`
 	}
 
 	// TxInfoMetadata metadata in transaction info.
@@ -103,101 +93,109 @@ type (
 		// Amount is withdrawal amount in lovelaces.
 		Amount decimal.Decimal `json:"amount,omitempty"`
 		// StakeAddress fo withdrawal.
-		StakeAddress StakeAddress `json:"stake_addr,omitempty"`
+		StakeAddress Address `json:"stake_addr,omitempty"`
 	}
 
 	// TxInfo transaction info.
 	TxInfo struct {
-		EUTxO
-
 		// BlockHash is hash of the block in which transaction was included.
-		BlockHash BlockHash `json:"block_hash,omitempty"`
+		BlockHash BlockHash `json:"block_hash"`
 
 		// BlockHeight is block number on chain where transaction was included.
-		BlockHeight uint64 `json:"block_height,omitempty"`
+		BlockHeight int `json:"block_height"`
 
 		// Epoch number.
-		Epoch EpochNo `json:"epoch,omitempty"`
+		EpochNo EpochNo `json:"epoch_no"`
 
 		// EpochSlot is slot number within epoch.
-		EpochSlot uint32 `json:"epoch_slot,omitempty"`
+		EpochSlot Slot `json:"epoch_slot"`
 
 		// AbsoluteSlot is overall slot number (slots from genesis block of chain).
-		AbsoluteSlot uint64 `json:"absolute_slot,omitempty"`
+		AbsoluteSlot Slot `json:"absolute_slot"`
 
 		// TxTimestamp is timestamp when block containing transaction was created.
-		TxTimestamp Timestamp `json:"tx_timestamp,omitempty"`
+		TxTimestamp Timestamp `json:"tx_timestamp"`
 
 		// TxBlockIndex is index of transaction within block.
-		TxBlockIndex uint32 `json:"tx_block_index,omitempty"`
+		TxBlockIndex int `json:"tx_block_index"`
 
 		// TxSize is transaction size in bytes.
-		TxSize uint32 `json:"tx_size,omitempty"`
+		TxSize int `json:"tx_size"`
 
 		// TotalOutput is total sum of all transaction outputs (in lovelaces).
-		TotalOutput decimal.Decimal `json:"total_output,omitempty"`
+		TotalOutput decimal.Decimal `json:"total_output"`
 
 		// Fee is total transaction fee (in lovelaces).
-		Fee decimal.Decimal `json:"fee,omitempty" cbor:"2,keyasint"`
+		Fee decimal.Decimal `json:"fee" cbor:"2,keyasint"`
 
 		// Deposit is total deposits included in transaction (for example,
 		// if it is registering a pool/key).
-		Deposit decimal.Decimal `json:"deposit,omitempty"`
+		Deposit decimal.Decimal `json:"deposit"`
 
 		// InvalidAfter is slot number after which transaction cannot be validated.
-		InvalidAfter uint64 `json:"invalid_after,omitempty" cbor:"3,keyasint,omitempty"`
+		InvalidAfter Timestamp `json:"invalid_after,omitempty" cbor:"3,keyasint,omitempty"`
 
 		// InvalidBefore is slot number before which transaction cannot be validated.
 		// (if supplied, else 0)
-		InvalidBefore uint64 `json:"invalid_before,omitempty" cbor:"8,keyasint,omitempty"`
+		InvalidBefore Timestamp `json:"invalid_before,omitempty" cbor:"8,keyasint,omitempty"`
+
+		// CollateralInputs An array of collateral inputs needed when dealing with smart contracts.
+		CollateralInputs []UTxO `json:"collateral_inputs,omitempty"`
+
+		// CollateralOutput
+		CollateralOutput *UTxO `json:"collateral_output,omitempty"`
+
+		// CollateralInputs An array of collateral inputs needed when dealing with smart contracts.
+		ReferenceInputs []UTxO `json:"reference_inputs,omitempty"`
 
 		// AssetsMinted An array of minted assets with-in a transaction (if any).
 		AssetsMinted []Asset `json:"assets_minted,omitempty"`
 
-		// Collaterals An array of collateral inputs needed when dealing with smart contracts.
-		Collaterals []TxInput `json:"collaterals,omitempty"`
-
 		// Metadata present with-in a transaction (if any)
-		Metadata any `json:"metadata,omitempty"`
+		Metadata []TxMetadata `json:"metadata,omitempty"`
 
 		// Array of withdrawals with-in a transaction (if any)
 		Withdrawals []TxsWithdrawal `json:"withdrawals,omitempty"`
 
 		// Certificates present with-in a transaction (if any)
 		Certificates []Certificate `json:"certificates,omitempty"`
+
+		NativeScripts   []NativeScript   `json:"native_scripts,omitempty"`
+		PlutusContracts []PlutusContract `json:"plutus_contracts,omitempty"`
 	}
 
 	// TxsInfosResponse represents response from `/tx_info` endpoint.
 	TxsInfosResponse struct {
 		Response
-		Data []TxInfo `json:"response"`
+		Data []TX `json:"response"`
 	}
 
 	// TxInfoResponse represents response from `/tx_info` endpoint.
 	// when requesting info about single transaction.
 	TxInfoResponse struct {
 		Response
-		Data *TxInfo `json:"response"`
+		Data TX `json:"response"`
 	}
 
 	// TxUTxOsResponse represents response from `/tx_utxos` endpoint.
 	TxUTxOsResponse struct {
 		Response
-		Data *UTxO `json:"data"`
+		Data *EUTxO `json:"data"`
 	}
 
 	// TxsUTxOsResponse represents response from `/tx_utxos` endpoint.
 	TxsUTxOsResponse struct {
 		Response
-		Data []UTxO `json:"data"`
+		Data []EUTxO `json:"data"`
 	}
 
 	// TxMetadata transaction metadata lookup res for `/tx_metadata` endpoint.
 	TxMetadata struct {
-		// TxHash is hash of transaction.
-		TxHash TxHash `json:"tx_hash"`
+		// // TxHash is hash of transaction.
+		// TxHash TxHash `json:"tx_hash"`
 		// Metadata present with-in a transaction (if any)
-		Metadata map[string]any `json:"metadata"`
+		Key  string                     `json:"key"`
+		JSON map[string]json.RawMessage `json:"json"`
 	}
 
 	// SubmitSignedTxResponse represents response from `/submittx` endpoint.
@@ -252,14 +250,16 @@ type (
 // GetTxInfo returns detailed information about transaction.
 func (c *Client) GetTxInfo(
 	ctx context.Context,
-	tx TxHash,
+	hash TxHash,
 	opts *RequestOptions,
 ) (res *TxInfoResponse, err error) {
 	res = &TxInfoResponse{}
-	rsp, err := c.GetTxsInfo(ctx, []TxHash{tx}, opts)
+	rsp, err := c.GetTxsInfo(ctx, []TxHash{hash}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) > 0 {
-		res.Data = &rsp.Data[0]
+	if len(rsp.Data) == 1 {
+		res.Data = rsp.Data[0]
+	} else {
+		err = fmt.Errorf("%w: %s", ErrNoData, hash)
 	}
 	return
 }
@@ -287,14 +287,16 @@ func (c *Client) GetTxsInfo(
 // GetTxUTxOs returns UTxO set (inputs/outputs) of transaction.
 func (c *Client) GetTxUTxOs(
 	ctx context.Context,
-	tx TxHash,
+	hash TxHash,
 	opts *RequestOptions,
 ) (res *TxUTxOsResponse, err error) {
 	res = &TxUTxOsResponse{}
-	rsp, err := c.GetTxsUTxOs(ctx, []TxHash{tx}, opts)
+	rsp, err := c.GetTxsUTxOs(ctx, []TxHash{hash}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) > 0 {
+	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
+	} else {
+		err = fmt.Errorf("%w: %s", ErrNoData, hash)
 	}
 	return
 }
@@ -316,21 +318,22 @@ func (c *Client) GetTxsUTxOs(
 	if err != nil {
 		return res, err
 	}
-
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
 // GetTxMetadata returns metadata information (if any) for given transaction.
 func (c *Client) GetTxMetadata(
 	ctx context.Context,
-	tx TxHash,
+	hash TxHash,
 	opts *RequestOptions,
 ) (res *TxMetadataResponse, err error) {
 	res = &TxMetadataResponse{}
-	rsp, err := c.GetTxsMetadata(ctx, []TxHash{tx}, opts)
+	rsp, err := c.GetTxsMetadata(ctx, []TxHash{hash}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) > 0 {
+	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
+	} else {
+		err = fmt.Errorf("%w: %s", ErrNoData, hash)
 	}
 	return
 }
@@ -406,14 +409,16 @@ func (c *Client) SubmitSignedTx(
 // GetTxStatus returns status of transaction.
 func (c *Client) GetTxStatus(
 	ctx context.Context,
-	tx TxHash,
+	hash TxHash,
 	opts *RequestOptions,
 ) (res *TxStatusResponse, err error) {
 	res = &TxStatusResponse{}
-	rsp, err := c.GetTxsStatuses(ctx, []TxHash{tx}, opts)
+	rsp, err := c.GetTxsStatuses(ctx, []TxHash{hash}, opts)
 	res.Response = rsp.Response
-	if len(rsp.Data) > 0 {
+	if len(rsp.Data) == 1 {
 		res.Data = &rsp.Data[0]
+	} else {
+		err = fmt.Errorf("%w: %s", ErrNoData, hash)
 	}
 	return
 }
