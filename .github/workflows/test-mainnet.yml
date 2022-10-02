@@ -15,42 +15,67 @@ jobs:
     strategy:
       matrix:
         test:
-         - TestNetworkTip
-         - TestNetworkGenesis
-         - TestNetworkTotals
+         - NetworkTip
+         - NetworkGenesis
+         - NetworkTotals
     steps:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.19
       - uses: actions/checkout@v3
-      - run: go test -run  ${{ matrix.test }} .
+      - run: go test -v -covermode atomic -coverprofile coverage.txt -run  Test${{ matrix.test }}
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
+          name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
+          files: ./coverage.txt
+          env_vars: KOIOS_NETWORK
+          fail_ci_if_error: true
 
   epoch:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         test:
-         - TestEpochInfo
-         - TestEpochParams
-         - TestEpochBlockProtocols
+         - EpochInfo
+         - EpochParams
+         - EpochBlockProtocols
     steps:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.19
       - uses: actions/checkout@v3
-      - run: go test -run  ${{ matrix.test }} .
+      - run: go test -v -covermode atomic -coverprofile coverage.txt -run  Test${{ matrix.test }}
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
+          name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
+          files: ./coverage.txt
+          env_vars: KOIOS_NETWORK
+          fail_ci_if_error: true
 
-  block:
+  blocks:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         test:
-         - TestBlocks
-         - TestBlockInfo
-         - TestBlockTxs
+         - Blocks
+         - BlockInfo
+         - BlockTxs
     steps:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.19
       - uses: actions/checkout@v3
-      - run: go test -run  ${{ matrix.test }} .
+      - run: go test -v -covermode atomic -coverprofile coverage.txt -run  Test${{ matrix.test }}
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
+          name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
+          files: ./coverage.txt
+          env_vars: KOIOS_NETWORK
+          fail_ci_if_error: true
+
