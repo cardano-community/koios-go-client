@@ -61,10 +61,10 @@ type (
 		TxIndex int `json:"tx_index"`
 
 		// where funds were sent or change to be returned.
-		PaymentAddr PaymentAddr `json:"payment_addr"`
+		PaymentAddr *PaymentAddr `json:"payment_addr,omitempty"`
 
 		// StakeAddress for transaction's output UTxO.
-		StakeAddress Address `json:"stake_addr"`
+		StakeAddress *Address `json:"stake_addr,omitempty"`
 
 		// BlockHeight int `json:"block_height"`
 		// BlockTime   Timestamp `json:"block_time"`
@@ -158,14 +158,14 @@ type (
 	// TxsInfosResponse represents response from `/tx_info` endpoint.
 	TxsInfosResponse struct {
 		Response
-		Data []TX `json:"response"`
+		Data []TX `json:"data"`
 	}
 
 	// TxInfoResponse represents response from `/tx_info` endpoint.
 	// when requesting info about single transaction.
 	TxInfoResponse struct {
 		Response
-		Data TX `json:"response"`
+		Data TX `json:"data"`
 	}
 
 	// TxUTxOsResponse represents response from `/tx_utxos` endpoint.
@@ -226,13 +226,13 @@ type (
 	// TxsStatusesResponse represents response from `/tx_status` endpoint.
 	TxsStatusesResponse struct {
 		Response
-		Data []TxStatus `json:"response"`
+		Data []TxStatus `json:"data"`
 	}
 
 	// TxStatusResponse represents response from `/tx_status` endpoint.
 	TxStatusResponse struct {
 		Response
-		Data *TxStatus `json:"response"`
+		Data *TxStatus `json:"data"`
 	}
 )
 

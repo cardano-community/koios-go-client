@@ -74,43 +74,43 @@ type (
 	// AccountListResponse represents response from `/account_list` endpoint.
 	AccountListResponse struct {
 		Response
-		Data []Address `json:"response"`
+		Data []Address `json:"data"`
 	}
 
 	// AccountInfoResponse represents response from `/account_info` endpoint.
 	AccountInfoResponse struct {
 		Response
-		Data *AccountInfo `json:"response"`
+		Data *AccountInfo `json:"data"`
 	}
 
 	// AccountRewardsResponse represents response from `/account_rewards` endpoint.
 	AccountRewardsResponse struct {
 		Response
-		Data []AccountRewards `json:"response"`
+		Data []AccountRewards `json:"data"`
 	}
 
 	// AccountUpdatesResponse represents response from `/account_rewards` endpoint.
 	AccountUpdatesResponse struct {
 		Response
-		Data []AccountAction `json:"response"`
+		Data []AccountAction `json:"data"`
 	}
 
 	// AccountAddressesResponse represents response from `/account_addresses` endpoint.
 	AccountAddressesResponse struct {
 		Response
-		Data []Address `json:"response"`
+		Data []Address `json:"data"`
 	}
 
 	// AccountAssetsResponse represents response from `/account_assets` endpoint.
 	AccountAssetsResponse struct {
 		Response
-		Data []AccountAsset `json:"response"`
+		Data []AccountAsset `json:"data"`
 	}
 
 	// AccountHistoryResponse represents response from `/account_history` endpoint.
 	AccountHistoryResponse struct {
 		Response
-		Data []AccountHistoryEntry `json:"response"`
+		Data []AccountHistoryEntry `json:"data"`
 	}
 )
 

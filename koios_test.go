@@ -82,6 +82,52 @@ func networkTxHashes() []koios.TxHash {
 	return hash
 }
 
+func networkAddresses() []koios.Address {
+	var addrs []koios.Address
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		addrs = []koios.Address{
+			"addr_test1qzmtfv43a8ncx6ve92ja6yy25npn9raz9pu5a2tfxsqv9gy9ktf0pu6yu4zjh9r37fzx3h4tsxqdjhu3t4d5ffdsfz9s6ska3z",
+			"addr_test1vq67g5u8ls4vm4wdvs0r8xvsuej66nvaqedyrj2tcz6tuycz275pu",
+		}
+	case "testnet":
+		addrs = []koios.Address{
+			"addr_test1qzx9hu8j4ah3auytk0mwcupd69hpc52t0cw39a65ndrah86djs784u92a3m5w475w3w35tyd6v3qumkze80j8a6h5tuqq5xe8y",
+			"addr_test1qrk7920v35zukhcch4kyydy6rxnhqdcvetkvngeqrvtgavw8tpzdklse3kwer7urhrlfg962m9fc8cznfcdpka5pd07sgf8n0w",
+		}
+	default:
+		// mainnet
+		addrs = []koios.Address{
+			"addr1qyp9kz50sh9c53hpmk3l4ewj9ur794t2hdqpngsjn3wkc5sztv9glpwt3frwrhdrltjaytc8ut2k4w6qrx3p98zad3fq07xe9g",
+			"addr1qyfldpcvte8nkfpyv0jdc8e026cz5qedx7tajvupdu2724tlj8sypsq6p90hl40ya97xamkm9fwsppus2ru8zf6j8g9sm578cu",
+		}
+	}
+	return addrs
+}
+
+func networkPaymentCredentials() []koios.PaymentCredential {
+	var creds []koios.PaymentCredential
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		creds = []koios.PaymentCredential{
+			"b6b4b2b1e9e78369992aa5dd108aa4c3328fa228794ea9693400c2a0",
+			"35e45387fc2acdd5cd641e339990e665ad4d9d065a41c94bc0b4be13",
+		}
+	case "testnet":
+		creds = []koios.PaymentCredential{
+			"00003fac863dc2267d0cd90768c4af653572d719a79ca3b01957fa79",
+			"000056d48603bf7daada30c9c175be9c93172d36f82fba0ca972c245",
+		}
+	default:
+		// mainnet
+		creds = []koios.PaymentCredential{
+			"025b0a8f85cb8a46e1dda3fae5d22f07e2d56abb4019a2129c5d6c52",
+			"13f6870c5e4f3b242463e4dc1f2f56b02a032d3797d933816f15e555",
+		}
+	}
+	return creds
+}
+
 func getClient() (client *koios.Client, err error) {
 	net, ok := os.LookupEnv("KOIOS_NETWORK")
 	if !ok {
@@ -111,9 +157,9 @@ func assertIsPositive(t TestingT, in decimal.Decimal, tag string) bool {
 	return assert.True(t, in.IsPositive(), msg)
 }
 
-func assertGreater[V any](t TestingT, want, got V, tag string) bool {
-	msg := fmt.Sprintf("%s: val(%v) should be greater than %v", tag, got, want)
-	return assert.Greater(t, want, got, msg)
+func assertGreater[V any](t TestingT, count, min V, tag string) bool {
+	msg := fmt.Sprintf("%s: should be greater than %v", tag, min)
+	return assert.Greater(t, count, min, msg)
 }
 
 func assertNotEmpty(t TestingT, in any, tag string) bool {
@@ -139,9 +185,14 @@ func assertEUTxO(t TestingT, eutxo koios.EUTxO, tag string) {
 func assertUTxO(t TestingT, utxo koios.UTxO, tag string) {
 	assertNotEmpty(t, utxo.TxHash, fmt.Sprintf("%s.tx_hash", tag))
 	assertGreater(t, utxo.TxIndex, -1, fmt.Sprintf("%s.tx_index", tag))
-	assertNotEmpty(t, utxo.PaymentAddr.Bech32, fmt.Sprintf("%s.payment_addr.bech32", tag))
-	assertNotEmpty(t, utxo.PaymentAddr.Cred, fmt.Sprintf("%s.payment_addr.cred", tag))
-	// assertNotEmpty(t, utxo.StakeAddress, fmt.Sprintf("%s.stake_addr", tag))
+
+	if utxo.PaymentAddr != nil {
+		assertNotEmpty(t, utxo.PaymentAddr.Bech32, fmt.Sprintf("%s.payment_addr.bech32", tag))
+		assertNotEmpty(t, utxo.PaymentAddr.Cred, fmt.Sprintf("%s.payment_addr.cred", tag))
+	}
+	if utxo.StakeAddress != nil {
+		assertNotEmpty(t, utxo.StakeAddress, fmt.Sprintf("%s.stake_addr", tag))
+	}
 	// assertGreater(t, utxo.BlockHeight, 0, fmt.Sprintf("%s.block_height", tag))
 	// assertTimeNotZero(t, utxo.BlockTime, fmt.Sprintf("%s.block_time", tag))
 	assertIsPositive(t, utxo.Value, fmt.Sprintf("%s.value", tag))

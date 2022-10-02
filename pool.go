@@ -286,56 +286,56 @@ type (
 	// PoolListResponse represents response from `/pool_list` endpoint.
 	PoolListResponse struct {
 		Response
-		Data []PoolListItem `json:"response"`
+		Data []PoolListItem `json:"data"`
 	}
 
 	// PoolInfosResponse represents response from `/pool_info` endpoint.
 	PoolInfosResponse struct {
 		Response
-		Data []PoolInfo `json:"response"`
+		Data []PoolInfo `json:"data"`
 	}
 
 	// PoolInfoResponse represents response from `/pool_info` endpoint.
 	// when requesting info about single pool.
 	PoolInfoResponse struct {
 		Response
-		Data *PoolInfo `json:"response"`
+		Data *PoolInfo `json:"data"`
 	}
 
 	// PoolDelegatorsResponse represents response from `/pool_delegators` endpoint.
 	PoolDelegatorsResponse struct {
 		Response
-		Data []PoolDelegator `json:"response"`
+		Data []PoolDelegator `json:"data"`
 	}
 
 	// PoolBlocksResponse represents response from `/pool_blocks` endpoint.
 	PoolBlocksResponse struct {
 		Response
-		Data []PoolBlockInfo `json:"response"`
+		Data []PoolBlockInfo `json:"data"`
 	}
 
 	// PoolUpdatesResponse represents response from `/pool_updates` endpoint.
 	PoolUpdatesResponse struct {
 		Response
-		Data []PoolUpdateInfo `json:"response"`
+		Data []PoolUpdateInfo `json:"data"`
 	}
 
 	// PoolRelaysResponse represents response from `/pool_relays` endpoint.
 	PoolRelaysResponse struct {
 		Response
-		Data []PoolRelays `json:"response"`
+		Data []PoolRelays `json:"data"`
 	}
 
 	// PoolMetadataResponse represents response from `/pool_metadata` endpoint.
 	PoolMetadataResponse struct {
 		Response
-		Data []PoolMetadata `json:"response"`
+		Data []PoolMetadata `json:"data"`
 	}
 
 	// PoolHistoryResponse represents response from `/pool_history` endpoint.
 	PoolHistoryResponse struct {
 		Response
-		Data []PoolHistory `json:"response"`
+		Data []PoolHistory `json:"data"`
 	}
 )
 
