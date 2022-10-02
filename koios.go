@@ -18,6 +18,9 @@
 // endpoints and Cardano Blockchain. Sub package ./cmd/koios-rest
 // provides cli application.
 //
+// Deprecated: Upgrade to github.com/cardano-community/koios-go-client/v2
+// versions < v2 do not work with Koios API after koios v1.0.7 breaking changes.
+//
 // Koios is best described as a Decentralized and Elastic RESTful query layer
 // for exploring data on Cardano blockchain to consume within
 // applications/wallets/explorers/etc.
