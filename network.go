@@ -61,7 +61,7 @@ type (
 		ActiveSlotCoeff decimal.Decimal `json:"activeslotcoeff"`
 
 		// A JSON dump of Alonzo Genesis.
-		AlonzoGenesis string `json:"alonzogenesis"`
+		AlonzoGenesis json.RawMessage `json:"alonzogenesis"`
 
 		// Number of slots in an epoch.
 		EpochLength decimal.Decimal `json:"epochlength"`
@@ -197,7 +197,7 @@ func (c *Client) GetTotals(
 
 func (g *Genesis) AlonzoGenesisMap() (map[string]any, error) {
 	var data map[string]any
-	if err := json.Unmarshal([]byte(g.AlonzoGenesis), &data); err != nil {
+	if err := json.Unmarshal(g.AlonzoGenesis, &data); err != nil {
 		return nil, err
 	}
 	return data, nil

@@ -168,10 +168,10 @@ func assertAsset(t TestingT, asset koios.Asset, tag string) {
 	assertIsPositive(t, asset.Quantity, fmt.Sprintf("%s.quantity", tag))
 }
 
-func assertTxMetadata(t TestingT, metadata []koios.TxMetadata, tag string) {
-	for i, meta := range metadata {
-		assertNotEmpty(t, meta.Key, fmt.Sprintf("%s[%d].key", tag, i))
-		assertNotEmpty(t, meta.JSON, fmt.Sprintf("%s[%d].json", tag, i))
+func assertTxMetadata(t TestingT, metadata koios.TxMetadata, tag string) {
+	for key, json := range metadata {
+		assertNotEmpty(t, key, fmt.Sprintf("%s[%s]", tag, key))
+		assertNotEmpty(t, json, fmt.Sprintf("%s[%s]", tag, json))
 	}
 }
 
