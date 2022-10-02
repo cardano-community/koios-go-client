@@ -87,7 +87,7 @@ type (
 	// NativeScriptListResponse represents response from `/native_script_list` endpoint.
 	NativeScriptListResponse struct {
 		Response
-		Data []NativeScript `json:"response"`
+		Data []NativeScript `json:"data"`
 	}
 
 	// PlutusScriptListItem item of plutus script list.
@@ -102,13 +102,13 @@ type (
 	// PlutusScriptListResponse represents response from `/plutus_script_list` endpoint.
 	PlutusScriptListResponse struct {
 		Response
-		Data []PlutusScriptListItem `json:"response"`
+		Data []PlutusScriptListItem `json:"data"`
 	}
 
 	// ScriptRedeemersResponse represents response from `/script_redeemers` endpoint.
 	ScriptRedeemersResponse struct {
 		Response
-		Data *ScriptRedeemers `json:"response"`
+		Data *ScriptRedeemers `json:"data"`
 	}
 )
 

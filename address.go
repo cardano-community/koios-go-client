@@ -28,60 +28,75 @@ type (
 	// Address defines type for _address.
 	Address string
 
-	// AddressUTxO UTxO attached to address.
-	// AddressUTxO struct {
-	// 	// Hash of Transaction for input UTxO.
-	// 	TxHash TxHash `json:"tx_hash"`
-
-	// 	// Index of input UTxO on the mentioned address used for input.
-	// 	TxIndex uint32 `json:"tx_index"`
-
-	// 	// Balance on the selected input transaction.
-	// 	Value decimal.Decimal `json:"value"`
-
-	// 	// An array of assets contained on UTxO.
-	// 	AssetList []Asset `json:"asset_list"`
-	// }.
-
 	// AddressInfo esponse for `/address_info`.
 	AddressInfo struct {
 		// Balance ADA Lovelace balance of address
 		Balance decimal.Decimal `json:"balance"`
 
+		Address Address `json:"address"`
+
 		// StakeAddress associated with address
 		StakeAddress Address `json:"stake_address,omitempty"`
 
+		ScriptAddress bool `json:"script_address"`
+
 		UTxOs []UTxO `json:"utxo_set"`
+	}
+
+	AddressTx struct {
+		TxHash      TxHash    `json:"tx_hash"`
+		EpochNo     EpochNo   `json:"epoch_no"`
+		BlockTime   Timestamp `json:"block_time"`
+		BlockHeight uint64    `json:"block_height"`
 	}
 
 	// AddressInfoResponse represents response from `/address_info` endpoint.
 	AddressInfoResponse struct {
 		Response
-		Data *AddressInfo `json:"response"`
+		Data *AddressInfo `json:"data"`
 	}
-
-	AddressTx struct {
-		TxHash      TxHash    `json:"tx_hash"`
-		BlockTime   Timestamp `json:"block_time"`
-		BlockHeight uint64    `json:"block_height"`
+	AddressesInfoResponse struct {
+		Response
+		Data []AddressInfo `json:"data"`
 	}
 
 	// AddressTxsResponse represents response from `/address_txs` endpoint.
 	AddressTxsResponse struct {
 		Response
-		Data []AddressTx `json:"response"`
+		Data []AddressTx `json:"data"`
 	}
 
 	// CredentialTxsResponse represents response from `/credential_txs` endpoint.
 	CredentialTxsResponse struct {
 		Response
-		Data []AddressTx `json:"response"`
+		Data []AddressTx `json:"data"`
 	}
 
 	// AddressAssetsResponse represents response from `/address_info` endpoint.
 	AddressAssetsResponse struct {
 		Response
-		Data []Asset `json:"response"`
+		Data *AddressCollections `json:"data"`
+	}
+
+	AddressesAssetsResponse struct {
+		Response
+		Data []AddressCollections `json:"data"`
+	}
+
+	AddressCollections struct {
+		Address     Address             `json:"address"`
+		Collections []AddressCollection `json:"assets"`
+	}
+
+	AddressCollection struct {
+		PolicyID     PolicyID                 `json:"policy_id"`
+		PolicyAssets []AddressCollectionAsset `json:"assets"`
+	}
+
+	AddressCollectionAsset struct {
+		AssetName      AssetName       `json:"asset_name"`
+		AssetNameASCII string          `json:"asset_name_ascii"`
+		Balance        decimal.Decimal `json:"balance"`
 	}
 )
 
@@ -111,26 +126,33 @@ func (c *Client) GetAddressInfo(
 	addr Address,
 	opts *RequestOptions,
 ) (res *AddressInfoResponse, err error) {
-	res = &AddressInfoResponse{}
+
+	res2, err := c.GetAddressesInfo(ctx, []Address{addr}, opts)
+	if err != nil {
+		return
+	}
+	if len(res2.Data) == 1 {
+		res.Data = &res2.Data[0]
+	}
+	return
+}
+
+func (c *Client) GetAddressesInfo(
+	ctx context.Context,
+	addr []Address,
+	opts *RequestOptions,
+) (res *AddressesInfoResponse, err error) {
+	res = &AddressesInfoResponse{}
 	if len(addr) == 0 {
 		err = ErrNoAddress
 		res.applyError(nil, err)
 		return
 	}
-	if opts == nil {
-		opts = c.NewRequestOptions()
-	}
-	opts.QuerySet("_address", addr.String())
-
-	rsp, err := c.request(ctx, &res.Response, "GET", "/address_info", nil, opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/address_info", addressesPL(addr), opts)
 	if err != nil {
 		return
 	}
-	addrs := []AddressInfo{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &addrs)
-	if len(addrs) == 1 {
-		res.Data = &addrs[0]
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -186,17 +208,36 @@ func (c *Client) GetAddressAssets(
 		res.applyError(nil, err)
 		return
 	}
-	if opts == nil {
-		opts = c.NewRequestOptions()
-	}
-	opts.QuerySet("_address", addr.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/address_assets", nil, opts)
+	rsp, err := c.GetAddressesAssets(ctx, []Address{addr}, opts)
 	if err != nil {
 		return
 	}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	if len(rsp.Data) == 1 {
+		res.Data = &rsp.Data[0]
+	}
 	return
+}
+
+func (c *Client) GetAddressesAssets(
+	ctx context.Context,
+	addrs []Address,
+	opts *RequestOptions,
+) (*AddressesAssetsResponse, error) {
+	res := &AddressesAssetsResponse{}
+	if len(addrs) == 0 {
+		err := ErrNoAddress
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/address_assets", addressesPL(addrs), opts)
+	if err != nil {
+		return res, err
+	}
+
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, err
 }
 
 // GetCredentialTxs returns the transaction hash list of input
@@ -233,4 +274,16 @@ func (c *Client) GetCredentialTxs(
 	res.applyError(nil, err)
 
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+func addressesPL(addrs []Address) io.Reader {
+	var payload = struct {
+		Adresses []Address `json:"_addresses"`
+	}{addrs}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+	return rpipe
 }

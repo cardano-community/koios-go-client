@@ -28,7 +28,7 @@ type (
 	// Asset represents Cardano Asset.
 	Asset struct {
 		// Asset Name (hex).
-		Name string `json:"asset_name,omitempty"`
+		AssetName AssetName `json:"asset_name,omitempty"`
 
 		Fingerprint string `json:"fingerprint,omitempty"`
 
@@ -134,7 +134,7 @@ type (
 	// AssetListResponse represents response from `/asset_list` endpoint.
 	AssetListResponse struct {
 		Response
-		Data []AssetListItem `json:"response"`
+		Data []AssetListItem `json:"data"`
 	}
 
 	// AssetHolder payment addresses holding the given token (including balance).
@@ -146,25 +146,25 @@ type (
 	// AssetAddressListResponse represents response from `/asset_address_list` endpoint.
 	AssetAddressListResponse struct {
 		Response
-		Data []AssetHolder `json:"response"`
+		Data []AssetHolder `json:"data"`
 	}
 
 	// AssetInfoResponse represents response from `/asset_info` endpoint.
 	AssetInfoResponse struct {
-		Data *AssetInfo `json:"response"`
+		Data *AssetInfo `json:"data"`
 		Response
 	}
 
 	// AssetSummaryResponse represents response from `/asset_summary` endpoint.
 	AssetSummaryResponse struct {
 		Response
-		Data *AssetSummary `json:"response"`
+		Data *AssetSummary `json:"data"`
 	}
 
 	// AssetTxsResponse represents response from `/asset_txs` endpoint.
 	AssetTxsResponse struct {
 		Response
-		Data []TX `json:"response"`
+		Data []TX `json:"data"`
 	}
 
 	// AssetPolicyInfo is response body for `/asset_policy_info` endpoint.
@@ -176,7 +176,7 @@ type (
 	// AssetPolicyInfoResponse represents response from `/asset_policy_info` endpoint.
 	AssetPolicyInfoResponse struct {
 		Response
-		Data *AssetPolicyInfo `json:"response"`
+		Data *AssetPolicyInfo `json:"data"`
 	}
 
 	// AssetMintTX holds specific mint tx hash and amount.
@@ -195,7 +195,7 @@ type (
 	// AssetHistoryResponse represents response from `/asset_history` endpoint.
 	AssetHistoryResponse struct {
 		Response
-		Data *AssetHistory `json:"response"`
+		Data *AssetHistory `json:"data"`
 	}
 )
 
