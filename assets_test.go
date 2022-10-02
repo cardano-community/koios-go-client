@@ -173,7 +173,9 @@ func testAssetSummaryTest(t TestingT, client *koios.Client, policyID koios.Polic
 		assertNotEmpty(t, summary.PolicyID, "policy_id")
 		// assertNotEmpty(t, summary.AssetName, "asset_name")
 		assertGreater(t, summary.TotalTransactions, 0, "total_transactions")
-		assertGreater(t, summary.StakedWallets, 0, "staked_wallets")
+		if summary.StakedWallets == 0 {
+			githubActionWarning("AssetSummary", "staked_wallets is 0")
+		}
 		// assertGreater(t, summary.UnstakedAddresses, 0, "unstaked_addresses")
 	}
 }
