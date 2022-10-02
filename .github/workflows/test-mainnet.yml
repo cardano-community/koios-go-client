@@ -39,3 +39,18 @@ jobs:
           go-version: 1.19
       - uses: actions/checkout@v3
       - run: go test -run  ${{ matrix.test }} .
+
+  block:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test:
+         - TestBlocks
+         - TestBlockInfo
+         - TestBlockTxs
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - uses: actions/checkout@v3
+      - run: go test -run  ${{ matrix.test }} .

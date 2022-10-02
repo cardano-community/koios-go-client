@@ -77,7 +77,7 @@ func TestNetworkTotals(t *testing.T) {
 	if !assert.NoError(t, err) {
 		return
 	}
-	networkTotalsTest(t, defaultEpoch(), client)
+	networkTotalsTest(t, networkEpoch(), client)
 }
 
 func networkTotalsTest(t TestingT, epoch koios.EpochNo, client *koios.Client) {

@@ -57,7 +57,7 @@ var (
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoPoolID                 = errors.New("missing pool id")
-	ErrResponse                 = errors.New("http error")
+	ErrResponse                 = errors.New("response error")
 	ErrSchema                   = errors.New("scheme must be http or https")
 	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
