@@ -210,7 +210,7 @@ func poolHistoryTest(t TestingT, client *koios.Client, poolID koios.PoolID, epoc
 		assertGreater(t, d.EpochNo, 0, "block_hash")
 		assertIsPositive(t, d.ActiveStake, "active_stake")
 		assertGreater(t, d.ActiveStakePCT, 0, "active_stake_pct")
-		assertGreater(t, d.SaturationPCT, 0, "saturation_pct")
+		// assertGreater(t, d.SaturationPCT, 0, "saturation_pct")
 		assertGreater(t, d.BlockCNT, 0, "block_cnt")
 		assertGreater(t, d.DelegatorCNT, 0, "delegator_cnt")
 		assertGreater(t, d.Margin, 0, "margin")
