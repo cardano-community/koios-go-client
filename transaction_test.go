@@ -100,7 +100,7 @@ func txInfoTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
 			}
 		}
 
-		if len(tx.Metadata) > 0 {
+		if tx.Metadata != nil {
 			assertTxMetadata(t, tx.Metadata, fmt.Sprintf("tx[%s].metadata", tx.TxHash))
 		}
 
@@ -131,5 +131,23 @@ func txUTxOsTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
 	}
 	for _, eutxo := range res.Data {
 		assertEUTxO(t, eutxo, fmt.Sprintf("tx[%s]", eutxo.TxHash))
+	}
+}
+
+func TestTxMetadata(t *testing.T) {
+	client, err := getClient()
+	if !assert.NoError(t, err) {
+		return
+	}
+	txMetadataTest(t, networkTxHashes(), client)
+}
+
+func txMetadataTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
+	res, err := client.GetTxsMetadata(context.Background(), hashes, nil)
+	if !assert.NoError(t, err) {
+		return
+	}
+	for _, listitem := range res.Data {
+		assertTxMetadata(t, listitem.Metadata, fmt.Sprintf("tx[%s].metadata", listitem.TxHash))
 	}
 }

@@ -33,11 +33,14 @@ func TestBlocks(t *testing.T) {
 }
 
 func blocksTest(t TestingT, client *koios.Client) {
-	res, err := client.GetBlocks(context.Background(), nil)
+
+	opts := client.NewRequestOptions()
+	opts.SetPageSize(10)
+	res, err := client.GetBlocks(context.Background(), opts)
 	if !assert.NoError(t, err) {
 		return
 	}
-	assertEqual(t, 1000, len(res.Data), "total blocks returned")
+	assertEqual(t, 10, len(res.Data), "total blocks returned")
 
 	assertNotEmpty(t, res.Data[0].Hash, "hash")
 	assertGreater(t, res.Data[0].EpochNo, koios.EpochNo(0), "epoch_no")

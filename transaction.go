@@ -79,15 +79,6 @@ type (
 		AssetList []Asset `json:"asset_list,omitempty"`
 	}
 
-	// TxInfoMetadata metadata in transaction info.
-	TxInfoMetadata struct {
-		// JSON containing details about metadata within transaction.
-		JSON map[string]any `json:"json"`
-
-		// Key is metadata (index).
-		Key string `json:"key"`
-	}
-
 	// TxsWithdrawal withdrawal record in transaction.
 	TxsWithdrawal struct {
 		// Amount is withdrawal amount in lovelaces.
@@ -152,7 +143,7 @@ type (
 		AssetsMinted []Asset `json:"assets_minted,omitempty"`
 
 		// Metadata present with-in a transaction (if any)
-		Metadata []TxMetadata `json:"metadata,omitempty"`
+		Metadata TxMetadata `json:"metadata,omitempty"`
 
 		// Array of withdrawals with-in a transaction (if any)
 		Withdrawals []TxsWithdrawal `json:"withdrawals,omitempty"`
@@ -190,12 +181,11 @@ type (
 	}
 
 	// TxMetadata transaction metadata lookup res for `/tx_metadata` endpoint.
-	TxMetadata struct {
-		// // TxHash is hash of transaction.
-		// TxHash TxHash `json:"tx_hash"`
-		// Metadata present with-in a transaction (if any)
-		Key  string                     `json:"key"`
-		JSON map[string]json.RawMessage `json:"json"`
+	TxMetadata map[string]json.RawMessage
+
+	TxMetadataOf struct {
+		TxHash   TxHash     `json:"tx_hash"`
+		Metadata TxMetadata `json:"metadata"`
 	}
 
 	// SubmitSignedTxResponse represents response from `/submittx` endpoint.
@@ -213,15 +203,14 @@ type (
 	// TxMetadataResponse represents response from `/tx_metadata` endpoint.
 	TxMetadataResponse struct {
 		Response
-		Data *TxMetadata `json:"data"`
+		Data *TxMetadataOf `json:"data"`
 	}
 
 	// TxsMetadataResponse represents response from `/tx_metadata` endpoint.
 	TxsMetadataResponse struct {
 		Response
-		Data []TxMetadata `json:"data"`
+		Data []TxMetadataOf `json:"data"`
 	}
-
 	// TxMetaLabelsResponse represents response from `/tx_metalabels` endpoint.
 	TxMetaLabelsResponse struct {
 		Response
@@ -453,4 +442,41 @@ func txHashesPL(txs []TxHash) io.Reader {
 		defer w.Close()
 	}()
 	return rpipe
+}
+
+type metaArrayItem struct {
+	// JSON containing details about metadata within transaction.
+	JSON json.RawMessage `json:"json"`
+
+	// Key is metadata (index).
+	Key string `json:"key"`
+}
+
+func (m *TxMetadata) UnmarshalJSON(b []byte) error {
+	// tx_info
+	// payload is most likely array
+	var array []metaArrayItem
+	if err2 := json.Unmarshal(b, &array); err2 != nil {
+		return fmt.Errorf("unmarshal metadata: %w", err2)
+	}
+	(*m) = make(TxMetadata)
+	for _, meta := range array {
+		(*m)[meta.Key] = meta.JSON
+	}
+	return nil
+}
+
+type metaListItem struct {
+	TxHash   TxHash                     `json:"tx_hash"`
+	Metadata map[string]json.RawMessage `json:"metadata"`
+}
+
+func (m *TxMetadataOf) UnmarshalJSON(b []byte) error {
+	var data metaListItem
+	if err := json.Unmarshal(b, &data); err != nil {
+		return fmt.Errorf("unmarshal metadata list: %w", err)
+	}
+	m.TxHash = data.TxHash
+	m.Metadata = data.Metadata
+	return nil
 }

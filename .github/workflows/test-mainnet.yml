@@ -86,6 +86,7 @@ jobs:
         test:
          - TxInfo
          - TxUTxO
+         - TxMetadata
     steps:
       - uses: actions/setup-go@v3
         with:
