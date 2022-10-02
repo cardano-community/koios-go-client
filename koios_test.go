@@ -81,8 +81,8 @@ func networkTxHashes() []koios.TxHash {
 	}
 	return hash
 }
-func networkPoolID() koios.PoolID {
 
+func networkPoolID() koios.PoolID {
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
 		return "pool1xc9eywck4e20tydz4yvh5vfe0ep8whawvwz8wqkc9k046a2ypp4"
@@ -91,6 +91,18 @@ func networkPoolID() koios.PoolID {
 	default:
 		// mainnet
 		return "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"
+	}
+}
+
+func networkScriptHash() koios.ScriptHash {
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		return "160301a01ee86d8e46cbe3aef1e3bf69bfa28c65d5be2dde56a37af8"
+	case "testnet":
+		return "9a3910acc1e1d49a25eb5798d987739a63f65eb48a78462ffae21e6f"
+	default:
+		// mainnet
+		return "d8480dc869b94b80e81ec91b0abe307279311fe0e7001a9488f61ff8"
 	}
 }
 
