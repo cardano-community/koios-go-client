@@ -18,6 +18,7 @@ package koios_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/cardano-community/koios-go-client/v2"
@@ -38,9 +39,14 @@ func epochInfoTest(t TestingT, epoch koios.EpochNo, client *koios.Client) {
 		return
 	}
 	assertEqual(t, epoch, res.Data[0].EpochNo, "epoch_no")
-	assertIsPositive(t, res.Data[0].OutSum, "out_sum")
-	assertIsPositive(t, res.Data[0].Fees, "fees")
-	assertGreater(t, res.Data[0].TxCount, 0, "tx_count")
+
+	if res.Data[0].TxCount == 0 {
+		githubActionWarning("/epoch_info", fmt.Sprintf("epoch(%d) tx count is 0", res.Data[0].EpochNo))
+	} else {
+		assertIsPositive(t, res.Data[0].Fees, "fees")
+		assertIsPositive(t, res.Data[0].OutSum, "out_sum")
+	}
+
 	assertGreater(t, res.Data[0].BlkCount, 0, "blk_count")
 	assertTimeNotZero(t, res.Data[0].StartTime, "start_time")
 	assertTimeNotZero(t, res.Data[0].EndTime, "end_time")

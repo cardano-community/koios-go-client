@@ -179,7 +179,7 @@ func (c *Client) GetBlockTxs(
 	if len(rsp.Data) > 0 {
 		res.Data = rsp.Data[0]
 	} else {
-		err = fmt.Errorf("%w: block_txs response was empty", ErrResponse)
+		err = fmt.Errorf("%w: block %s had no transactions", ErrNoData, hash)
 	}
 	return
 }

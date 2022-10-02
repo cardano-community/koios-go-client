@@ -18,6 +18,7 @@ package koios_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/cardano-community/koios-go-client/v2"
@@ -49,7 +50,9 @@ func blocksTest(t TestingT, client *koios.Client) {
 	assertGreater(t, res.Data[0].Height, 0, "block_height")
 	assertGreater(t, res.Data[0].Size, 0, "block_size")
 	assertTimeNotZero(t, res.Data[0].Time, "block_time")
-	assertGreater(t, res.Data[0].TxCount, 0, "tx_count")
+	if res.Data[0].TxCount == 0 {
+		githubActionWarning("/blocks", fmt.Sprintf("block(%s) tx count is 0", res.Data[0].Hash))
+	}
 	assertNotEmpty(t, res.Data[0].VrfKey, "vrf_key")
 	assertNotEmpty(t, res.Data[0].Pool, "pool")
 	assertGreater(t, res.Data[0].OpCertCounter, 0, "op_cert_counter")
@@ -78,15 +81,21 @@ func blockInfoTest(t TestingT, hash koios.BlockHash, client *koios.Client) {
 	assertGreater(t, res.Data.Height, 0, "block_height")
 	assertGreater(t, res.Data.Size, 0, "block_size")
 	assertTimeNotZero(t, res.Data.Time, "block_time")
-	assertGreater(t, res.Data.TxCount, 0, "tx_count")
+
+	if res.Data.TxCount == 0 {
+		githubActionWarning("/block_info", fmt.Sprintf("block(%s) tx count is 0", res.Data.Hash))
+	} else {
+		assertIsPositive(t, res.Data.TotalOutput, "total_output")
+		assertIsPositive(t, res.Data.TotalFees, "total_fees")
+	}
+
 	assertNotEmpty(t, res.Data.VrfKey, "vrf_key")
 	assertNotEmpty(t, res.Data.OpCert, "op_cert")
 	assertGreater(t, res.Data.OpCertCounter, 0, "op_cert_counter")
 	assertNotEmpty(t, res.Data.Pool, "pool")
 	assertGreater(t, res.Data.ProtoMajor, 0, "proto_major")
 	// assertGreater(t, res.Data.ProtoMinor, 0, "proto_minor")
-	assertIsPositive(t, res.Data.TotalOutput, "total_output")
-	assertIsPositive(t, res.Data.TotalFees, "total_fees")
+
 	assertGreater(t, res.Data.Confirmations, 0, "num_confirmations")
 	assertNotEmpty(t, res.Data.ParentHash, "parent_hash")
 	assertNotEmpty(t, res.Data.ChildHash, "child_hash")
@@ -102,7 +111,12 @@ func TestBlockTxs(t *testing.T) {
 
 func blockTxsTest(t TestingT, hash koios.BlockHash, client *koios.Client) {
 	res, err := client.GetBlockTxs(context.Background(), hash, nil)
-	if !assert.NoError(t, err) {
+	if err != nil {
+		if assert.ErrorIs(t, err, koios.ErrNoData) {
+			githubActionWarning("BlockTxs", err.Error())
+			return
+		}
+		assert.NoError(t, err)
 		return
 	}
 	assertEqual(t, hash, res.Data.BlockHash, "req/res block hashes do not match")

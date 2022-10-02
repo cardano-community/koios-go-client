@@ -32,6 +32,12 @@ import (
 [![macos](https://github.com/cardano-community/koios-go-client/workflows/macos/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/macos.yml)
 [![windows](https://github.com/cardano-community/koios-go-client/workflows/windows/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/windows.yml)
 
+**Koios API Endpoint Tests**
+
+[![mainnet](https://github.com/cardano-community/koios-go-client/actions/workflows/test-mainnet.yml/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/test-mainnet.yml)
+[![testnet](https://github.com/cardano-community/koios-go-client/actions/workflows/test-testnet.yml/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/test-testnet.yml)
+[![guild](https://github.com/cardano-community/koios-go-client/actions/workflows/test-guild.yml/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/test-guild.yml)
+
 **Development Status**
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/cardano-community/koios-go-client)
@@ -45,7 +51,7 @@ import (
 - [Usage](#usage)
   - [Basic usage](#basic-usage)
   - [Concurrency using goroutines](#concurrency-using-goroutines)
-- [Lovelace / Coin (math on ada, assets and tokens).](#lovelace--coin-math-on-ada-assets-and-tokens)
+- [Math on ada, assets and tokens).](#math-on-ada-assets-and-tokens)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
   - [Got a Question or Problem?](#got-a-question-or-problem)
@@ -167,7 +173,7 @@ func main() {
 }
 ```
 
-## Lovelace / Coin (math on ada, assets and tokens).
+## Math on ada, assets and tokens).
 
 Library uses [`decimal.Decimal`](https://pkg.go.dev/badge/github.com/shopspring/decimal) data type to represent lovelace and coin values.  
 Which provides arbitrary-precision fixed-point decimal numbers in go.
