@@ -1,3 +1,5 @@
+// Deprecated: Upgrade to github.com/cardano-community/koios-go-client/v2
+// versions < v2 do not work with Koios API after koios v1.0.7 breaking changes.
 module github.com/cardano-community/koios-go-client
 
 go 1.16
