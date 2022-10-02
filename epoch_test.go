@@ -29,7 +29,7 @@ func TestEpochInfo(t *testing.T) {
 	if !assert.NoError(t, err) {
 		return
 	}
-	epochInfoTest(t, defaultEpoch(), client)
+	epochInfoTest(t, networkEpoch(), client)
 }
 
 func epochInfoTest(t TestingT, epoch koios.EpochNo, client *koios.Client) {
@@ -37,18 +37,18 @@ func epochInfoTest(t TestingT, epoch koios.EpochNo, client *koios.Client) {
 	if !assert.NoError(t, err) {
 		return
 	}
-	assert.Equal(t, epoch, res.Data[0].EpochNo, "epoch_no")
-	assert.True(t, res.Data[0].OutSum.IsPositive(), "out_sum")
-	assert.True(t, res.Data[0].Fees.IsPositive(), "fees")
-	assert.Greater(t, res.Data[0].TxCount, 0, "tx_count")
-	assert.Greater(t, res.Data[0].BlkCount, 0, "blk_count")
-	assert.False(t, res.Data[0].StartTime.IsZero(), "start_time")
-	assert.False(t, res.Data[0].EndTime.IsZero(), "end_time")
-	assert.False(t, res.Data[0].FirstBlockTime.IsZero(), "first_block_time")
-	assert.False(t, res.Data[0].LastBlockTime.IsZero(), "last_block_time")
-	assert.True(t, res.Data[0].ActiveStake.IsPositive(), "active_stake")
-	assert.True(t, res.Data[0].TotalRewards.IsPositive(), "total_rewards")
-	assert.True(t, res.Data[0].AvgBlkReward.IsPositive(), "avg_blk_reward")
+	assertEqual(t, epoch, res.Data[0].EpochNo, "epoch_no")
+	assertIsPositive(t, res.Data[0].OutSum, "out_sum")
+	assertIsPositive(t, res.Data[0].Fees, "fees")
+	assertGreater(t, res.Data[0].TxCount, 0, "tx_count")
+	assertGreater(t, res.Data[0].BlkCount, 0, "blk_count")
+	assertTimeNotZero(t, res.Data[0].StartTime.Time, "start_time")
+	assertTimeNotZero(t, res.Data[0].EndTime.Time, "end_time")
+	assertTimeNotZero(t, res.Data[0].FirstBlockTime.Time, "first_block_time")
+	assertTimeNotZero(t, res.Data[0].LastBlockTime.Time, "last_block_time")
+	assertIsPositive(t, res.Data[0].ActiveStake, "active_stake")
+	assertIsPositive(t, res.Data[0].TotalRewards, "total_rewards")
+	assertIsPositive(t, res.Data[0].AvgBlkReward, "avg_blk_reward")
 }
 
 func TestEpochParams(t *testing.T) {
@@ -56,7 +56,7 @@ func TestEpochParams(t *testing.T) {
 	if !assert.NoError(t, err) {
 		return
 	}
-	epochParamsTest(t, defaultEpoch(), client)
+	epochParamsTest(t, networkEpoch(), client)
 
 }
 
@@ -107,7 +107,7 @@ func TestEpochBlockProtocols(t *testing.T) {
 	if !assert.NoError(t, err) {
 		return
 	}
-	epochBlockProtocolsTest(t, defaultEpoch(), client)
+	epochBlockProtocolsTest(t, networkEpoch(), client)
 
 }
 

@@ -19,7 +19,10 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
+
+	"github.com/shopspring/decimal"
 )
 
 type (
@@ -29,14 +32,14 @@ type (
 		// Hash block hash
 		Hash BlockHash `json:"hash"`
 
-		// Epoch number.
-		Epoch EpochNo `json:"epoch"`
+		// EpochNo number.
+		EpochNo EpochNo `json:"epoch_no"`
 
-		// AbsoluteSlot is overall slot number (slots from genesis block of chain).
-		AbsoluteSlot int `json:"abs_slot"`
+		// AbsSlot is overall slot number (slots from genesis block of chain).
+		AbsSlot Slot `json:"abs_slot"`
 
 		// EpochSlot slot number within epoch.
-		EpochSlot int `json:"epoch_slot"`
+		EpochSlot Slot `json:"epoch_slot"`
 
 		// Height is block number on chain where transaction was included.
 		Height int `json:"block_height"`
@@ -67,6 +70,20 @@ type (
 
 		// ChildHash child block hash
 		ChildHash BlockHash `json:"child_hash,omitempty"`
+
+		// ProtoMajor is protocol major version
+		ProtoMajor int `json:"proto_major,omitempty"`
+		// ProtoMinor is protocol minor version
+		ProtoMinor int `json:"proto_minor,omitempty"`
+
+		// TotalOutput output of the block (in lovelace)
+		TotalOutput decimal.Decimal `json:"total_output,omitempty"`
+
+		// TotalOutput Total fees of the block (in lovelace)
+		TotalFees decimal.Decimal `json:"total_fees,omitempty"`
+
+		// Confirmations is number of confirmations for the block
+		Confirmations int `json:"num_confirmations"`
 	}
 
 	// BlocksResponse represents response from `/blocks` endpoint.
@@ -77,7 +94,7 @@ type (
 	// BlockInfoResponse represents response from `/block_info` endpoint.
 	BlockInfoResponse struct {
 		Response
-		Data *Block `json:"data"`
+		Data Block `json:"data"`
 	}
 	// BlockInfoResponse represents response from `/block_info` endpoint.
 	BlocksInfoResponse struct {
@@ -85,9 +102,19 @@ type (
 		Data []Block `json:"data"`
 	}
 	// BlockTxsHashesResponse represents response from `/block_txs` endpoint.
-	BlockTxsHashesResponse struct {
+
+	BlockTxs struct {
+		BlockHash BlockHash `json:"block_hash"`
+		TxHashes  []TxHash  `json:"tx_hashes"`
+	}
+
+	BlocksTxsResponse struct {
 		Response
-		Data []TxHash `json:"data"`
+		Data []BlockTxs `json:"data"`
+	}
+	BlockTxsResponse struct {
+		Response
+		Data BlockTxs `json:"data"`
 	}
 )
 
@@ -112,17 +139,19 @@ func (c *Client) GetBlockInfo(
 	opts *RequestOptions,
 ) (res *BlockInfoResponse, err error) {
 	res = &BlockInfoResponse{}
-	rsp, err := c.GetBlocksInfo(ctx, []BlockHash{hash}, opts)
+	rsp, err := c.GetBlockInfos(ctx, []BlockHash{hash}, opts)
 	res.Response = rsp.Response
 
 	if len(rsp.Data) > 0 {
-		res.Data = &rsp.Data[0]
+		res.Data = rsp.Data[0]
+	} else {
+		err = fmt.Errorf("%w: block_info response was empty", ErrResponse)
 	}
 	return
 }
 
 // GetBlocksInfo returns detailed information about a set of blocks.
-func (c *Client) GetBlocksInfo(
+func (c *Client) GetBlockInfos(
 	ctx context.Context,
 	hashes []BlockHash,
 	opts *RequestOptions,
@@ -137,33 +166,36 @@ func (c *Client) GetBlocksInfo(
 	return
 }
 
-// GetBlockTxHashes returns a list of all transactions hashes
-// included in a provided block.
-func (c *Client) GetBlockTxHashes(
+// GetBlocksTxs returns a list of all transactions included in a blocks.
+func (c *Client) GetBlockTxs(
 	ctx context.Context,
 	hash BlockHash,
 	opts *RequestOptions,
-) (res *BlockTxsHashesResponse, err error) {
-	res = &BlockTxsHashesResponse{}
-	if opts == nil {
-		opts = c.NewRequestOptions()
-	}
-	opts.QuerySet("_block_hash", hash.String())
+) (res *BlockTxsResponse, err error) {
+	res = &BlockTxsResponse{}
+	rsp, err := c.GetBlocksTxs(ctx, []BlockHash{hash}, opts)
+	res.Response = rsp.Response
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/block_txs", nil, opts)
+	if len(rsp.Data) > 0 {
+		res.Data = rsp.Data[0]
+	} else {
+		err = fmt.Errorf("%w: block_txs response was empty", ErrResponse)
+	}
+	return
+}
+
+// GetBlocksTxs returns a list of all transactions included in a blocks.
+func (c *Client) GetBlocksTxs(
+	ctx context.Context,
+	hashes []BlockHash,
+	opts *RequestOptions,
+) (res *BlocksTxsResponse, err error) {
+	res = &BlocksTxsResponse{}
+	rsp, err := c.request(ctx, &res.Response, "POST", "/block_txs", blockHashesPL(hashes), opts)
 	if err != nil {
 		return
 	}
-	blockTxs := []struct {
-		Hash TxHash `json:"tx_hash"`
-	}{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &blockTxs)
-
-	if len(blockTxs) > 0 {
-		for _, tx := range blockTxs {
-			res.Data = append(res.Data, tx.Hash)
-		}
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
@@ -179,20 +211,20 @@ func blockHashesPL(bhash []BlockHash) io.Reader {
 	return rpipe
 }
 
-// handle api json tags Block.epoch and Block.epoch_no.
-func (block *Block) UnmarshalJSON(b []byte) error {
-	type B Block
-	if err := json.Unmarshal(b, (*B)(block)); err != nil {
-		return err
-	}
-	if block.Epoch == 0 {
-		var fix = struct {
-			Epoch EpochNo `json:"epoch_no"`
-		}{}
-		if err := json.Unmarshal(b, &fix); err != nil {
-			return err
-		}
-		block.Epoch = fix.Epoch
-	}
-	return nil
-}
+// // handle api json tags Block.epoch and Block.epoch_no.
+// func (block *Block) UnmarshalJSON(b []byte) error {
+// 	type B Block
+// 	if err := json.Unmarshal(b, (*B)(block)); err != nil {
+// 		return err
+// 	}
+// 	if block.EpochNo == 0 {
+// 		var fix = struct {
+// 			Epoch EpochNo `json:"epoch_no"`
+// 		}{}
+// 		if err := json.Unmarshal(b, &fix); err != nil {
+// 			return err
+// 		}
+// 		block.Epoch = fix.Epoch
+// 	}
+// 	return nil
+// }

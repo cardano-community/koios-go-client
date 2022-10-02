@@ -32,7 +32,7 @@ type TestingT interface {
 	Errorf(format string, args ...any)
 }
 
-func defaultEpoch() koios.EpochNo {
+func networkEpoch() koios.EpochNo {
 	var epoch koios.EpochNo
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
@@ -44,6 +44,20 @@ func defaultEpoch() koios.EpochNo {
 		epoch = koios.EpochNo(320)
 	}
 	return epoch
+}
+
+func networkBlockHash() koios.BlockHash {
+	var hash koios.BlockHash
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		hash = koios.BlockHash("af2f6f7dd4e4ea6765103a1e38e023da3edd2b3c7fea2aa367222564dbe01cfd")
+	case "testnet":
+		hash = koios.BlockHash("f75fea40852ed7d7f539d008e45255725daef8553ae7162750836f279570813a")
+	default:
+		// mainnet
+		hash = koios.BlockHash("fb9087c9f1408a7bbd7b022fd294ab565fec8dd3a8ef091567482722a1fa4e30")
+	}
+	return hash
 }
 
 func getClient() (client *koios.Client, err error) {
