@@ -19,13 +19,13 @@ jobs:
         uses: golangci/golangci-lint-action@v3
 
   # Run misspell with reviewdog
-  spellcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: misspell
-        uses: reviewdog/action-misspell@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          locale: "US"
-          ignore: Decentralisation,Decentralization
+  # spellcheck:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: misspell
+  #       uses: reviewdog/action-misspell@v1
+  #       with:
+  #         github_token: ${{ secrets.github_token }}
+  #         locale: "US"
+  #         ignore: Decentralisation,Decentralization
