@@ -190,6 +190,7 @@ func (c *Client) GetAccountInfo(
 	acc Address,
 	opts *RequestOptions,
 ) (res *AccountInfoResponse, err error) {
+	res = &AccountInfoResponse{}
 	res2, err := c.GetAccountsInfo(ctx, []Address{acc}, opts)
 	if err != nil {
 		return
