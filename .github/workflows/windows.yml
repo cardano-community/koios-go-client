@@ -22,10 +22,10 @@ jobs:
       - name: Run tests
         run: |
           go mod download -x
-          go test -v -race -coverprofile=coverage.txt -covermode atomic ./...
+          go test -v -race -coverprofile coverage.coverprofile -covermode atomic ./...
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
           flags: windows,local
           fail_ci_if_error: true
-          files: ./coverage.txt
+          files: ./coverage.coverprofile

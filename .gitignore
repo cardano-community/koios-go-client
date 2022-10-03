@@ -12,6 +12,7 @@
 .env
 testdata/**/**.json
 coverage.txt
+coverage.coverprofile
 go.work
 go.work.sum
 
