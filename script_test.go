@@ -25,8 +25,8 @@ import (
 )
 
 func TestNativeScriptList(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	nativeScriptListTest(t, client)
@@ -50,8 +50,8 @@ func nativeScriptListTest(t TestingT, client *koios.Client) {
 }
 
 func TestPlutusScriptList(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	plutusScriptListTest(t, client)
@@ -74,8 +74,8 @@ func plutusScriptListTest(t TestingT, client *koios.Client) {
 }
 
 func TestScriptRedeemers(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	scripthash := networkScriptHash()

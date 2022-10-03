@@ -93,15 +93,20 @@ func HTTPClient(client *http.Client) Option {
 				return ErrHTTPClientChange
 			}
 			if client == nil {
-				client = http.DefaultClient
-				client.Timeout = time.Second * 60
+				client = &http.Client{
+					Timeout: time.Second * 60,
+				}
 			}
 			if client.Timeout == 0 {
 				return ErrHTTPClientTimeoutSetting
 			}
 			c.client = client
 			if c.client.Transport == nil {
-				c.client.Transport = http.DefaultTransport
+				t := http.DefaultTransport.(*http.Transport).Clone()
+				t.MaxIdleConns = 100
+				t.MaxConnsPerHost = 100
+				t.MaxIdleConnsPerHost = 100
+				c.client.Transport = t
 			}
 			return nil
 		},

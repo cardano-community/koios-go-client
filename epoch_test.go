@@ -26,8 +26,8 @@ import (
 )
 
 func TestEpochInfo(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	epochInfoTest(t, networkEpoch(), client)
@@ -58,8 +58,8 @@ func epochInfoTest(t TestingT, epoch koios.EpochNo, client *koios.Client) {
 }
 
 func TestEpochParams(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	epochParamsTest(t, networkEpoch(), client)
@@ -109,8 +109,8 @@ func epochParamsTest(t TestingT, epoch koios.EpochNo, client *koios.Client) {
 }
 
 func TestEpochBlockProtocols(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	epochBlockProtocolsTest(t, networkEpoch(), client)

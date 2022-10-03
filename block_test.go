@@ -26,8 +26,8 @@ import (
 )
 
 func TestBlocks(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	blocksTest(t, client)
@@ -61,8 +61,8 @@ func blocksTest(t TestingT, client *koios.Client) {
 }
 
 func TestBlockInfo(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	blockInfoTest(t, networkBlockHash(), client)
@@ -102,8 +102,8 @@ func blockInfoTest(t TestingT, hash koios.BlockHash, client *koios.Client) {
 }
 
 func TestBlockTxs(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	blockTxsTest(t, networkBlockHash(), client)

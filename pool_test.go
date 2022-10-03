@@ -26,8 +26,8 @@ import (
 )
 
 func TestPools(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolsTest(t, client)
@@ -49,8 +49,8 @@ func poolsTest(t TestingT, client *koios.Client) {
 }
 
 func TestPoolSnapshot(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolID := networkPoolID()
@@ -78,8 +78,8 @@ func poolSnapshotTest(t TestingT, client *koios.Client, poolID koios.PoolID) {
 }
 
 func TestPoolInfo(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolID := networkPoolID()
@@ -121,8 +121,8 @@ func poolInfoTest(t TestingT, client *koios.Client, poolID koios.PoolID) {
 }
 
 func TestPoolDelegators(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolID := networkPoolID()
@@ -144,8 +144,8 @@ func poolDelegatorsTest(t TestingT, client *koios.Client, poolID koios.PoolID) {
 }
 
 func TestPoolDelegatorsHistory(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolID := networkPoolID()
@@ -167,8 +167,8 @@ func poolDelegatorsHistoryTest(t TestingT, client *koios.Client, poolID koios.Po
 }
 
 func TestPoolBlocks(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolID := networkPoolID()
@@ -192,8 +192,8 @@ func poolBlocksTest(t TestingT, client *koios.Client, poolID koios.PoolID, epoch
 }
 
 func TestPoolHistory(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolID := networkPoolID()
@@ -222,8 +222,8 @@ func poolHistoryTest(t TestingT, client *koios.Client, poolID koios.PoolID, epoc
 }
 
 func TestPoolUpdates(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolID := networkPoolID()
@@ -260,8 +260,8 @@ func poolUpdatesTest(t TestingT, client *koios.Client, poolID *koios.PoolID) {
 }
 
 func TestPoolRelays(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolRelaysTest(t, client)
@@ -286,8 +286,8 @@ func poolRelaysTest(t TestingT, client *koios.Client) {
 }
 
 func TestPoolMetadata(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	poolID := networkPoolID()

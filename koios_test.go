@@ -29,7 +29,10 @@ import (
 // TestingT is an interface wrapper around *testing.T
 type TestingT interface {
 	Errorf(format string, args ...any)
+	Error(args ...any)
 }
+
+var errLocalClient = errors.New("local client is used")
 
 func networkEpoch() koios.EpochNo {
 	var epoch koios.EpochNo
@@ -38,9 +41,11 @@ func networkEpoch() koios.EpochNo {
 		epoch = koios.EpochNo(1950)
 	case "testnet":
 		epoch = koios.EpochNo(185)
-	default:
-		// mainnet
+	case "mainnet":
 		epoch = koios.EpochNo(320)
+	default:
+		// local
+		epoch = koios.EpochNo(0)
 	}
 	return epoch
 }
@@ -52,9 +57,11 @@ func networkBlockHash() koios.BlockHash {
 		hash = koios.BlockHash("af2f6f7dd4e4ea6765103a1e38e023da3edd2b3c7fea2aa367222564dbe01cfd")
 	case "testnet":
 		hash = koios.BlockHash("f75fea40852ed7d7f539d008e45255725daef8553ae7162750836f279570813a")
+	case "mainnet":
+		hash = koios.BlockHash("fb9087c9f1408a7bbd7b022fd294ab565fec8dd3a8ef091567482722a1fa4e30")
 	default:
 		// mainnet
-		hash = koios.BlockHash("fb9087c9f1408a7bbd7b022fd294ab565fec8dd3a8ef091567482722a1fa4e30")
+		hash = koios.BlockHash("")
 	}
 	return hash
 }
@@ -72,12 +79,14 @@ func networkTxHashes() []koios.TxHash {
 			"928052b80bfc23801da525a6bf8f805da36f22fa0fd5fec2198b0746eb82b72b",
 			"c7e96e4cd6aa9e3afbc7b32d1e8023daf4197931f1ea61d2bdfc7a2e5e017cf1",
 		}
-	default:
-		// mainnet
+	case "mainnet":
 		hash = []koios.TxHash{
 			"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e",
 			"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94",
 		}
+	default:
+		// local
+		hash = []koios.TxHash{}
 	}
 	return hash
 }
@@ -88,9 +97,11 @@ func networkPoolID() koios.PoolID {
 		return "pool1xc9eywck4e20tydz4yvh5vfe0ep8whawvwz8wqkc9k046a2ypp4"
 	case "testnet":
 		return "pool102llj7e7a0mmxssjvjkv2d6lppuh6cz6q9xwc3tsksn0jqwz9eh"
-	default:
-		// mainnet
+	case "mainnet":
 		return "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"
+	default:
+		// local
+		return ""
 	}
 }
 
@@ -100,9 +111,11 @@ func networkScriptHash() koios.ScriptHash {
 		return "160301a01ee86d8e46cbe3aef1e3bf69bfa28c65d5be2dde56a37af8"
 	case "testnet":
 		return "9a3910acc1e1d49a25eb5798d987739a63f65eb48a78462ffae21e6f"
-	default:
-		// mainnet
+	case "mainnet":
 		return "d8480dc869b94b80e81ec91b0abe307279311fe0e7001a9488f61ff8"
+	default:
+		// local
+		return ""
 	}
 }
 
@@ -119,12 +132,14 @@ func networkAddresses() []koios.Address {
 			"addr_test1qzx9hu8j4ah3auytk0mwcupd69hpc52t0cw39a65ndrah86djs784u92a3m5w475w3w35tyd6v3qumkze80j8a6h5tuqq5xe8y",
 			"addr_test1qrk7920v35zukhcch4kyydy6rxnhqdcvetkvngeqrvtgavw8tpzdklse3kwer7urhrlfg962m9fc8cznfcdpka5pd07sgf8n0w",
 		}
-	default:
-		// mainnet
+	case "mainnet":
 		addrs = []koios.Address{
 			"addr1qyp9kz50sh9c53hpmk3l4ewj9ur794t2hdqpngsjn3wkc5sztv9glpwt3frwrhdrltjaytc8ut2k4w6qrx3p98zad3fq07xe9g",
 			"addr1qyfldpcvte8nkfpyv0jdc8e026cz5qedx7tajvupdu2724tlj8sypsq6p90hl40ya97xamkm9fwsppus2ru8zf6j8g9sm578cu",
 		}
+	default:
+		// mainnet
+		addrs = []koios.Address{}
 	}
 	return addrs
 }
@@ -142,12 +157,15 @@ func networkPaymentCredentials() []koios.PaymentCredential {
 			"00003fac863dc2267d0cd90768c4af653572d719a79ca3b01957fa79",
 			"000056d48603bf7daada30c9c175be9c93172d36f82fba0ca972c245",
 		}
-	default:
-		// mainnet
+	case "mainnet":
 		creds = []koios.PaymentCredential{
 			"025b0a8f85cb8a46e1dda3fae5d22f07e2d56abb4019a2129c5d6c52",
 			"13f6870c5e4f3b242463e4dc1f2f56b02a032d3797d933816f15e555",
 		}
+	default:
+		// local
+		creds = []koios.PaymentCredential{}
+
 	}
 	return creds
 }
@@ -165,12 +183,14 @@ func networkAccounts() []koios.Address {
 			"stake_test1uqrw9tjymlm8wrwq7jk68n6v7fs9qz8z0tkdkve26dylmfc2ux2hj",
 			"stake_test1uq7g7kqeucnqfweqzgxk3dw34e8zg4swnc7nagysug2mm4cm77jrx",
 		}
-	default:
-		// mainnet
+	case "mainnet":
 		accs = []koios.Address{
 			"stake1uyfmzu5qqy70a8kq4c8rw09q0w0ktfcxppwujejnsh6tyrg5c774g",
 			"stake1uydhlh7f2kkw9eazct5zyzlrvj32gjnkmt2v5qf6t8rut4qwch8ey",
 		}
+	default:
+		// local
+		accs = []koios.Address{}
 	}
 	return accs
 }
@@ -181,16 +201,18 @@ func networkPolicyAsset() (koios.PolicyID, koios.AssetName, int) {
 		return "313534a537bc476c86ff7c57ec511bd7f24a9d15654091b24e9c606e", "41484c636f696e", 63487
 	case "testnet":
 		return "000327a9e427a3a3256eb6212ae26b7f53f7969b8e62d37ea9138a7b", "54735465737431", 63487
+	case "mainnet":
+		return "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", "444f4e545350414d", 63487
 	default:
 		// mainnet
-		return "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", "444f4e545350414d", 63487
+		return "", "", 0
 	}
 }
 
-func getClient() (client *koios.Client, err error) {
+func getLiveClient() (client *koios.Client, err error) {
 	net, ok := os.LookupEnv("KOIOS_NETWORK")
 	if !ok {
-		return nil, errors.New("KOIOS_NETWORK not set")
+		return nil, fmt.Errorf("%w: KOIOS_NETWORK not set", errLocalClient)
 	}
 	var host string
 	switch net {
@@ -330,4 +352,15 @@ func githubActionWarning(title, msg string) {
 		title,
 		msg,
 	)
+}
+
+func testIsLocal(t TestingT, err error) bool {
+	if err == nil {
+		return false
+	}
+	if errors.Is(err, errLocalClient) {
+		return true
+	}
+	t.Error(err)
+	return false
 }

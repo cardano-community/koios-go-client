@@ -26,8 +26,8 @@ import (
 )
 
 func TestTxInfo(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	txInfoTest(t, networkTxHashes(), client)
@@ -117,8 +117,8 @@ func txInfoTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
 }
 
 func TestTxUTxO(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	txUTxOsTest(t, networkTxHashes(), client)
@@ -135,8 +135,8 @@ func txUTxOsTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
 }
 
 func TestTxMetadata(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	txMetadataTest(t, networkTxHashes(), client)
@@ -153,8 +153,8 @@ func txMetadataTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
 }
 
 func TestTxMetaLabels(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	txMetaLabelsTest(t, client)
@@ -176,8 +176,8 @@ func txMetaLabelsTest(t TestingT, client *koios.Client) {
 }
 
 func TestTxStatus(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	txStatusTest(t, networkTxHashes(), client)

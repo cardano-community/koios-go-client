@@ -26,8 +26,8 @@ import (
 )
 
 func TestAddressInfo(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	addressInfoTest(t, networkAddresses(), client)
@@ -49,8 +49,8 @@ func addressInfoTest(t TestingT, addrs []koios.Address, client *koios.Client) {
 }
 
 func TestAddressTxs(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	addressTxsTest(t, networkAddresses(), client)
@@ -72,8 +72,8 @@ func addressTxsTest(t TestingT, addrs []koios.Address, client *koios.Client) {
 }
 
 func TestAddressAssets(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	addressAssetsTest(t, networkAddresses(), client)
@@ -108,8 +108,8 @@ func addressAssetsTest(t TestingT, addrs []koios.Address, client *koios.Client) 
 }
 
 func TestCredentialTxs(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	credentialTxsTest(t, networkPaymentCredentials(), client)

@@ -27,8 +27,8 @@ import (
 )
 
 func TestAccounts(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	accountsTest(t, client)
@@ -53,8 +53,8 @@ func accountsTest(t TestingT, client *koios.Client) {
 }
 
 func TestAccountInfo(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	accountInfoTest(t, networkAccounts(), client)
@@ -85,8 +85,8 @@ func accountInfoTest(t TestingT, accs []koios.Address, client *koios.Client) {
 }
 
 func TestAccountRewards(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	epoch := networkEpoch()
@@ -114,8 +114,8 @@ func accountRewardsTest(t TestingT, accs []koios.Address, epoch *koios.EpochNo, 
 }
 
 func TestAccountUpdates(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	accountUpdatesTest(t, networkAccounts(), client)
@@ -141,8 +141,8 @@ func accountUpdatesTest(t TestingT, accs []koios.Address, client *koios.Client) 
 }
 
 func TestAccountAddresses(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	accountAddressesTest(t, networkAccounts(), client)
@@ -164,8 +164,8 @@ func accountAddressesTest(t TestingT, accs []koios.Address, client *koios.Client
 }
 
 func TestAccountAssets(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	accountAssetsTest(t, networkAccounts(), client)
@@ -195,8 +195,8 @@ func accountAssetsTest(t TestingT, accs []koios.Address, client *koios.Client) {
 }
 
 func TestAccountHistory(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	accountHistoryTest(t, networkAccounts(), client)

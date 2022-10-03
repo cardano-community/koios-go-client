@@ -25,8 +25,8 @@ import (
 )
 
 func TestNetworkTip(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	networkTipTest(t, client)
@@ -46,8 +46,8 @@ func networkTipTest(t TestingT, client *koios.Client) {
 }
 
 func TestNetworkGenesis(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	networkGenesisTest(t, client)
@@ -73,8 +73,8 @@ func networkGenesisTest(t TestingT, client *koios.Client) {
 }
 
 func TestNetworkTotals(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	networkTotalsTest(t, networkEpoch(), client)

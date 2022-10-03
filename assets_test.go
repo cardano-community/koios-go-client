@@ -26,8 +26,8 @@ import (
 )
 
 func TestAssets(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	assetsTest(t, client)
@@ -50,8 +50,8 @@ func assetsTest(t TestingT, client *koios.Client) {
 }
 
 func TestAssetAddresses(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	policyID, assetName, _ := networkPolicyAsset()
@@ -71,8 +71,8 @@ func assetAddressesTest(t TestingT, client *koios.Client, policyID koios.PolicyI
 }
 
 func TestAssetInfo(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	policyID, assetName, _ := networkPolicyAsset()
@@ -100,8 +100,8 @@ func assetInfoTest(t TestingT, client *koios.Client, policyID koios.PolicyID, as
 }
 
 func TestAssetHistory(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	policyID, assetName, _ := networkPolicyAsset()
@@ -123,8 +123,8 @@ func assetHistoryTest(t TestingT, client *koios.Client, policyID koios.PolicyID,
 }
 
 func TestAssetPolicyInfo(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	policyID, _, _ := networkPolicyAsset()
@@ -155,8 +155,8 @@ func assetPolicyInfoTest(t TestingT, client *koios.Client, policyID koios.Policy
 }
 
 func TestAssetSummary(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	policyID, asset, _ := networkPolicyAsset()
@@ -181,8 +181,8 @@ func testAssetSummaryTest(t TestingT, client *koios.Client, policyID koios.Polic
 }
 
 func TestAssetTxs(t *testing.T) {
-	client, err := getClient()
-	if !assert.NoError(t, err) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
 		return
 	}
 	policyID, asset, abh := networkPolicyAsset()
