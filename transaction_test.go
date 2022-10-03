@@ -162,14 +162,14 @@ func TestTxMetaLabels(t *testing.T) {
 
 func txMetaLabelsTest(t TestingT, client *koios.Client) {
 	opts := client.NewRequestOptions()
-	opts.SetPageSize(10)
+	opts.SetPageSize(2) // testnet Range error if number is too big
 
 	res, err := client.GetTxMetaLabels(context.Background(), opts)
 	if !assert.NoError(t, err) {
 		return
 	}
 
-	assertGreater(t, len(res.Data), 2, "GetTxMetaLabels")
+	assertGreater(t, len(res.Data), 1, "GetTxMetaLabels")
 	for _, label := range res.Data {
 		assertNotEmpty(t, label.Key, "empty label")
 	}
