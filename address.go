@@ -127,7 +127,7 @@ func (c *Client) GetAddressInfo(
 	addr Address,
 	opts *RequestOptions,
 ) (res *AddressInfoResponse, err error) {
-
+	res = &AddressInfoResponse{}
 	res2, err := c.GetAddressesInfo(ctx, []Address{addr}, opts)
 	if err != nil {
 		return
