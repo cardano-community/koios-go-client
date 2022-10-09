@@ -453,25 +453,15 @@ type metaArrayItem struct {
 }
 
 func (m *TxMetadata) UnmarshalJSON(b []byte) error {
-	if len(b) == 0 {
+	if len(b) == 0 || string(b) == "[]" {
 		return nil
 	}
-	// tx_info
-	// payload is most likely array
-	var array []metaArrayItem
-	if err2 := json.Unmarshal(b, &array); err2 != nil {
+	var txMetadata map[string]json.RawMessage
+
+	if err2 := json.Unmarshal(b, &txMetadata); err2 != nil {
 		return fmt.Errorf("unmarshal metadata: %w", err2)
 	}
-	if len(array) == 0 {
-		return nil
-	}
-	if len(array) == 1 && len(array[0].Key) == 0 {
-		return nil
-	}
-	(*m) = make(TxMetadata)
-	for _, meta := range array {
-		(*m)[meta.Key] = meta.JSON
-	}
+	*m = txMetadata
 	return nil
 }
 
