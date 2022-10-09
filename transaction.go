@@ -445,11 +445,10 @@ func txHashesPL(txs []TxHash) io.Reader {
 }
 
 type metaArrayItem struct {
-	// JSON containing details about metadata within transaction.
-	JSON json.RawMessage `json:"json"`
-
 	// Key is metadata (index).
-	Key string `json:"key"`
+	Key string `json:"key,omitempty"`
+	// JSON containing details about metadata within transaction.
+	JSON json.RawMessage `json:"json,omitempty"`
 }
 
 func (m *TxMetadata) UnmarshalJSON(b []byte) error {
@@ -457,11 +456,24 @@ func (m *TxMetadata) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 	var txMetadata map[string]json.RawMessage
-
-	if err2 := json.Unmarshal(b, &txMetadata); err2 != nil {
+	var txMetadataArray []metaArrayItem
+	if err2 := json.Unmarshal(b, &txMetadataArray); err2 != nil {
+		if err3 := json.Unmarshal(b, &txMetadata); err3 == nil {
+			*m = txMetadata
+			return nil
+		}
 		return fmt.Errorf("unmarshal metadata: %w", err2)
 	}
-	*m = txMetadata
+	if len(txMetadataArray) == 0 {
+		return nil
+	}
+	if len(txMetadataArray) == 1 && len(txMetadataArray[0].Key) == 0 {
+		return nil
+	}
+	(*m) = make(TxMetadata)
+	for _, meta := range txMetadataArray {
+		(*m)[meta.Key] = meta.JSON
+	}
 	return nil
 }
 
