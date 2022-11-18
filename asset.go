@@ -290,7 +290,8 @@ func (c *Client) GetAssetTxs(
 	ctx context.Context,
 	policy PolicyID,
 	name AssetName,
-	h int,
+	afterBlockHeight int,
+	history bool,
 	opts *RequestOptions,
 ) (res *AssetTxsResponse, err error) {
 	res = &AssetTxsResponse{}
@@ -302,9 +303,11 @@ func (c *Client) GetAssetTxs(
 	if len(name) > 0 {
 		opts.QuerySet("_asset_name", name.String())
 	}
-	if h > 0 {
-		opts.QuerySet("_after_block_height", fmt.Sprint(h))
-
+	if afterBlockHeight > 0 {
+		opts.QuerySet("_after_block_height", fmt.Sprint(afterBlockHeight))
+	}
+	if history {
+		opts.QuerySet("_history", fmt.Sprint(history))
 	}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_txs", nil, opts)
 	if err != nil {
