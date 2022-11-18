@@ -79,9 +79,6 @@ type (
 	// PaymentCredential type def.
 	PaymentCredential string
 
-	// AssetName defines type for _asset_name.
-	AssetName string
-
 	// BlockHash defines type for _block_hash.
 	BlockHash string
 
@@ -252,11 +249,6 @@ func New(opts ...Option) (*Client, error) {
 
 // String returns PaymentCredential as string.
 func (v PaymentCredential) String() string {
-	return string(v)
-}
-
-// String returns AssetName as string.
-func (v AssetName) String() string {
 	return string(v)
 }
 

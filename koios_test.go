@@ -54,7 +54,7 @@ func networkBlockHash() koios.BlockHash {
 	var hash koios.BlockHash
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
-		hash = koios.BlockHash("af2f6f7dd4e4ea6765103a1e38e023da3edd2b3c7fea2aa367222564dbe01cfd")
+		hash = koios.BlockHash("bddbbc6df0ad09567a513349bafd56d8ec5c8fcd9ee9db12173624b896350d57")
 	case "testnet":
 		hash = koios.BlockHash("f75fea40852ed7d7f539d008e45255725daef8553ae7162750836f279570813a")
 	case "mainnet":
