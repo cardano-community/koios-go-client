@@ -190,16 +190,14 @@ func accountAssetsTest(t TestingT, accs []koios.Address, client *koios.Client) {
 	for i, account := range res.Data {
 		label := fmt.Sprintf("acc[%d]", i)
 		assertNotEmpty(t, account.StakeAddress, label)
-		for j, col := range account.Assets {
-			assertNotEmpty(t, col.PolicyID, fmt.Sprintf("acc[%d].assets[%d].policy_id", i, j))
-			for n, asset := range col.Assets {
-				// asset name can be empty
-				if len(asset.AssetName) > 0 {
-					assertNotEmpty(t, asset.AssetName, fmt.Sprintf("acc[%d].assets[%d].asset[%d].asset_name", i, j, n))
-					assertNotEmpty(t, asset.AssetNameASCII, fmt.Sprintf("acc[%d].assets[%d].asset[%d].asset_name_ascii", i, j, n))
-				}
-				assertIsPositive(t, asset.Balance, fmt.Sprintf("acc[%d].assets[%d].asset[%d].balance", i, j, n))
+		for j, asset := range account.Assets {
+			assertNotEmpty(t, asset.PolicyID, fmt.Sprintf("acc[%d].assets[%d].policy_id", i, j))
+			// asset name can be empty
+			if len(asset.AssetName) > 0 {
+				assertNotEmpty(t, asset.AssetName, fmt.Sprintf("acc[%d].assets[%d].asset_name", i, j))
 			}
+			assertNotEmpty(t, asset.Fingerprint, fmt.Sprintf("acc[%d].assets[%d].fingerprint", i, j))
+			assertIsPositive(t, asset.Quantity, fmt.Sprintf("acc[%d].assets[%d].quantity", i, j))
 		}
 	}
 }
