@@ -8,16 +8,16 @@
 
 **[Koios API] Client Library for Go**
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client/v2)](https://pkg.go.dev/github.com/cardano-community/koios-go-client/v2)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client/v3)](https://pkg.go.dev/github.com/cardano-community/koios-go-client/v3)
 
 ```shell
-go get github.com/cardano-community/koios-go-client/v2
+go get github.com/cardano-community/koios-go-client/v3
 ```
 
 ```go
 ...
 import (
-  "github.com/cardano-community/koios-go-client/v2" // imports as package "koios"
+  "github.com/cardano-community/koios-go-client/v3" // imports as package "koios"
 )
 ...
 ```
@@ -46,7 +46,7 @@ import (
 [![codecov](https://codecov.io/gh/cardano-community/koios-go-client/branch/main/graph/badge.svg?token=FA1KGG6ZQ5)](https://codecov.io/gh/cardano-community/koios-go-client)
 [![codeql](https://github.com/cardano-community/koios-go-client/workflows/codeql/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/codeql.yml)
 [![misspell](https://github.com/cardano-community/koios-go-client/workflows/misspell/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/misspell.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/cardano-community/koios-go-client/v2)](https://goreportcard.com/report/github.com/cardano-community/koios-go-client/v2)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cardano-community/koios-go-client/v3)](https://goreportcard.com/report/github.com/cardano-community/koios-go-client/v3)
 
 ---
 
@@ -80,7 +80,7 @@ import (
 
 ## Usage
 
-See Godoc [![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client/v2)](https://pkg.go.dev/github.com/cardano-community/koios-go-client/v2)
+See Godoc [![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client/v3)](https://pkg.go.dev/github.com/cardano-community/koios-go-client/v3)
 
 Additionally you can find all usecases by looking source of `koio-cli` Command-line application [koios-cli] which utilizes entire API of this library.
 
@@ -99,7 +99,7 @@ import (
 	"fmt"
 	"log"
 
-	koios "github.com/cardano-community/koios-go-client/v2"
+	koios "github.com/cardano-community/koios-go-client/v3"
 )
 
 func main() {

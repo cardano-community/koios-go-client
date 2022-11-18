@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cardano-community/koios-go-client/v2"
+	"github.com/cardano-community/koios-go-client/v3"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 )
