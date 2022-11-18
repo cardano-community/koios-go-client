@@ -31,6 +31,7 @@ func TestAccounts(t *testing.T) {
 	if testIsLocal(t, err) {
 		return
 	}
+
 	accountsTest(t, client)
 }
 
@@ -57,16 +58,25 @@ func TestAccountInfo(t *testing.T) {
 	if testIsLocal(t, err) {
 		return
 	}
-	accountInfoTest(t, networkAccounts(), client)
+	accountInfoTest(t, networkAccounts(), false, client)
 }
 
-func accountInfoTest(t TestingT, accs []koios.Address, client *koios.Client) {
-	res, err := client.GetAccountsInfo(context.Background(), accs, nil)
+func TestAccountInfoCached(t *testing.T) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
+		return
+	}
+	accountInfoTest(t, networkAccounts(), true, client)
+}
+
+func accountInfoTest(t TestingT, accs []koios.Address, cached bool, client *koios.Client) {
+
+	res, err := client.GetAccountsInfo(context.Background(), accs, cached, nil)
 	if !assert.NoError(t, err) {
 		return
 	}
 
-	assertEqual(t, len(accs), len(res.Data), "total blocks returned")
+	assertEqual(t, len(accs), len(res.Data), "total account infos returned")
 	for i, account := range res.Data {
 		label := fmt.Sprintf("account[%d]", i)
 		assertNotEmpty(t, account.StakeAddress, label+".stake_address")

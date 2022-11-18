@@ -188,10 +188,11 @@ func (c *Client) GetAccounts(
 func (c *Client) GetAccountInfo(
 	ctx context.Context,
 	acc Address,
+	cached bool,
 	opts *RequestOptions,
 ) (res *AccountInfoResponse, err error) {
 	res = &AccountInfoResponse{}
-	res2, err := c.GetAccountsInfo(ctx, []Address{acc}, opts)
+	res2, err := c.GetAccountsInfo(ctx, []Address{acc}, cached, opts)
 	if err != nil {
 		return
 	}
@@ -206,6 +207,7 @@ func (c *Client) GetAccountInfo(
 func (c *Client) GetAccountsInfo(
 	ctx context.Context,
 	accs []Address,
+	cached bool,
 	opts *RequestOptions,
 ) (res *AccountsInfoResponse, err error) {
 	res = &AccountsInfoResponse{}
@@ -214,7 +216,12 @@ func (c *Client) GetAccountsInfo(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_info", stakeAddressesPL(accs, nil), opts)
+	endpoint := "/account_info"
+	if cached {
+		endpoint = "/account_info_cached"
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", endpoint, stakeAddressesPL(accs, nil), opts)
 	if err != nil {
 		return
 	}
