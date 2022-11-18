@@ -206,17 +206,17 @@ func networkAccounts() []koios.Address {
 	return accs
 }
 
-func networkPolicyAsset() (koios.PolicyID, koios.AssetName, int) {
+func networkPolicyAsset() (koios.PolicyID, koios.AssetName, int, bool) {
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
-		return "313534a537bc476c86ff7c57ec511bd7f24a9d15654091b24e9c606e", "41484c636f696e", 63487
+		return "313534a537bc476c86ff7c57ec511bd7f24a9d15654091b24e9c606e", "41484c636f696e", 63487, true
 	case "testnet":
-		return "000327a9e427a3a3256eb6212ae26b7f53f7969b8e62d37ea9138a7b", "54735465737431", 63487
+		return "000327a9e427a3a3256eb6212ae26b7f53f7969b8e62d37ea9138a7b", "54735465737431", 63487, true
 	case "mainnet":
-		return "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", "444f4e545350414d", 63487
+		return "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", "444f4e545350414d", 63487, true
 	default:
 		// mainnet
-		return "", "", 0
+		return "", "", 0, false
 	}
 }
 

@@ -53,7 +53,7 @@ func TestAssetAddresses(t *testing.T) {
 	if testIsLocal(t, err) {
 		return
 	}
-	policyID, assetName, _ := networkPolicyAsset()
+	policyID, assetName, _, _ := networkPolicyAsset()
 	assetAddressesTest(t, client, policyID, assetName)
 }
 
@@ -74,7 +74,7 @@ func TestAssetInfo(t *testing.T) {
 	if testIsLocal(t, err) {
 		return
 	}
-	policyID, assetName, _ := networkPolicyAsset()
+	policyID, assetName, _, _ := networkPolicyAsset()
 	assetInfoTest(t, client, policyID, assetName)
 }
 
@@ -103,7 +103,7 @@ func TestAssetHistory(t *testing.T) {
 	if testIsLocal(t, err) {
 		return
 	}
-	policyID, assetName, _ := networkPolicyAsset()
+	policyID, assetName, _, _ := networkPolicyAsset()
 	assetHistoryTest(t, client, policyID, assetName)
 }
 
@@ -127,7 +127,7 @@ func TestAssetPolicyInfo(t *testing.T) {
 	if testIsLocal(t, err) {
 		return
 	}
-	policyID, _, _ := networkPolicyAsset()
+	policyID, _, _, _ := networkPolicyAsset()
 	assetPolicyInfoTest(t, client, policyID)
 }
 
@@ -159,7 +159,7 @@ func TestAssetSummary(t *testing.T) {
 	if testIsLocal(t, err) {
 		return
 	}
-	policyID, asset, _ := networkPolicyAsset()
+	policyID, asset, _, _ := networkPolicyAsset()
 	testAssetSummaryTest(t, client, policyID, asset)
 }
 
@@ -185,12 +185,19 @@ func TestAssetTxs(t *testing.T) {
 	if testIsLocal(t, err) {
 		return
 	}
-	policyID, asset, abh := networkPolicyAsset()
-	assetTxsTest(t, client, policyID, asset, abh)
+	policyID, asset, abh, history := networkPolicyAsset()
+	assetTxsTest(t, client, policyID, asset, abh, history)
 }
 
-func assetTxsTest(t TestingT, client *koios.Client, policyID koios.PolicyID, asset koios.AssetName, h int) {
-	res, err := client.GetAssetTxs(context.Background(), policyID, asset, h, nil)
+func assetTxsTest(
+	t TestingT,
+	client *koios.Client,
+	policyID koios.PolicyID,
+	asset koios.AssetName,
+	abh int,
+	history bool,
+) {
+	res, err := client.GetAssetTxs(context.Background(), policyID, asset, abh, history, nil)
 	if !assert.NoError(t, err) {
 		return
 	}
