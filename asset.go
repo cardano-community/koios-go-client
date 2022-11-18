@@ -27,12 +27,22 @@ import (
 // introduces breaking change since v1.3.0
 
 type (
+	// AssetName defines type for _asset_name.
+	AssetName string
+
+	// AssetFingerprint defines type for asset_fingerprint.
+	// The CIP14 fingerprint of the asset,
+	// This specification defines a user-facing asset fingerprint
+	// as a bech32-encoded blake2b-160 digest of the concatenation
+	// of the policy id and the asset name.
+	AssetFingerprint string
+
 	// Asset represents Cardano Asset.
 	Asset struct {
 		// Asset Name (hex).
 		AssetName AssetName `json:"asset_name,omitempty"`
 
-		Fingerprint string `json:"fingerprint,omitempty"`
+		Fingerprint AssetFingerprint `json:"fingerprint,omitempty"`
 
 		// Asset Policy ID (hex).
 		PolicyID PolicyID `json:"policy_id"`
@@ -84,7 +94,7 @@ type (
 		AssetNameASCII string `json:"asset_name_ascii"`
 
 		// The CIP14 fingerprint of the asset
-		Fingerprint string `json:"fingerprint"`
+		Fingerprint AssetFingerprint `json:"fingerprint"`
 
 		// MintingTxMetadata minting Tx JSON payload if it can be decoded as JSON
 		// MintingTxMetadata *TxInfoMetadata `json:"minting_tx_metadata"`
@@ -112,25 +122,11 @@ type (
 		MintingTxHash TxHash `json:"minting_tx_hash"`
 	}
 
-	// // AssetTxs Txs info for the given asset (latest first).
-	// AssetTx struct {
-	// 	// AssetName (hex)
-	// 	AssetName AssetName `json:"asset_name"`
-
-	// 	// PoliciID Asset Policy ID (hex)
-	// 	PolicyID PolicyID `json:"policy_id"`
-
-	// 	// TxHashes List of Tx hashes
-	// 	TxHash TxHash `json:"tx_hash"`
-	// }.
-
 	// AssetListItem used to represent response from /asset_list`.
 	AssetListItem struct {
-		PolicyID   PolicyID `json:"policy_id"`
-		AssetNames struct {
-			HEX   []string `json:"hex"`
-			ASCII []string `json:"ascii"`
-		} `json:"asset_names"`
+		PolicyID    PolicyID         `json:"policy_id"`
+		AssetName   AssetName        `json:"asset_name"`
+		Fingerprint AssetFingerprint `json:"fingerprint"`
 	}
 
 	// AssetListResponse represents response from `/asset_list` endpoint.
@@ -196,6 +192,16 @@ type (
 		Data *AssetHistory `json:"data"`
 	}
 )
+
+// String returns AssetName as string.
+func (v AssetName) String() string {
+	return string(v)
+}
+
+// String returns AssetFingerprint as string.
+func (v AssetFingerprint) String() string {
+	return string(v)
+}
 
 // GetAssetList returns the list of all native assets (paginated).
 func (c *Client) GetAssets(

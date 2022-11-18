@@ -44,8 +44,7 @@ func assetsTest(t TestingT, client *koios.Client) {
 
 	for _, item := range res.Data {
 		assertNotEmpty(t, item.PolicyID, "policy_id")
-		assertGreater(t, len(item.AssetNames.ASCII), 0, item.PolicyID.String()+"asset_names.ascii")
-		assertGreater(t, len(item.AssetNames.HEX), 0, item.PolicyID.String()+"asset_names.hex")
+		assertGreater(t, len(item.Fingerprint), 0, item.PolicyID.String()+" fingerprint")
 	}
 }
 
