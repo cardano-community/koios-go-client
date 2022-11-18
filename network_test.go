@@ -37,9 +37,9 @@ func networkTipTest(t TestingT, client *koios.Client) {
 	if !assert.NoError(t, err) {
 		return
 	}
-	assertGreater(t, tip.Data.AbsSlot, koios.Slot(100000), "abs_slot")
-	assertGreater(t, tip.Data.BlockNo, koios.BlockNo(100000), "block_no")
-	assertGreater(t, tip.Data.EpochNo, koios.EpochNo(230), "epoch_no")
+	assertGreater(t, tip.Data.AbsSlot, koios.Slot(10000), "abs_slot")
+	assertGreater(t, tip.Data.BlockNo, koios.BlockNo(10000), "block_no")
+	assertGreater(t, tip.Data.EpochNo, koios.EpochNo(1), "epoch_no")
 	assertGreater(t, tip.Data.EpochSlot, koios.Slot(1), "epoch_slot")
 	assertNotEmpty(t, tip.Data.Hash, "hash")
 	assertTimeNotZero(t, tip.Data.BlockTime, "block_time")

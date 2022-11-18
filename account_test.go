@@ -76,7 +76,10 @@ func accountInfoTest(t TestingT, accs []koios.Address, cached bool, client *koio
 		return
 	}
 
-	assertEqual(t, len(accs), len(res.Data), "total account infos returned")
+	if !cached {
+		assertEqual(t, len(accs), len(res.Data), "total account infos returned")
+	}
+
 	for i, account := range res.Data {
 		label := fmt.Sprintf("account[%d]", i)
 		assertNotEmpty(t, account.StakeAddress, label+".stake_address")
