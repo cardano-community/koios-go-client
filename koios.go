@@ -26,7 +26,8 @@ import (
 
 // MainnetHost       : is primay and default api host.
 // GuildnetHost      : is Guild network host.
-// TestnetHost       : is api host for testnet.
+// PreviewHost       : is Preview network host.
+// PreProdHost       : is Pre Production network host.
 // DefaultAPIVersion : is openapi spec version e.g. /v0.
 // DefaultPort       : default port used by api client.
 // DefaultSchema     : default schema used by api client.
@@ -38,7 +39,6 @@ const (
 	MainnetHostEU            = "eu-api.koios.rest"
 	GuildHost                = "guild.koios.rest"
 	PreviewHost              = "preview.koios.rest"
-	TestnetHost              = "testnet.koios.rest"
 	PreProdHost              = "preprod.koios.rest"
 	DefaultAPIVersion        = "v0"
 	DefaultPort       uint16 = 443

@@ -40,8 +40,6 @@ func networkEpoch() koios.EpochNo {
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
 		epoch = koios.EpochNo(1950)
-	case "testnet":
-		epoch = koios.EpochNo(185)
 	case "mainnet":
 		epoch = koios.EpochNo(320)
 	case "preprod":
@@ -60,8 +58,6 @@ func networkBlockHash() koios.BlockHash {
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
 		hash = koios.BlockHash("bddbbc6df0ad09567a513349bafd56d8ec5c8fcd9ee9db12173624b896350d57")
-	case "testnet":
-		hash = koios.BlockHash("f75fea40852ed7d7f539d008e45255725daef8553ae7162750836f279570813a")
 	case "mainnet":
 		hash = koios.BlockHash("fb9087c9f1408a7bbd7b022fd294ab565fec8dd3a8ef091567482722a1fa4e30")
 	case "preprod":
@@ -82,11 +78,6 @@ func networkTxHashes() []koios.TxHash {
 		hash = []koios.TxHash{
 			"bf04578d452dd3acb7c70fbac32dc972cb69f932f804171cfb4268f5af0228e7",
 			"63b716064012f858450731cb5f960c100c6cb639ec1ec999b898c604451f116a",
-		}
-	case "testnet":
-		hash = []koios.TxHash{
-			"928052b80bfc23801da525a6bf8f805da36f22fa0fd5fec2198b0746eb82b72b",
-			"c7e96e4cd6aa9e3afbc7b32d1e8023daf4197931f1ea61d2bdfc7a2e5e017cf1",
 		}
 	case "mainnet":
 		hash = []koios.TxHash{
@@ -114,8 +105,6 @@ func networkPoolID() koios.PoolID {
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
 		return "pool1xc9eywck4e20tydz4yvh5vfe0ep8whawvwz8wqkc9k046a2ypp4"
-	case "testnet":
-		return "pool102llj7e7a0mmxssjvjkv2d6lppuh6cz6q9xwc3tsksn0jqwz9eh"
 	case "mainnet":
 		return "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"
 	case "preprod":
@@ -132,8 +121,6 @@ func networkScriptHash() koios.ScriptHash {
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
 		return "160301a01ee86d8e46cbe3aef1e3bf69bfa28c65d5be2dde56a37af8"
-	case "testnet":
-		return "9a3910acc1e1d49a25eb5798d987739a63f65eb48a78462ffae21e6f"
 	case "mainnet":
 		return "d8480dc869b94b80e81ec91b0abe307279311fe0e7001a9488f61ff8"
 	case "preprod":
@@ -168,11 +155,6 @@ func networkAddresses() []koios.Address {
 			"addr_test1qzmtfv43a8ncx6ve92ja6yy25npn9raz9pu5a2tfxsqv9gy9ktf0pu6yu4zjh9r37fzx3h4tsxqdjhu3t4d5ffdsfz9s6ska3z",
 			"addr_test1vq67g5u8ls4vm4wdvs0r8xvsuej66nvaqedyrj2tcz6tuycz275pu",
 		}
-	case "testnet":
-		addrs = []koios.Address{
-			"addr_test1qzx9hu8j4ah3auytk0mwcupd69hpc52t0cw39a65ndrah86djs784u92a3m5w475w3w35tyd6v3qumkze80j8a6h5tuqq5xe8y",
-			"addr_test1qrk7920v35zukhcch4kyydy6rxnhqdcvetkvngeqrvtgavw8tpzdklse3kwer7urhrlfg962m9fc8cznfcdpka5pd07sgf8n0w",
-		}
 	case "mainnet":
 		addrs = []koios.Address{
 			"addr1qyp9kz50sh9c53hpmk3l4ewj9ur794t2hdqpngsjn3wkc5sztv9glpwt3frwrhdrltjaytc8ut2k4w6qrx3p98zad3fq07xe9g",
@@ -202,11 +184,6 @@ func networkPaymentCredentials() []koios.PaymentCredential {
 		creds = []koios.PaymentCredential{
 			"b6b4b2b1e9e78369992aa5dd108aa4c3328fa228794ea9693400c2a0",
 			"35e45387fc2acdd5cd641e339990e665ad4d9d065a41c94bc0b4be13",
-		}
-	case "testnet":
-		creds = []koios.PaymentCredential{
-			"00003fac863dc2267d0cd90768c4af653572d719a79ca3b01957fa79",
-			"000056d48603bf7daada30c9c175be9c93172d36f82fba0ca972c245",
 		}
 	case "mainnet":
 		creds = []koios.PaymentCredential{
@@ -239,11 +216,6 @@ func networkAccounts() []koios.Address {
 			"stake_test17zt9x005zkd2usz2vhvktyzqsuwz25gmgnaqdka5hcj9m2qfg2py2",
 			"stake_test1uzzm95hs7dzw23ftj3cly3rgm64crqxet7g46k6y5kcy3zcs3mpjd",
 		}
-	case "testnet":
-		accs = []koios.Address{
-			"stake_test1uqrw9tjymlm8wrwq7jk68n6v7fs9qz8z0tkdkve26dylmfc2ux2hj",
-			"stake_test1uq7g7kqeucnqfweqzgxk3dw34e8zg4swnc7nagysug2mm4cm77jrx",
-		}
 	case "mainnet":
 		accs = []koios.Address{
 			"stake1uyfmzu5qqy70a8kq4c8rw09q0w0ktfcxppwujejnsh6tyrg5c774g",
@@ -270,8 +242,6 @@ func networkPolicyAsset() (koios.PolicyID, koios.AssetName, int, bool) {
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
 		return "313534a537bc476c86ff7c57ec511bd7f24a9d15654091b24e9c606e", "41484c636f696e", 63487, true
-	case "testnet":
-		return "000327a9e427a3a3256eb6212ae26b7f53f7969b8e62d37ea9138a7b", "54735465737431", 63487, true
 	case "mainnet":
 		return "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", "444f4e545350414d", 63487, true
 	case "preprod":
@@ -295,8 +265,6 @@ func getLiveClient() (client *koios.Client, err error) {
 		host = koios.MainnetHost
 	case "guild":
 		host = koios.GuildHost
-	case "testnet":
-		host = koios.TestnetHost
 	case "preprod":
 		host = koios.PreProdHost
 	case "preview":

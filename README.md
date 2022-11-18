@@ -35,7 +35,6 @@ import (
 **Koios API Endpoint Tests**
 
 [![mainnet](https://github.com/cardano-community/koios-go-client/actions/workflows/test-mainnet.yml/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/test-mainnet.yml)
-[![testnet](https://github.com/cardano-community/koios-go-client/actions/workflows/test-testnet.yml/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/test-testnet.yml)
 [![guild](https://github.com/cardano-community/koios-go-client/actions/workflows/test-guild.yml/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/test-guild.yml)
 [![preview](https://github.com/cardano-community/koios-go-client/actions/workflows/test-preview.yml/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/test-preview.yml)
 [![preprod](https://github.com/cardano-community/koios-go-client/actions/workflows/test-preprod.yml/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/test-preprod.yml)

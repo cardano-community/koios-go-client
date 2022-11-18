@@ -162,7 +162,7 @@ func TestTxMetaLabels(t *testing.T) {
 
 func txMetaLabelsTest(t TestingT, client *koios.Client) {
 	opts := client.NewRequestOptions()
-	opts.SetPageSize(2) // testnet Range error if number is too big
+	opts.SetPageSize(2) // testnets Range error if number is too big
 
 	res, err := client.GetTxMetaLabels(context.Background(), opts)
 	if !assert.NoError(t, err) {
