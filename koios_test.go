@@ -30,6 +30,7 @@ import (
 type TestingT interface {
 	Errorf(format string, args ...any)
 	Error(args ...any)
+	SkipNow()
 }
 
 var errLocalClient = errors.New("local client is used")
@@ -369,6 +370,7 @@ func testIsLocal(t TestingT, err error) bool {
 		return false
 	}
 	if errors.Is(err, errLocalClient) {
+		t.SkipNow()
 		return true
 	}
 	t.Error(err)
