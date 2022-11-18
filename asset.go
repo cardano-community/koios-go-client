@@ -51,7 +51,7 @@ type (
 		// Input: asset balance on the selected input transaction.
 		// Output: sum of assets for output UTxO.
 		// Mint: sum of minted assets (negative on burn).
-		Quantity decimal.Decimal `json:"quantity"`
+		Quantity decimal.Decimal `json:"quantity,omitempty"`
 	}
 
 	// TokenRegistryMetadata metadata registered on the Cardano Token Registry.
@@ -68,11 +68,7 @@ type (
 
 	// AssetSummary aggregated asset summary.
 	AssetSummary struct {
-		// Asset Name (hex)
-		AssetName AssetName `json:"asset_name"`
-
-		// Asset Policy ID (hex)
-		PolicyID PolicyID `json:"policy_id"`
+		Asset
 
 		// Total number of registered wallets holding the given asset
 		StakedWallets uint64 `json:"staked_wallets"`
@@ -122,17 +118,10 @@ type (
 		MintingTxHash TxHash `json:"minting_tx_hash"`
 	}
 
-	// AssetListItem used to represent response from /asset_list`.
-	AssetListItem struct {
-		PolicyID    PolicyID         `json:"policy_id"`
-		AssetName   AssetName        `json:"asset_name"`
-		Fingerprint AssetFingerprint `json:"fingerprint"`
-	}
-
 	// AssetListResponse represents response from `/asset_list` endpoint.
 	AssetListResponse struct {
 		Response
-		Data []AssetListItem `json:"data"`
+		Data []Asset `json:"data"`
 	}
 
 	// AssetHolder payment addresses holding the given token (including balance).
@@ -181,8 +170,7 @@ type (
 
 	// AssetHistory holds given asset mint/burn tx's.
 	AssetHistory struct {
-		PolicyID   PolicyID      `json:"policy_id"`
-		AssetName  AssetName     `json:"asset_name"`
+		Asset
 		MintingTXs []AssetMintTX `json:"minting_txs"`
 	}
 
