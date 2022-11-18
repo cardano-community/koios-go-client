@@ -113,6 +113,7 @@ func assetHistoryTest(t TestingT, client *koios.Client, policyID koios.PolicyID,
 		return
 	}
 	assertNotEmpty(t, res.Data.PolicyID, "policy_id")
+	assertNotEmpty(t, res.Data.Fingerprint, "fingerprint")
 	for _, minttx := range res.Data.MintingTXs {
 		assertNotEmpty(t, minttx.TxHash, "tx_hash")
 		assertNotEmpty(t, minttx.BlockTime, "block_time")
