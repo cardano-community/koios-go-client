@@ -19,11 +19,18 @@ package koios
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"io"
 
 	"github.com/shopspring/decimal"
 )
 
 type (
+	// ScriptHash defines type for _script_hash.
+	ScriptHash string
+
+	DatumHash string
+
 	// ScriptRedeemers defines model for script_redeemers.
 	ScriptRedeemers struct {
 		// Hash of Transaction for which details are being shown
@@ -60,6 +67,13 @@ type (
 
 		// The budget in Cpu steps to run a script.
 		UnitSteps int `json:"unit_steps"`
+	}
+
+	// DatumInfo datum information for given datum hash
+	DatumInfo struct {
+		Hash  DatumHash        `json:"hash"`
+		Bytes string           `json:"bytes"`
+		Value *json.RawMessage `json:"value"`
 	}
 
 	PlutusContract struct {
@@ -110,7 +124,27 @@ type (
 		Response
 		Data *ScriptRedeemers `json:"data"`
 	}
+
+	// DatumInfosResponse represents response from `/datum_info` endpoint.
+	DatumInfosResponse struct {
+		Response
+		Data []DatumInfo `json:"data"`
+	}
+	DatumInfoResponse struct {
+		Response
+		Data *DatumInfo `json:"data"`
+	}
 )
+
+// String returns ScriptHash as string.
+func (v ScriptHash) String() string {
+	return string(v)
+}
+
+// String returns DatumHash as string.
+func (v DatumHash) String() string {
+	return string(v)
+}
 
 // GetNativeScriptList returns list of all existing native script hashes
 // along with their creation transaction hashes.
@@ -166,4 +200,53 @@ func (c *Client) GetScriptRedeemers(
 		res.Data = &r[0]
 	}
 	return
+}
+
+// GetTxStatus returns status of transaction.
+func (c *Client) GetDatumInfo(
+	ctx context.Context,
+	hash DatumHash,
+	opts *RequestOptions,
+) (res *DatumInfoResponse, err error) {
+	res = &DatumInfoResponse{}
+	rsp, err := c.GetDatumInfos(ctx, []DatumHash{hash}, opts)
+	res.Response = rsp.Response
+	if len(rsp.Data) == 1 {
+		res.Data = &rsp.Data[0]
+	} else {
+		err = fmt.Errorf("%w: %s", ErrNoData, hash)
+	}
+	return
+}
+
+// GetTxsStatuses returns status of transaction(s).
+func (c *Client) GetDatumInfos(
+	ctx context.Context,
+	hashes []DatumHash,
+	opts *RequestOptions,
+) (*DatumInfosResponse, error) {
+	res := &DatumInfosResponse{}
+	if len(hashes) == 0 {
+		err := ErrNoDatumHash
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/datum_info", datumHashesPL(hashes), opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+func datumHashesPL(hashes []DatumHash) io.Reader {
+	var payload = struct {
+		DatumHashes []DatumHash `json:"_datum_hashes"`
+	}{hashes}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+	return rpipe
 }

@@ -99,3 +99,22 @@ func scriptRedeemersTest(t TestingT, client *koios.Client, scripthash koios.Scri
 		assertIsPositive(t, redeemer.Fee, "fee")
 	}
 }
+
+func TestDatumInfo(t *testing.T) {
+	client, err := getLiveClient()
+	if testIsLocal(t, err) {
+		return
+	}
+	datumhash := networkDatumHash()
+	datumInfoTest(t, client, datumhash)
+}
+
+func datumInfoTest(t TestingT, client *koios.Client, datumhash koios.DatumHash) {
+	res, err := client.GetDatumInfo(context.Background(), datumhash, nil)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	assertNotEmpty(t, res.Data.Hash, "hash")
+	assertNotEmpty(t, res.Data.Bytes, "bytes")
+}
