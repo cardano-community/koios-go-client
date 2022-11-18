@@ -289,7 +289,7 @@ type (
 		FixedCost      decimal.Decimal `json:"fixed_cost"`
 		PoolFees       decimal.Decimal `json:"pool_fees"`
 		DelegRewards   decimal.Decimal `json:"deleg_rewards"`
-		EpochROS       float64         `json:"epoch_ros"`
+		EpochROS       decimal.Decimal `json:"epoch_ros"`
 	}
 
 	PoolSnapshot struct {
