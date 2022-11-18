@@ -56,6 +56,7 @@ var (
 	ErrRateLimitRange           = errors.New("rate limit must be between 1-255 requests per sec")
 	ErrResponseIsNotJSON        = errors.New("got non json response")
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
+	ErrNoDatumHash              = errors.New("missing datum hash(es)")
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoPoolID                 = errors.New("missing pool id")
 	ErrResponse                 = errors.New("response error")
@@ -90,11 +91,6 @@ type (
 
 	// PolicyID type def.
 	PolicyID string
-
-	// ScriptHash defines type for _script_hash.
-	ScriptHash string
-
-	DatumHash string
 
 	// Timestamp extends time to work with unix timestamps and
 	// fix time format anomalies when Unmarshaling and Marshaling
@@ -274,11 +270,6 @@ func (v PoolID) String() string {
 
 // String returns PolicyID as string.
 func (v PolicyID) String() string {
-	return string(v)
-}
-
-// String returns ScriptHash as string.
-func (v ScriptHash) String() string {
 	return string(v)
 }
 

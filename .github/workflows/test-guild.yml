@@ -197,8 +197,8 @@ jobs:
       matrix:
         test:
          - Pools
-         - PoolSnapshot
          - PoolInfo
+         - PoolSnapshot
          - PoolDelegators
          - PoolDelegatorsHistory
          - PoolBlocks
@@ -219,6 +219,7 @@ jobs:
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
           files: ./coverage.txt
           env_vars: KOIOS_NETWORK
+
   scripts:
     runs-on: ubuntu-latest
     needs:
@@ -230,6 +231,7 @@ jobs:
          - NativeScriptList
          - PlutusScriptList
          - ScriptRedeemers
+         - DatumInfo
     steps:
       - uses: actions/setup-go@v3
         with:

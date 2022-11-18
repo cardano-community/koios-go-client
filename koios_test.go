@@ -119,6 +119,16 @@ func networkScriptHash() koios.ScriptHash {
 	}
 }
 
+func networkDatumHash() koios.DatumHash {
+	switch os.Getenv("KOIOS_NETWORK") {
+	case "guild":
+		return "45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0"
+	default:
+		// local
+		return ""
+	}
+}
+
 func networkAddresses() []koios.Address {
 	var addrs []koios.Address
 	switch os.Getenv("KOIOS_NETWORK") {
