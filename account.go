@@ -144,8 +144,8 @@ type (
 	}
 
 	AccountAssets struct {
-		StakeAddress Address             `json:"stake_address"`
-		Assets       []AddressCollection `json:"assets"`
+		StakeAddress Address `json:"stake_address"`
+		Assets       []Asset `json:"assets"`
 	}
 
 	// AccountHistoryResponse represents response from `/account_history` endpoint.

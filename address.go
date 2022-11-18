@@ -51,6 +51,11 @@ type (
 		BlockHeight uint64    `json:"block_height"`
 	}
 
+	AddressAssets struct {
+		Address   Address `json:"address"`
+		AssetList []Asset `json:"asset_list"`
+	}
+
 	// AddressInfoResponse represents response from `/address_info` endpoint.
 	AddressInfoResponse struct {
 		Response
@@ -76,22 +81,12 @@ type (
 	// AddressAssetsResponse represents response from `/address_info` endpoint.
 	AddressAssetsResponse struct {
 		Response
-		Data *AddressCollections `json:"data"`
+		Data *AddressAssets `json:"data"`
 	}
 
 	AddressesAssetsResponse struct {
 		Response
-		Data []AddressCollections `json:"data"`
-	}
-
-	AddressCollections struct {
-		Address     Address             `json:"address"`
-		Collections []AddressCollection `json:"assets"`
-	}
-
-	AddressCollection struct {
-		PolicyID PolicyID       `json:"policy_id"`
-		Assets   []AddressAsset `json:"assets"`
+		Data []AddressAssets `json:"data"`
 	}
 
 	AddressAsset struct {

@@ -92,17 +92,14 @@ func addressAssetsTest(t TestingT, addrs []koios.Address, client *koios.Client) 
 
 	for _, addrcol := range res.Data {
 		assertNotEmpty(t, addrcol.Address, "address")
-		for i, col := range addrcol.Collections {
+		for i, asset := range addrcol.AssetList {
 			label := fmt.Sprintf("address[%s].assets[%d]", addrcol.Address, i)
-			assertNotEmpty(t, col.PolicyID, label+".ploicy_id")
-			for j, asset := range col.Assets {
-				label2 := fmt.Sprintf("%s.assets[%d]", label, j)
-				if len(asset.AssetName) > 0 {
-					assertNotEmpty(t, asset.AssetName, label2+"asset_name")
-					assertNotEmpty(t, asset.AssetNameASCII, label2+"asset_name_ascii")
-				}
-				assertIsPositive(t, asset.Balance, label2+"balance")
+			assertNotEmpty(t, asset.PolicyID, label+".ploicy_id")
+			if len(asset.AssetName) > 0 {
+				assertNotEmpty(t, asset.AssetName, label+"asset_name")
 			}
+			assertNotEmpty(t, asset.Fingerprint, label+"fingerprint")
+			assertIsPositive(t, asset.Quantity, label+"quantity")
 		}
 	}
 }
