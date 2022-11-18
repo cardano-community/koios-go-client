@@ -37,7 +37,9 @@ const (
 	MainnetHost              = "api.koios.rest"
 	MainnetHostEU            = "eu-api.koios.rest"
 	GuildHost                = "guild.koios.rest"
+	PreviewHost              = "preview.koios.rest"
 	TestnetHost              = "testnet.koios.rest"
+	PreProdHost              = "preprod.koios.rest"
 	DefaultAPIVersion        = "v0"
 	DefaultPort       uint16 = 443
 	DefaultScheme            = "https"

@@ -44,6 +44,10 @@ func networkEpoch() koios.EpochNo {
 		epoch = koios.EpochNo(185)
 	case "mainnet":
 		epoch = koios.EpochNo(320)
+	case "preprod":
+		epoch = koios.EpochNo(31)
+	case "preview":
+		epoch = koios.EpochNo(12)
 	default:
 		// local
 		epoch = koios.EpochNo(0)
@@ -60,6 +64,10 @@ func networkBlockHash() koios.BlockHash {
 		hash = koios.BlockHash("f75fea40852ed7d7f539d008e45255725daef8553ae7162750836f279570813a")
 	case "mainnet":
 		hash = koios.BlockHash("fb9087c9f1408a7bbd7b022fd294ab565fec8dd3a8ef091567482722a1fa4e30")
+	case "preprod":
+		hash = koios.BlockHash("2abeb8d1c1227139763be30ddb7a2fd79abd7d44195fca87a7c836a510b2802d")
+	case "preview":
+		hash = koios.BlockHash("a4504e2495ed03b48be36676f430c54dca0769d29f72ebf18d493abf42d2167b")
 	default:
 		// mainnet
 		hash = koios.BlockHash("")
@@ -85,6 +93,16 @@ func networkTxHashes() []koios.TxHash {
 			"f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e",
 			"0b8ba3bed976fa4913f19adc9f6dd9063138db5b4dd29cecde369456b5155e94",
 		}
+	case "preprod":
+		hash = []koios.TxHash{
+			"d10133964da9e443b303917fd0b7644ae3d01c133deff85b4f59416c2d00f530",
+			"145688d3619e7524510ea64c0ec6363b77a9b8da179ef9bb0273a0940d57d576",
+		}
+	case "preview":
+		hash = []koios.TxHash{
+			"f1592b29b79ae85d753913dd25644c60925a4a0683979faa33832fead4b4bd9c",
+			"206f6da5b0b0de45605a95f5ce7e172be9674550f7dde3838c45cbf24bab8b00",
+		}
 	default:
 		// local
 		hash = []koios.TxHash{}
@@ -100,6 +118,10 @@ func networkPoolID() koios.PoolID {
 		return "pool102llj7e7a0mmxssjvjkv2d6lppuh6cz6q9xwc3tsksn0jqwz9eh"
 	case "mainnet":
 		return "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"
+	case "preprod":
+		return "pool1ext7qrwjzaxcdfhdnkq5mth59ukuu2atcg6tgqpmevpt7ratkta"
+	case "preview":
+		return "pool1p90428kec03mjdya3k4gv5d20w7lmed7ca0snknef5j977l3y8l"
 	default:
 		// local
 		return ""
@@ -114,6 +136,10 @@ func networkScriptHash() koios.ScriptHash {
 		return "9a3910acc1e1d49a25eb5798d987739a63f65eb48a78462ffae21e6f"
 	case "mainnet":
 		return "d8480dc869b94b80e81ec91b0abe307279311fe0e7001a9488f61ff8"
+	case "preprod":
+		return "590555d7b5760e98ae2bdd29b356247776251dfab0a207bfce98a485"
+	case "preview":
+		return "f758cf422ca0cbed7d9d6fad1eb5a3c70537d62e661ad450dd2a3810"
 	default:
 		// local
 		return ""
@@ -124,6 +150,10 @@ func networkDatumHash() koios.DatumHash {
 	switch os.Getenv("KOIOS_NETWORK") {
 	case "guild":
 		return "45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0"
+	case "preprod":
+		return "5571e2c3549f15934a38382d1318707a86751fb70827f4cbd29b104480f1be9b"
+	case "preview":
+		return "6181b3dc623cd8812caf027a3507e9b3095388a7cf3db65983e1fddd3a84c88c"
 	default:
 		// local
 		return ""
@@ -147,6 +177,16 @@ func networkAddresses() []koios.Address {
 		addrs = []koios.Address{
 			"addr1qyp9kz50sh9c53hpmk3l4ewj9ur794t2hdqpngsjn3wkc5sztv9glpwt3frwrhdrltjaytc8ut2k4w6qrx3p98zad3fq07xe9g",
 			"addr1qyfldpcvte8nkfpyv0jdc8e026cz5qedx7tajvupdu2724tlj8sypsq6p90hl40ya97xamkm9fwsppus2ru8zf6j8g9sm578cu",
+		}
+	case "preprod":
+		addrs = []koios.Address{
+			"addr_test1vzpwq95z3xyum8vqndgdd9mdnmafh3djcxnc6jemlgdmswcve6tkw",
+			"addr_test1vpfwv0ezc5g8a4mkku8hhy3y3vp92t7s3ul8g778g5yegsgalc6gc",
+		}
+	case "preview":
+		addrs = []koios.Address{
+			"addr_test1vpfwv0ezc5g8a4mkku8hhy3y3vp92t7s3ul8g778g5yegsgalc6gc",
+			"addr_test1vqneq3v0dqh3x3muv6ee3lt8e5729xymnxuavx6tndcjc2cv24ef9",
 		}
 	default:
 		// mainnet
@@ -172,6 +212,16 @@ func networkPaymentCredentials() []koios.PaymentCredential {
 		creds = []koios.PaymentCredential{
 			"025b0a8f85cb8a46e1dda3fae5d22f07e2d56abb4019a2129c5d6c52",
 			"13f6870c5e4f3b242463e4dc1f2f56b02a032d3797d933816f15e555",
+		}
+	case "preprod":
+		creds = []koios.PaymentCredential{
+			"b429738bd6cc58b5c7932d001aa2bd05cfea47020a556c8c753d4436",
+			"82e016828989cd9d809b50d6976d9efa9bc5b2c1a78d4b3bfa1bb83b",
+		}
+	case "preview":
+		creds = []koios.PaymentCredential{
+			"33c378cee41b2e15ac848f7f6f1d2f78155ab12d93b713de898d855f",
+			"52e63f22c5107ed776b70f7b92248b02552fd08f3e747bc745099441",
 		}
 	default:
 		// local
@@ -199,6 +249,16 @@ func networkAccounts() []koios.Address {
 			"stake1uyfmzu5qqy70a8kq4c8rw09q0w0ktfcxppwujejnsh6tyrg5c774g",
 			"stake1uydhlh7f2kkw9eazct5zyzlrvj32gjnkmt2v5qf6t8rut4qwch8ey",
 		}
+	case "preprod":
+		accs = []koios.Address{
+			"stake_test1urq4rcynzj4uxqc74c852zky7wa6epgmn9r6k3j3gv7502q8jks0l",
+			"stake_test1ur4t5nhceyn2amfuj7z74uxmmj8jf9fmgd2egqw8c98ve3cp2g4wx",
+		}
+	case "preview":
+		accs = []koios.Address{
+			"stake_test1upv7n2x0lxepkyx8ux2gjt74ecaa39tjgaccxl6hw5fwzngpzf5zt",
+			"stake_test1up6wqzrw2h9vvjy5zfkjn0dwtymy5r29zyhf8fyhm6fat9c2am5hl",
+		}
 	default:
 		// local
 		accs = []koios.Address{}
@@ -214,6 +274,10 @@ func networkPolicyAsset() (koios.PolicyID, koios.AssetName, int, bool) {
 		return "000327a9e427a3a3256eb6212ae26b7f53f7969b8e62d37ea9138a7b", "54735465737431", 63487, true
 	case "mainnet":
 		return "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff", "444f4e545350414d", 63487, true
+	case "preprod":
+		return "c6e65ba7878b2f8ea0ad39287d3e2fd256dc5c4160fc19bdf4c4d87e", "7447454e53", 50000, true
+	case "preview":
+		return "065270479316f1d92e00f7f9f095ebeaac9d009c878dc35ce36d3404", "433374", 50000, true
 	default:
 		// mainnet
 		return "", "", 0, false
@@ -233,6 +297,10 @@ func getLiveClient() (client *koios.Client, err error) {
 		host = koios.GuildHost
 	case "testnet":
 		host = koios.TestnetHost
+	case "preprod":
+		host = koios.PreProdHost
+	case "preview":
+		host = koios.PreviewHost
 	default:
 		return nil, fmt.Errorf("invalid KOIOS_NETWORK=%q", net)
 	}

@@ -55,7 +55,7 @@ func blocksTest(t TestingT, client *koios.Client) {
 	}
 	assertNotEmpty(t, res.Data[0].VrfKey, "vrf_key")
 	assertNotEmpty(t, res.Data[0].Pool, "pool")
-	assertGreater(t, res.Data[0].OpCertCounter, 0, "op_cert_counter")
+	// assertGreater(t, res.Data[0].OpCertCounter, 0, "op_cert_counter")
 	assertGreater(t, res.Data[0].ProtoMajor, 0, "proto_major")
 	// assertGreater(t, res.Data[0].ProtoMinor, 0, "proto_minor")
 }
@@ -91,7 +91,7 @@ func blockInfoTest(t TestingT, hash koios.BlockHash, client *koios.Client) {
 
 	assertNotEmpty(t, res.Data.VrfKey, "vrf_key")
 	assertNotEmpty(t, res.Data.OpCert, "op_cert")
-	assertGreater(t, res.Data.OpCertCounter, 0, "op_cert_counter")
+	// assertGreater(t, res.Data.OpCertCounter, 0, "op_cert_counter")
 	assertNotEmpty(t, res.Data.Pool, "pool")
 	assertGreater(t, res.Data.ProtoMajor, 0, "proto_major")
 	// assertGreater(t, res.Data.ProtoMinor, 0, "proto_minor")
