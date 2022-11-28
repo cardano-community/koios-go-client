@@ -65,7 +65,9 @@ func APIVersion(version string) Option {
 func Port(port uint16) Option {
 	return Option{
 		apply: func(c *Client) error {
-			c.url.Host = fmt.Sprint(c.url.Hostname(), ":", port)
+			if port != 80 && port != 443 {
+				c.url.Host = fmt.Sprint(c.url.Hostname(), ":", port)
+			}
 			return nil
 		},
 	}
