@@ -141,6 +141,8 @@ func networkDatumHash() koios.DatumHash {
 		return "5571e2c3549f15934a38382d1318707a86751fb70827f4cbd29b104480f1be9b"
 	case "preview":
 		return "6181b3dc623cd8812caf027a3507e9b3095388a7cf3db65983e1fddd3a84c88c"
+	case "mainnet":
+		return "818ee3db3bbbd04f9f2ce21778cac3ac605802a4fcb00c8b3a58ee2dafc17d46"
 	default:
 		// local
 		return ""
