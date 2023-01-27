@@ -145,7 +145,7 @@ type (
 
 	AccountAssets struct {
 		StakeAddress Address `json:"stake_address"`
-		Assets       []Asset `json:"assets"`
+		Assets       []Asset `json:"asset_list"`
 	}
 
 	// AccountHistoryResponse represents response from `/account_history` endpoint.
@@ -357,7 +357,6 @@ func (c *Client) GetAccountsAddresses(
 func (c *Client) GetAccountAssets(
 	ctx context.Context,
 	acc Address,
-	epoch *EpochNo,
 	opts *RequestOptions,
 ) (res *AccountAssetsResponse, err error) {
 	res = &AccountAssetsResponse{}

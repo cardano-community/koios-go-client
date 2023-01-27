@@ -1,3 +1,5 @@
+![Koios Go](./koios-go.png)
+
 <h1>Koios API Client Library for Go</h1>
 
 **[Koios API] is Elastic Cardano Query Layer!**
@@ -191,14 +193,31 @@ Which provides arbitrary-precision fixed-point decimal numbers in go.
 
 We would love for you to contribute to [Koios API Client Library for Go][github] and help make it even better than it is today! As a contributor, here are the guidelines we would like you to follow:
 
- - [Code of Conduct](#code-of-conduct)
- - [Question or Problem?](#got-a-question-or-problem)
- - [Found a Bug?](#issues-and-bugs)
- - [Missing a Feature?](#feature-requests)
- - [Submission Guidelines](#submission-guidelines)
- - [Coding Rules](#coding-rules)
- - [Commit Message Guidelines](#commit-message-guidelines)
- - [Development Documentation](#development-documentation)
+- [Usage](#usage)
+  - [Basic usage](#basic-usage)
+  - [Concurrency using goroutines](#concurrency-using-goroutines)
+- [Math on ada, assets and tokens).](#math-on-ada-assets-and-tokens)
+- [Contributing](#contributing)
+  - [Code of Conduct](#code-of-conduct)
+  - [Got a Question or Problem?](#got-a-question-or-problem)
+  - [Issues and Bugs](#issues-and-bugs)
+  - [Feature Requests](#feature-requests)
+  - [Submission Guidelines](#submission-guidelines)
+    - [Submitting an Issue](#submitting-an-issue)
+    - [Submitting a Pull Request (PR)](#submitting-a-pull-request-pr)
+    - [After your pull request is merged](#after-your-pull-request-is-merged)
+  - [Coding Rules](#coding-rules)
+  - [Commit Message Guidelines](#commit-message-guidelines)
+    - [Commit Message Format](#commit-message-format)
+    - [Revert](#revert)
+    - [Type](#type)
+    - [Scope](#scope)
+    - [Subject](#subject)
+    - [Body](#body)
+    - [Footer](#footer)
+  - [Development Documentation](#development-documentation)
+    - [Setup your machine](#setup-your-machine)
+- [Credits](#credits)
 
 ### Code of Conduct
 
@@ -504,6 +523,9 @@ task cover
 
 <sub>**Original author.**</sub>  
 <sup>koios-go-client was moved under Cardano Community from <a href="https://github.com/howijd/koios-rest-go-client">howijd/koios-rest-go-client</a></sup>
+
+<sub>**Koios Go banner design.**</sub>  
+<sup>Koios Go banner was designed by Egon Elbre <a href="https://egonelbre.com/" target="_blank">egonelbre.com</a></sup>
 
 <!-- LINKS -->
 [Koios API]: https://koios.rest "Koios API"
