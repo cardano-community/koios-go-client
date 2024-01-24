@@ -17,6 +17,8 @@
 package koios
 
 import (
+	"compress/flate"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -81,7 +83,20 @@ func ReadResponseBody(rsp *http.Response) (body []byte, err error) {
 
 	defer func() { _ = rsp.Body.Close() }()
 
-	return io.ReadAll(rsp.Body)
+	rb := rsp.Body
+
+	if strings.Contains(rsp.Header.Get("Content-Encoding"), "gzip") {
+		if rb, err = gzip.NewReader(rsp.Body); err == nil {
+			defer rb.Close()
+		} else {
+			return nil, err
+		}
+	} else if rsp.Header.Get("Content-Encoding") == "deflate" {
+		rb = flate.NewReader(rsp.Body)
+		defer rb.Close()
+	}
+
+	return io.ReadAll(rb)
 }
 
 // ReadAndUnmarshalResponse is helper to unmarchal json responses.
