@@ -154,10 +154,19 @@ func Origin(origin string) Option {
 
 // CollectRequestsStats when enabled uses httptrace is used
 // to collect detailed timing information about the request.
+//
+// Deprecated: Use EnableRequestsStats instead.
+// CollectRequestsStats will be removed in v5.0.0
 func CollectRequestsStats(enabled bool) Option {
+	return EnableRequestsStats(enabled)
+}
+
+// EnableRequestsStats when enabled uses httptrace is used
+// to collect detailed timing information about the request.
+func EnableRequestsStats(enable bool) Option {
 	return Option{
 		apply: func(c *Client) error {
-			c.reqStatsEnabled = enabled
+			c.reqStatsEnabled = enable
 			return nil
 		},
 	}
