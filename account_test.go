@@ -22,7 +22,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cardano-community/koios-go-client/v3"
+	"github.com/cardano-community/koios-go-client/v4"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -1,12 +1,12 @@
-module github.com/cardano-community/koios-go-client/v3 // imports as package "koios"
+module github.com/cardano-community/koios-go-client/v4 // imports as package "koios"
 
-go 1.18
+go 1.22
 
 require (
 	github.com/shopspring/decimal v1.3.1
-	github.com/stretchr/testify v1.8.1
-	golang.org/x/text v0.5.0
-	golang.org/x/time v0.2.0
+	github.com/stretchr/testify v1.8.4
+	golang.org/x/text v0.14.0
+	golang.org/x/time v0.5.0
 )
 
 require (

@@ -40,12 +40,12 @@ const (
 	GuildHost                = "guild.koios.rest"
 	PreviewHost              = "preview.koios.rest"
 	PreProdHost              = "preprod.koios.rest"
-	DefaultAPIVersion        = "v0"
+	DefaultAPIVersion        = "v1"
 	DefaultPort       uint16 = 443
 	DefaultScheme            = "https"
 	LibraryVersion           = "v0"
 	DefaultRateLimit  int    = 10 // https://api.koios.rest/#overview--limits
-	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client"
+	DefaultOrigin            = "koios-go-client/v4"
 	PageSize          uint   = 1000
 )
 
