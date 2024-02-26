@@ -23,13 +23,13 @@ jobs:
          - NetworkGenesis
          - NetworkTotals
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
@@ -45,13 +45,13 @@ jobs:
          - EpochParams
          - EpochBlockProtocols
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
@@ -67,13 +67,13 @@ jobs:
          - BlockInfo
          - BlockTxs
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
@@ -91,13 +91,13 @@ jobs:
          - TxMetaLabels
          - TxStatus
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
@@ -117,13 +117,13 @@ jobs:
          - AddressAssets
          - CredentialTxs
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
@@ -147,13 +147,13 @@ jobs:
          - AccountAssets
          - AccountHistory
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
@@ -176,13 +176,13 @@ jobs:
          - AssetSummary
          - AssetTxs
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
@@ -208,13 +208,13 @@ jobs:
          - PoolRelays
          - PoolMetadata
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"
@@ -234,13 +234,13 @@ jobs:
          - ScriptRedeemers
          - DatumInfo
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.19
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: go test -v -covermode atomic -coverprofile coverage.txt -run ^Test${{ matrix.test }}$
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: "${{ env.KOIOS_NETWORK }},${{ github.job }},${{ matrix.test }}"
           name: "${{ env.KOIOS_NETWORK }}-${{ github.job }}-${{ matrix.test }}"

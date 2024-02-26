@@ -14,16 +14,16 @@ jobs:
         go: ['1.18', '1.19']
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run tests
         run: |
           go test -v -race -covermode atomic -coverprofile=coverage.txt ./...
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           flags: macos,local
           fail_ci_if_error: true
