@@ -45,7 +45,7 @@ const (
 	DefaultScheme            = "https"
 	LibraryVersion           = "v0"
 	DefaultRateLimit  int    = 10 // https://api.koios.rest/#overview--limits
-	DefaultOrigin            = "koios-go-client/v4"
+	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client@v4"
 	PageSize          uint   = 1000
 )
 
@@ -77,7 +77,9 @@ var (
 // introduces breaking change since v1.3.0
 
 type (
-	Slot int
+	Slot uint
+
+	BlockNo uint
 
 	// PaymentCredential type def.
 	PaymentCredential string
@@ -276,9 +278,11 @@ func (v PolicyID) String() string {
 }
 
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		return nil
+	}
 	q, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
-		// time.IsZero = true
 		return nil
 	}
 	t.Time = time.Unix(q, 0)
@@ -287,5 +291,23 @@ func (t *Timestamp) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON turns our time.Time back into an int.
 func (t Timestamp) MarshalJSON() ([]byte, error) {
+	if t.IsZero() {
+		return []byte("null"), nil
+	}
 	return []byte(strconv.FormatInt(t.Time.Unix(), 10)), nil
+}
+
+func (b BlockNo) String() string {
+	return fmt.Sprintf("%d", b)
+}
+
+func (s Slot) String() string {
+	return fmt.Sprintf("%d", s)
+}
+
+func (h BlockHash) MarshalJSON() ([]byte, error) {
+	if len(h) == 0 {
+		return []byte("null"), nil
+	}
+	return []byte(fmt.Sprintf("%q", h)), nil
 }
