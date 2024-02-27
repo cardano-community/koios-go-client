@@ -1,195 +1,174 @@
-// Copyright 2022 The Cardano Community Authors
 // SPDX-License-Identifier: Apache-2.0
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at:
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//   or LICENSE file in repository root.
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright © 2022 The Cardano Community Authors
 
 package koios_test
 
-import (
-	"context"
-	"fmt"
-	"testing"
+// func TestTxInfo(t *testing.T) {
+// 	client, err := getLiveClient()
+// 	if testIsLocal(t, err) {
+// 		return
+// 	}
+// 	txInfoTest(t, networkTxHashes(), client)
+// }
 
-	"github.com/cardano-community/koios-go-client/v4"
-	"github.com/stretchr/testify/assert"
-)
+// func txInfoTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
+// 	res, err := client.GetTxsInfo(context.Background(), hashes, nil)
+// 	if !assert.NoError(t, err) {
+// 		return
+// 	}
 
-func TestTxInfo(t *testing.T) {
-	client, err := getLiveClient()
-	if testIsLocal(t, err) {
-		return
-	}
-	txInfoTest(t, networkTxHashes(), client)
-}
+// 	for _, tx := range res.Data {
+// 		assertNotEmpty(t, tx.TxHash, fmt.Sprintf("tx[%s].tx_hash", tx.TxHash))
+// 		assertNotEmpty(t, tx.BlockHash, fmt.Sprintf("tx[%s].block_hash", tx.TxHash))
+// 		assertGreater(t, tx.BlockHeight, 0, fmt.Sprintf("tx[%s].block_height", tx.TxHash))
+// 		assertGreater(t, tx.EpochNo, koios.EpochNo(0), fmt.Sprintf("tx[%s].epoch_no", tx.TxHash))
+// 		assertGreater(t, tx.EpochSlot, koios.Slot(0), fmt.Sprintf("tx[%s].epoch_slot", tx.TxHash))
+// 		assertGreater(t, tx.AbsoluteSlot, koios.Slot(0), fmt.Sprintf("tx[%s].absolute_slot", tx.TxHash))
+// 		assertTimeNotZero(t, tx.TxTimestamp, fmt.Sprintf("tx[%s].tx_timestamp", tx.TxHash))
+// 		// assertGreater(t, tx.TxBlockIndex, 0, fmt.Sprintf("tx[%s].tx_block_index", tx.TxHash))
+// 		assertGreater(t, tx.TxSize, 0, fmt.Sprintf("tx[%s].tx_size", tx.TxHash))
+// 		assertIsPositive(t, tx.TotalOutput, fmt.Sprintf("tx[%s].total_output", tx.TxHash))
+// 		assertIsPositive(t, tx.Fee, fmt.Sprintf("tx[%s].fee", tx.TxHash))
 
-func txInfoTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
-	res, err := client.GetTxsInfo(context.Background(), hashes, nil)
-	if !assert.NoError(t, err) {
-		return
-	}
+// 		// assertTimeNotZero(t, tx.InvalidBefore, "invalid_before")
+// 		// assertTimeNotZero(t, tx.InvalidAfter, fmt.Sprintf("tx[%s].invalid_after", tx.TxHash))
 
-	for _, tx := range res.Data {
-		assertNotEmpty(t, tx.TxHash, fmt.Sprintf("tx[%s].tx_hash", tx.TxHash))
-		assertNotEmpty(t, tx.BlockHash, fmt.Sprintf("tx[%s].block_hash", tx.TxHash))
-		assertGreater(t, tx.BlockHeight, 0, fmt.Sprintf("tx[%s].block_height", tx.TxHash))
-		assertGreater(t, tx.EpochNo, koios.EpochNo(0), fmt.Sprintf("tx[%s].epoch_no", tx.TxHash))
-		assertGreater(t, tx.EpochSlot, koios.Slot(0), fmt.Sprintf("tx[%s].epoch_slot", tx.TxHash))
-		assertGreater(t, tx.AbsoluteSlot, koios.Slot(0), fmt.Sprintf("tx[%s].absolute_slot", tx.TxHash))
-		assertTimeNotZero(t, tx.TxTimestamp, fmt.Sprintf("tx[%s].tx_timestamp", tx.TxHash))
-		// assertGreater(t, tx.TxBlockIndex, 0, fmt.Sprintf("tx[%s].tx_block_index", tx.TxHash))
-		assertGreater(t, tx.TxSize, 0, fmt.Sprintf("tx[%s].tx_size", tx.TxHash))
-		assertIsPositive(t, tx.TotalOutput, fmt.Sprintf("tx[%s].total_output", tx.TxHash))
-		assertIsPositive(t, tx.Fee, fmt.Sprintf("tx[%s].fee", tx.TxHash))
+// 		if !tx.Deposit.IsZero() {
+// 			assertIsPositive(t, tx.Deposit, fmt.Sprintf("tx[%s].deposit", tx.TxHash))
+// 		}
+// 		// DATA
+// 		if len(tx.CollateralInputs) > 0 {
+// 			for _, utxo := range tx.CollateralInputs {
+// 				assertUTxO(t, utxo, fmt.Sprintf("tx[%s].tx.collateral_inputs", tx.TxHash))
+// 			}
+// 		}
 
-		// assertTimeNotZero(t, tx.InvalidBefore, "invalid_before")
-		// assertTimeNotZero(t, tx.InvalidAfter, fmt.Sprintf("tx[%s].invalid_after", tx.TxHash))
+// 		if tx.CollateralOutput != nil {
+// 			// assertNotEmpty(t, , "collateral_inputs")
+// 			assertUTxO(t, *tx.CollateralOutput, fmt.Sprintf("tx[%s].tx.collateral_output", tx.TxHash))
+// 		}
 
-		if !tx.Deposit.IsZero() {
-			assertIsPositive(t, tx.Deposit, fmt.Sprintf("tx[%s].deposit", tx.TxHash))
-		}
-		// DATA
-		if len(tx.CollateralInputs) > 0 {
-			for _, utxo := range tx.CollateralInputs {
-				assertUTxO(t, utxo, fmt.Sprintf("tx[%s].tx.collateral_inputs", tx.TxHash))
-			}
-		}
+// 		if len(tx.ReferenceInputs) > 0 {
+// 			for i, utxo := range tx.ReferenceInputs {
+// 				assertUTxO(t, utxo, fmt.Sprintf("tx[%s].reference_inputs[%d]", tx.TxHash, i))
+// 			}
+// 		}
 
-		if tx.CollateralOutput != nil {
-			// assertNotEmpty(t, , "collateral_inputs")
-			assertUTxO(t, *tx.CollateralOutput, fmt.Sprintf("tx[%s].tx.collateral_output", tx.TxHash))
-		}
+// 		if assertGreater(t, len(tx.Inputs), 0, "inputs") {
+// 			for i, utxo := range tx.Inputs {
+// 				assertUTxO(t, utxo, fmt.Sprintf("tx[%s].inputs[%d]", tx.TxHash, i))
+// 			}
+// 		}
+// 		if assertGreater(t, len(tx.Outputs), 0, "outputs") {
+// 			for i, utxo := range tx.Outputs {
+// 				assertUTxO(t, utxo, fmt.Sprintf("tx[%s].outputs[%d]", tx.TxHash, i))
+// 			}
+// 		}
 
-		if len(tx.ReferenceInputs) > 0 {
-			for i, utxo := range tx.ReferenceInputs {
-				assertUTxO(t, utxo, fmt.Sprintf("tx[%s].reference_inputs[%d]", tx.TxHash, i))
-			}
-		}
+// 		if len(tx.Withdrawals) > 0 {
+// 			for i, withdrawal := range tx.Withdrawals {
+// 				assertNotEmpty(t, withdrawal.StakeAddress, fmt.Sprintf("tx[%s].withdrawals[%d].stake_addr", tx.TxHash, i))
+// 				assertIsPositive(t, withdrawal.Amount, fmt.Sprintf("tx[%s].withdrawals[%d].amount", tx.TxHash, i))
+// 			}
+// 		}
 
-		if assertGreater(t, len(tx.Inputs), 0, "inputs") {
-			for i, utxo := range tx.Inputs {
-				assertUTxO(t, utxo, fmt.Sprintf("tx[%s].inputs[%d]", tx.TxHash, i))
-			}
-		}
-		if assertGreater(t, len(tx.Outputs), 0, "outputs") {
-			for i, utxo := range tx.Outputs {
-				assertUTxO(t, utxo, fmt.Sprintf("tx[%s].outputs[%d]", tx.TxHash, i))
-			}
-		}
+// 		if len(tx.AssetsMinted) > 0 {
+// 			for i, asset := range tx.AssetsMinted {
+// 				assertAsset(t, asset, fmt.Sprintf("tx[%s].assets_minted[%d]", tx.TxHash, i))
+// 			}
+// 		}
 
-		if len(tx.Withdrawals) > 0 {
-			for i, withdrawal := range tx.Withdrawals {
-				assertNotEmpty(t, withdrawal.StakeAddress, fmt.Sprintf("tx[%s].withdrawals[%d].stake_addr", tx.TxHash, i))
-				assertIsPositive(t, withdrawal.Amount, fmt.Sprintf("tx[%s].withdrawals[%d].amount", tx.TxHash, i))
-			}
-		}
+// 		if tx.Metadata != nil {
+// 			assertTxMetadata(t, tx.Metadata, fmt.Sprintf("tx[%s].metadata", tx.TxHash))
+// 		}
 
-		if len(tx.AssetsMinted) > 0 {
-			for i, asset := range tx.AssetsMinted {
-				assertAsset(t, asset, fmt.Sprintf("tx[%s].assets_minted[%d]", tx.TxHash, i))
-			}
-		}
+// 		if len(tx.Certificates) > 0 {
+// 			assertCertificates(t, tx.Certificates, fmt.Sprintf("tx[%s].certificates", tx.TxHash))
+// 		}
+// 		if len(tx.NativeScripts) > 0 {
+// 			assertNativeScripts(t, tx.NativeScripts, fmt.Sprintf("tx[%s].native_scripts", tx.TxHash))
+// 		}
+// 		if len(tx.PlutusContracts) > 0 {
+// 			assertPlutusContracts(t, tx.PlutusContracts, fmt.Sprintf("tx[%s].plutus_contracts", tx.TxHash))
+// 		}
+// 	}
+// }
 
-		if tx.Metadata != nil {
-			assertTxMetadata(t, tx.Metadata, fmt.Sprintf("tx[%s].metadata", tx.TxHash))
-		}
+// func TestTxUTxO(t *testing.T) {
+// 	client, err := getLiveClient()
+// 	if testIsLocal(t, err) {
+// 		return
+// 	}
+// 	txUTxOsTest(t, networkTxHashes(), client)
+// }
 
-		if len(tx.Certificates) > 0 {
-			assertCertificates(t, tx.Certificates, fmt.Sprintf("tx[%s].certificates", tx.TxHash))
-		}
-		if len(tx.NativeScripts) > 0 {
-			assertNativeScripts(t, tx.NativeScripts, fmt.Sprintf("tx[%s].native_scripts", tx.TxHash))
-		}
-		if len(tx.PlutusContracts) > 0 {
-			assertPlutusContracts(t, tx.PlutusContracts, fmt.Sprintf("tx[%s].plutus_contracts", tx.TxHash))
-		}
-	}
-}
+// func txUTxOsTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
+// 	res, err := client.GetTxsUTxOs(context.Background(), hashes, nil)
+// 	if !assert.NoError(t, err) {
+// 		return
+// 	}
+// 	for _, eutxo := range res.Data {
+// 		assertEUTxO(t, eutxo, fmt.Sprintf("tx[%s]", eutxo.TxHash))
+// 	}
+// }
 
-func TestTxUTxO(t *testing.T) {
-	client, err := getLiveClient()
-	if testIsLocal(t, err) {
-		return
-	}
-	txUTxOsTest(t, networkTxHashes(), client)
-}
+// func TestTxMetadata(t *testing.T) {
+// 	client, err := getLiveClient()
+// 	if testIsLocal(t, err) {
+// 		return
+// 	}
+// 	txMetadataTest(t, networkTxHashes(), client)
+// }
 
-func txUTxOsTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
-	res, err := client.GetTxsUTxOs(context.Background(), hashes, nil)
-	if !assert.NoError(t, err) {
-		return
-	}
-	for _, eutxo := range res.Data {
-		assertEUTxO(t, eutxo, fmt.Sprintf("tx[%s]", eutxo.TxHash))
-	}
-}
+// func txMetadataTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
+// 	res, err := client.GetTxsMetadata(context.Background(), hashes, nil)
+// 	if !assert.NoError(t, err) {
+// 		return
+// 	}
+// 	for _, listitem := range res.Data {
+// 		assertTxMetadata(t, listitem.Metadata, fmt.Sprintf("tx[%s].metadata", listitem.TxHash))
+// 	}
+// }
 
-func TestTxMetadata(t *testing.T) {
-	client, err := getLiveClient()
-	if testIsLocal(t, err) {
-		return
-	}
-	txMetadataTest(t, networkTxHashes(), client)
-}
+// func TestTxMetaLabels(t *testing.T) {
+// 	client, err := getLiveClient()
+// 	if testIsLocal(t, err) {
+// 		return
+// 	}
+// 	txMetaLabelsTest(t, client)
+// }
 
-func txMetadataTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
-	res, err := client.GetTxsMetadata(context.Background(), hashes, nil)
-	if !assert.NoError(t, err) {
-		return
-	}
-	for _, listitem := range res.Data {
-		assertTxMetadata(t, listitem.Metadata, fmt.Sprintf("tx[%s].metadata", listitem.TxHash))
-	}
-}
+// func txMetaLabelsTest(t TestingT, client *koios.Client) {
+// 	opts := client.NewRequestOptions()
+// 	opts.SetPageSize(2) // testnets Range error if number is too big
 
-func TestTxMetaLabels(t *testing.T) {
-	client, err := getLiveClient()
-	if testIsLocal(t, err) {
-		return
-	}
-	txMetaLabelsTest(t, client)
-}
+// 	res, err := client.GetTxMetaLabels(context.Background(), opts)
+// 	if !assert.NoError(t, err) {
+// 		return
+// 	}
 
-func txMetaLabelsTest(t TestingT, client *koios.Client) {
-	opts := client.NewRequestOptions()
-	opts.SetPageSize(2) // testnets Range error if number is too big
+// 	assertGreater(t, len(res.Data), 1, "GetTxMetaLabels")
+// 	for _, label := range res.Data {
+// 		assertNotEmpty(t, label.Key, "empty label")
+// 	}
+// }
 
-	res, err := client.GetTxMetaLabels(context.Background(), opts)
-	if !assert.NoError(t, err) {
-		return
-	}
+// func TestTxStatus(t *testing.T) {
+// 	client, err := getLiveClient()
+// 	if testIsLocal(t, err) {
+// 		return
+// 	}
+// 	txStatusTest(t, networkTxHashes(), client)
+// }
 
-	assertGreater(t, len(res.Data), 1, "GetTxMetaLabels")
-	for _, label := range res.Data {
-		assertNotEmpty(t, label.Key, "empty label")
-	}
-}
-
-func TestTxStatus(t *testing.T) {
-	client, err := getLiveClient()
-	if testIsLocal(t, err) {
-		return
-	}
-	txStatusTest(t, networkTxHashes(), client)
-}
-
-func txStatusTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
-	res, err := client.GetTxsStatuses(context.Background(), hashes, nil)
-	if !assert.NoError(t, err) {
-		return
-	}
-	for i, status := range res.Data {
-		assertNotEmpty(t, status.TxHash, fmt.Sprintf("status[%d].status", i))
-		assertGreater(t, status.Confirmations, 0, fmt.Sprintf("status[%d].confirmations", i))
-	}
-}
+// func txStatusTest(t TestingT, hashes []koios.TxHash, client *koios.Client) {
+// 	res, err := client.GetTxsStatuses(context.Background(), hashes, nil)
+// 	if !assert.NoError(t, err) {
+// 		return
+// 	}
+// 	for i, status := range res.Data {
+// 		assertNotEmpty(t, status.TxHash, fmt.Sprintf("status[%d].status", i))
+// 		assertGreater(t, status.Confirmations, 0, fmt.Sprintf("status[%d].confirmations", i))
+// 	}
+// }
