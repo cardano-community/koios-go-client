@@ -1,5 +1,6 @@
-// Copyright 2022 The Cardano Community Authors
 // SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2022 The Cardano Community Authors
 
 // Package koios provides api client library to interact with Koios API
 // endpoints and Cardano Blockchain. Sub package ./cmd/koios-rest
