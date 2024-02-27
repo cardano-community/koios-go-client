@@ -19,34 +19,35 @@ import (
 	"strings"
 	"time"
 
+	"github.com/happy-sdk/happy/pkg/version"
 	"github.com/shopspring/decimal"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
-// MainnetHost       : is primay and default api host.
-// GuildnetHost      : is Guild network host.
-// PreviewHost       : is Preview network host.
-// PreProdHost       : is Pre Production network host.
-// DefaultAPIVersion : is openapi spec version e.g. /v0.
-// DefaultPort       : default port used by api client.
-// DefaultSchema     : default schema used by api client.
-// LibraryVersion    : koios go library version.
-// DefaultRateLimit  : is default rate limit used by api client.
-// DefaultOrigin     : is default origin header used by api client.
 const (
-	MainnetHost              = "api.koios.rest"
-	MainnetHostEU            = "eu-api.koios.rest"
-	GuildHost                = "guild.koios.rest"
-	PreviewHost              = "preview.koios.rest"
-	PreProdHost              = "preprod.koios.rest"
-	DefaultAPIVersion        = "v1"
-	DefaultPort       uint16 = 443
-	DefaultScheme            = "https"
-	LibraryVersion           = "v0"
-	DefaultRateLimit  int    = 10 // https://api.koios.rest/#overview--limits
-	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client@v4"
-	PageSize          uint   = 1000
+	// MainnetHost is primay and default api host.
+	MainnetHost = "api.koios.rest"
+	// MainnetHostEU is main net api host in EU.
+	MainnetHostEU = "eu-api.koios.rest"
+	// GuildnetHost is Guild network host.
+	GuildHost = "guild.koios.rest"
+	// PreviewHost is Preview network host.
+	PreviewHost = "preview.koios.rest"
+	// PreProdHost is Pre Production network host.
+	PreProdHost = "preprod.koios.rest"
+	// DefaultAPIVersion is openapi spec version e.g. /v1.
+	DefaultAPIVersion = "v1"
+	// DefaultPort default port used by api client.
+	DefaultPort uint16 = 443
+	// DefaultSchema default schema used by api client.
+	DefaultScheme = "https"
+	// DefaultRateLimit is default rate limit used by api client.
+	DefaultRateLimit int = 10 // https://api.koios.rest/#overview--limits
+	// DefaultOrigin is default origin header used by api client.
+	DefaultOrigin = "https://github.com/cardano-community/koios-go-client/v4"
+	// PageSize is default page size used by api client.
+	PageSize uint = 1000
 )
 
 // Predefined errors used by the library.
@@ -73,8 +74,6 @@ var (
 	// ZeroCoin is alias decimal.Zero.
 	ZeroCoin = decimal.Zero.Copy() //nolint: gochecknoglobals
 )
-
-// introduces breaking change since v1.3.0
 
 type (
 	Slot uint
@@ -212,7 +211,7 @@ func New(opts ...Option) (*Client, error) {
 		"User-Agent",
 		fmt.Sprintf(
 			"go-koios/%s (%s %s) %s/%s https://github.com/cardano-community/go-koios",
-			LibraryVersion,
+			Version(),
 			cases.Title(language.English).String(runtime.GOOS),
 			runtime.GOARCH,
 			runtime.GOOS,
@@ -245,6 +244,18 @@ func New(opts ...Option) (*Client, error) {
 	}
 
 	return c, nil
+}
+
+// Version returns koios go library version
+func Version() string {
+	return libraryVersion
+}
+
+var libraryVersion string
+
+func init() {
+	v := version.Current()
+	libraryVersion = v.String()
 }
 
 // String returns PaymentCredential as string.

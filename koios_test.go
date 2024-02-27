@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"testing"
 
 	"github.com/cardano-community/koios-go-client/v4"
 	"github.com/shopspring/decimal"
@@ -413,4 +414,8 @@ func testIsLocal(t TestingT, err error) bool {
 	}
 	t.Error(err)
 	return false
+}
+
+func TestVersion(t *testing.T) {
+	assertNotEmpty(t, koios.Version(), "koios.Version()")
 }
