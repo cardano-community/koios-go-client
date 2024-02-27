@@ -1,4 +1,4 @@
-name: CI/CD Workflow
+name: CI
 
 concurrency:
   group: main-${{ github.ref }}
