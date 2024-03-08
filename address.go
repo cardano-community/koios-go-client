@@ -40,8 +40,8 @@ type (
 	}
 
 	AddressAssets struct {
-		Address   Address `json:"address"`
-		AssetList []Asset `json:"asset_list"`
+		Asset
+		Address Address `json:"address"`
 	}
 
 	// AddressInfoResponse represents response from `/address_info` endpoint.
