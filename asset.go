@@ -28,9 +28,9 @@ type (
 	// Asset represents Cardano Asset.
 	Asset struct {
 		// Asset Name (hex).
-		AssetName AssetName `json:"asset_name,omitempty"`
+		AssetName AssetName `json:"asset_name"`
 
-		Fingerprint AssetFingerprint `json:"fingerprint,omitempty"`
+		Fingerprint AssetFingerprint `json:"fingerprint"`
 
 		// Asset Policy ID (hex).
 		PolicyID PolicyID `json:"policy_id"`
@@ -39,7 +39,9 @@ type (
 		// Input: asset balance on the selected input transaction.
 		// Output: sum of assets for output UTxO.
 		// Mint: sum of minted assets (negative on burn).
-		Quantity decimal.Decimal `json:"quantity,omitempty"`
+		Quantity decimal.Decimal `json:"quantity"`
+
+		Decimals uint8 `json:"decimals"`
 	}
 
 	// TokenRegistryMetadata metadata registered on the Cardano Token Registry.
