@@ -44,27 +44,29 @@ type (
 	UTxO struct {
 		// Hash of this transaction.
 		TxHash TxHash `json:"tx_hash"`
-
 		// Index of output UTxO.
 		TxIndex int `json:"tx_index"`
-
+		// Address A Cardano payment/base address (bech32 encoded)
+		Address *Address `json:"address,omitempty"`
+		// Total sum of ADA on the UTxO
+		Value decimal.Decimal `json:"value"`
+		// StakeAddress for transaction's output UTxO.
+		StakeAddress *Address `json:"stake_addr,omitempty"`
 		// where funds were sent or change to be returned.
 		PaymentAddr *PaymentAddr `json:"payment_addr,omitempty"`
 
-		// StakeAddress for transaction's output UTxO.
-		StakeAddress *Address `json:"stake_addr,omitempty"`
+		EpochNo     EpochNo   `json:"epoch_no"`
+		BlockHeight uint64    `json:"block_height"`
+		BlockTime   Timestamp `json:"block_time"`
 
-		// BlockHeight int `json:"block_height"`
-		// BlockTime   Timestamp `json:"block_time"`
+		DatumHash       DatumHash `json:"datum_hash"`
+		InlineDatum     any       `json:"inline_datum"`
+		ReferenceScript any       `json:"reference_script"`
 
-		// Total sum on the output address.
-		Value decimal.Decimal `json:"value"`
-
-		DatumHash       DatumHash `json:"datum_hash,omitempty"`
-		InlineDatum     any       `json:"inline_datum,omitempty"`
-		ReferenceScript any       `json:"reference_script,omitempty"`
 		// An array of assets to be included in output UTxO.
 		AssetList []Asset `json:"asset_list,omitempty"`
+
+		IsSpent bool `json:"is_spent,omitempty"`
 	}
 
 	// TxsWithdrawal withdrawal record in transaction.
