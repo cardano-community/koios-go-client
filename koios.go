@@ -1,5 +1,6 @@
-// Copyright 2022 The Cardano Community Authors
 // SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2022 The Cardano Community Authors
 
 // Package koios provides api client library to interact with Koios API
 // endpoints and Cardano Blockchain. Sub package ./cmd/koios-rest
@@ -19,34 +20,35 @@ import (
 	"strings"
 	"time"
 
+	"github.com/happy-sdk/happy/pkg/version"
 	"github.com/shopspring/decimal"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
-// MainnetHost       : is primay and default api host.
-// GuildnetHost      : is Guild network host.
-// PreviewHost       : is Preview network host.
-// PreProdHost       : is Pre Production network host.
-// DefaultAPIVersion : is openapi spec version e.g. /v0.
-// DefaultPort       : default port used by api client.
-// DefaultSchema     : default schema used by api client.
-// LibraryVersion    : koios go library version.
-// DefaultRateLimit  : is default rate limit used by api client.
-// DefaultOrigin     : is default origin header used by api client.
 const (
-	MainnetHost              = "api.koios.rest"
-	MainnetHostEU            = "eu-api.koios.rest"
-	GuildHost                = "guild.koios.rest"
-	PreviewHost              = "preview.koios.rest"
-	PreProdHost              = "preprod.koios.rest"
-	DefaultAPIVersion        = "v0"
-	DefaultPort       uint16 = 443
-	DefaultScheme            = "https"
-	LibraryVersion           = "v0"
-	DefaultRateLimit  int    = 10 // https://api.koios.rest/#overview--limits
-	DefaultOrigin            = "https://github.com/cardano-community/koios-go-client"
-	PageSize          uint   = 1000
+	// MainnetHost is primay and default api host.
+	MainnetHost = "api.koios.rest"
+	// MainnetHostEU is main net api host in EU.
+	MainnetHostEU = "eu-api.koios.rest"
+	// GuildnetHost is Guild network host.
+	GuildHost = "guild.koios.rest"
+	// PreviewHost is Preview network host.
+	PreviewHost = "preview.koios.rest"
+	// PreProdHost is Pre Production network host.
+	PreProdHost = "preprod.koios.rest"
+	// DefaultAPIVersion is openapi spec version e.g. /v1.
+	DefaultAPIVersion = "v1"
+	// DefaultPort default port used by api client.
+	DefaultPort uint16 = 443
+	// DefaultSchema default schema used by api client.
+	DefaultScheme = "https"
+	// DefaultRateLimit is default rate limit used by api client.
+	DefaultRateLimit int = 10 // https://api.koios.rest/#overview--limits
+	// DefaultOrigin is default origin header used by api client.
+	DefaultOrigin = "https://github.com/cardano-community/koios-go-client/v4"
+	// PageSize is default page size used by api client.
+	PageSize uint = 1000
 )
 
 // Predefined errors used by the library.
@@ -60,6 +62,8 @@ var (
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 	ErrNoDatumHash              = errors.New("missing datum hash(es)")
 	ErrNoAddress                = errors.New("missing address")
+	ErrNoAddressesProvided      = errors.New("atleast one address required")
+	ErrNoCredentialsProvided    = errors.New("atleast one payment credential required")
 	ErrNoPoolID                 = errors.New("missing pool id")
 	ErrResponse                 = errors.New("response error")
 	ErrSchema                   = errors.New("scheme must be http or https")
@@ -74,10 +78,10 @@ var (
 	ZeroCoin = decimal.Zero.Copy() //nolint: gochecknoglobals
 )
 
-// introduces breaking change since v1.3.0
-
 type (
-	Slot int
+	Slot uint
+
+	BlockNo uint
 
 	// PaymentCredential type def.
 	PaymentCredential string
@@ -210,7 +214,7 @@ func New(opts ...Option) (*Client, error) {
 		"User-Agent",
 		fmt.Sprintf(
 			"go-koios/%s (%s %s) %s/%s https://github.com/cardano-community/go-koios",
-			LibraryVersion,
+			Version(),
 			cases.Title(language.English).String(runtime.GOOS),
 			runtime.GOARCH,
 			runtime.GOOS,
@@ -245,6 +249,18 @@ func New(opts ...Option) (*Client, error) {
 	return c, nil
 }
 
+// Version returns koios go library version
+func Version() string {
+	return libraryVersion
+}
+
+var libraryVersion string
+
+func init() {
+	v := version.Current()
+	libraryVersion = v.String()
+}
+
 // String returns PaymentCredential as string.
 func (v PaymentCredential) String() string {
 	return string(v)
@@ -276,9 +292,11 @@ func (v PolicyID) String() string {
 }
 
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		return nil
+	}
 	q, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
-		// time.IsZero = true
 		return nil
 	}
 	t.Time = time.Unix(q, 0)
@@ -287,5 +305,23 @@ func (t *Timestamp) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON turns our time.Time back into an int.
 func (t Timestamp) MarshalJSON() ([]byte, error) {
+	if t.IsZero() {
+		return []byte("null"), nil
+	}
 	return []byte(strconv.FormatInt(t.Time.Unix(), 10)), nil
+}
+
+func (b BlockNo) String() string {
+	return fmt.Sprintf("%d", b)
+}
+
+func (s Slot) String() string {
+	return fmt.Sprintf("%d", s)
+}
+
+func (h BlockHash) MarshalJSON() ([]byte, error) {
+	if len(h) == 0 {
+		return []byte("null"), nil
+	}
+	return []byte(fmt.Sprintf("%q", h)), nil
 }

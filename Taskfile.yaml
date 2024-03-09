@@ -60,7 +60,7 @@ tasks:
       SNAPSHOT:
         sh: 'if [[ $(git describe --exact-match HEAD) != v* ]]; then echo "--snapshot"; fi'
     cmds:
-      - goreleaser release --rm-dist {{.SNAPSHOT}}
+      - goreleaser release --clean {{.SNAPSHOT}}
 
   setup:
     desc: Setup development env.

@@ -1,18 +1,6 @@
-// Copyright 2022 The Cardano Community Authors
 // SPDX-License-Identifier: Apache-2.0
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at:
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//   or LICENSE file in repository root.
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright © 2022 The Cardano Community Authors
 
 package koios
 
@@ -52,8 +40,8 @@ type (
 	}
 
 	AddressAssets struct {
-		Address   Address `json:"address"`
-		AssetList []Asset `json:"asset_list"`
+		Asset
+		Address Address `json:"address"`
 	}
 
 	// AddressInfoResponse represents response from `/address_info` endpoint.
@@ -93,6 +81,11 @@ type (
 		AssetName      AssetName       `json:"asset_name"`
 		AssetNameASCII string          `json:"asset_name_ascii"`
 		Balance        decimal.Decimal `json:"balance"`
+	}
+
+	UTxOsResponse struct {
+		Response
+		Data []UTxO `json:"data"`
 	}
 )
 
@@ -140,8 +133,7 @@ func (c *Client) GetAddressesInfo(
 ) (res *AddressesInfoResponse, err error) {
 	res = &AddressesInfoResponse{}
 	if len(addr) == 0 {
-		err = ErrNoAddress
-		res.applyError(nil, err)
+		res.applyError(nil, ErrNoAddressesProvided)
 		return
 	}
 	rsp, err := c.request(ctx, &res.Response, "POST", "/address_info", addressesPL(addr), opts)
@@ -277,6 +269,70 @@ func (c *Client) GetCredentialTxs(
 	res.applyError(nil, err)
 
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+func (c *Client) GetAddressUTxOs(
+	ctx context.Context,
+	addrs []Address,
+	extended bool,
+	opts *RequestOptions,
+) (*UTxOsResponse, error) {
+	res := &UTxOsResponse{}
+	if len(addrs) == 0 {
+		err := ErrNoAddress
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	var payload = struct {
+		Adresses []Address `json:"_addresses"`
+		Extended bool      `json:"_extended,omitempty"`
+	}{
+		Adresses: addrs,
+		Extended: extended,
+	}
+
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/address_utxos", rpipe, opts)
+	res.applyError(nil, err)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, err
+}
+
+func (c *Client) GetCredentialUTxOs(
+	ctx context.Context,
+	creds []PaymentCredential,
+	extended bool,
+	opts *RequestOptions,
+) (*UTxOsResponse, error) {
+	res := &UTxOsResponse{}
+	if len(creds) == 0 || len(creds[0]) == 0 {
+		err := ErrNoCredentialsProvided
+		res.applyError(nil, err)
+		return res, err
+	}
+	var payload = struct {
+		Creds    []PaymentCredential `json:"_payment_credentials"`
+		Extended bool                `json:"_extended,omitempty"`
+	}{
+		Creds:    creds,
+		Extended: extended,
+	}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_utxos", rpipe, opts)
+	res.applyError(nil, err)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, err
 }
 
 func addressesPL(addrs []Address) io.Reader {
