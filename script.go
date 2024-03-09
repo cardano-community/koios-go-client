@@ -134,6 +134,13 @@ func (v DatumHash) String() string {
 	return string(v)
 }
 
+func (v *DatumHash) MarshalJSON() ([]byte, error) {
+	if len(v.String()) == 0 {
+		return []byte("null"), nil
+	}
+	return []byte(fmt.Sprintf(`"%s"`, v.String())), nil
+}
+
 // GetNativeScriptList returns list of all existing native script hashes
 // along with their creation transaction hashes.
 func (c *Client) GetNativeScripts(

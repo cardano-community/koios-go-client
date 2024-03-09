@@ -89,6 +89,9 @@ func ReadResponseBody(rsp *http.Response) (body []byte, err error) {
 
 // ReadAndUnmarshalResponse is helper to unmarchal json responses.
 func ReadAndUnmarshalResponse(rsp *http.Response, res *Response, dest any) error {
+	if rsp == nil {
+		return fmt.Errorf("%w: got no response", ErrResponse)
+	}
 	body, err := ReadResponseBody(rsp)
 	if !strings.Contains(rsp.Header.Get("Content-Type"), "json") {
 		return fmt.Errorf("%w: %s", ErrResponseIsNotJSON, string(body))

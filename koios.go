@@ -62,6 +62,8 @@ var (
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 	ErrNoDatumHash              = errors.New("missing datum hash(es)")
 	ErrNoAddress                = errors.New("missing address")
+	ErrNoAddressesProvided      = errors.New("atleast one address required")
+	ErrNoCredentialsProvided    = errors.New("atleast one payment credential required")
 	ErrNoPoolID                 = errors.New("missing pool id")
 	ErrResponse                 = errors.New("response error")
 	ErrSchema                   = errors.New("scheme must be http or https")

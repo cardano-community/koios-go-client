@@ -82,6 +82,11 @@ type (
 		AssetNameASCII string          `json:"asset_name_ascii"`
 		Balance        decimal.Decimal `json:"balance"`
 	}
+
+	UTxOsResponse struct {
+		Response
+		Data []UTxO `json:"data"`
+	}
 )
 
 // Valid validates address and returns false and error
@@ -128,8 +133,7 @@ func (c *Client) GetAddressesInfo(
 ) (res *AddressesInfoResponse, err error) {
 	res = &AddressesInfoResponse{}
 	if len(addr) == 0 {
-		err = ErrNoAddress
-		res.applyError(nil, err)
+		res.applyError(nil, ErrNoAddressesProvided)
 		return
 	}
 	rsp, err := c.request(ctx, &res.Response, "POST", "/address_info", addressesPL(addr), opts)
@@ -265,6 +269,70 @@ func (c *Client) GetCredentialTxs(
 	res.applyError(nil, err)
 
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+func (c *Client) GetAddressUTxOs(
+	ctx context.Context,
+	addrs []Address,
+	extended bool,
+	opts *RequestOptions,
+) (*UTxOsResponse, error) {
+	res := &UTxOsResponse{}
+	if len(addrs) == 0 {
+		err := ErrNoAddress
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	var payload = struct {
+		Adresses []Address `json:"_addresses"`
+		Extended bool      `json:"_extended,omitempty"`
+	}{
+		Adresses: addrs,
+		Extended: extended,
+	}
+
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/address_utxos", rpipe, opts)
+	res.applyError(nil, err)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, err
+}
+
+func (c *Client) GetCredentialUTxOs(
+	ctx context.Context,
+	creds []PaymentCredential,
+	extended bool,
+	opts *RequestOptions,
+) (*UTxOsResponse, error) {
+	res := &UTxOsResponse{}
+	if len(creds) == 0 || len(creds[0]) == 0 {
+		err := ErrNoCredentialsProvided
+		res.applyError(nil, err)
+		return res, err
+	}
+	var payload = struct {
+		Creds    []PaymentCredential `json:"_payment_credentials"`
+		Extended bool                `json:"_extended,omitempty"`
+	}{
+		Creds:    creds,
+		Extended: extended,
+	}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_utxos", rpipe, opts)
+	res.applyError(nil, err)
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return res, err
 }
 
 func addressesPL(addrs []Address) io.Reader {
