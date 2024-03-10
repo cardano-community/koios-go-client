@@ -44,6 +44,27 @@ type (
 		Decimals uint8 `json:"decimals"`
 	}
 
+	AssetListItem struct {
+		// Asset Name (hex).
+		AssetName AssetName `json:"asset_name"`
+
+		Fingerprint AssetFingerprint `json:"fingerprint"`
+
+		// Asset Policy ID (hex).
+		PolicyID PolicyID `json:"policy_id"`
+	}
+
+	PolicyAssetListItem struct {
+		// Asset Name (hex).
+		AssetName AssetName `json:"asset_name"`
+
+		Fingerprint AssetFingerprint `json:"fingerprint"`
+		// TotalSupply of Asset
+		TotalSupply decimal.Decimal `json:"total_supply"`
+
+		Decimals uint8 `json:"decimals"`
+	}
+
 	// TokenRegistryMetadata metadata registered on the Cardano Token Registry.
 	TokenRegistryMetadata struct {
 		Decimals    int    `json:"decimals"`
@@ -77,7 +98,7 @@ type (
 		AssetName AssetName `json:"asset_name"`
 
 		// Asset Name (ASCII)
-		AssetNameASCII string `json:"asset_name_ascii"`
+		AssetNameASCII string `json:"asset_name_ascii,omitempty"`
 
 		// The CIP14 fingerprint of the asset
 		Fingerprint AssetFingerprint `json:"fingerprint"`
@@ -96,22 +117,22 @@ type (
 		TotalSupply decimal.Decimal `json:"total_supply"`
 
 		// CreationTime of Asset
-		CreationTime Timestamp `json:"creation_time"`
+		CreationTime Timestamp `json:"creation_time,omitempty"`
 
 		// MintCnt count of mint transactions
-		MintCnt int `json:"mint_cnt"`
+		MintCnt int `json:"mint_cnt,omitempty"`
 
 		// BurnCnt count of burn transactions
-		BurnCnt int `json:"burn_cnt"`
+		BurnCnt int `json:"burn_cnt,omitempty"`
 
 		// MintingTxHash mint tx
-		MintingTxHash TxHash `json:"minting_tx_hash"`
+		MintingTxHash TxHash `json:"minting_tx_hash,omitempty"`
 	}
 
 	// AssetListResponse represents response from `/asset_list` endpoint.
 	AssetListResponse struct {
 		Response
-		Data []Asset `json:"data"`
+		Data []AssetListItem `json:"data"`
 	}
 
 	// AssetHolder payment addresses holding the given token (including balance).
@@ -168,6 +189,12 @@ type (
 	AssetHistoryResponse struct {
 		Response
 		Data *AssetHistory `json:"data"`
+	}
+
+	// AssetPolicyAssetListResponse represents response from `/policy_asset_list` endpoint.
+	AssetPolicyAssetListResponse struct {
+		Response
+		Data []PolicyAssetListItem `json:"data"`
 	}
 )
 
@@ -361,5 +388,26 @@ func (c *Client) GetAssetHistory(
 	if len(info) == 1 {
 		res.Data = &info[0]
 	}
+	return
+}
+
+func (c *Client) GetPolicyAssetList(
+	ctx context.Context,
+	policy PolicyID,
+	opts *RequestOptions,
+) (res *AssetPolicyAssetListResponse, err error) {
+	res = &AssetPolicyAssetListResponse{}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/policy_asset_list", nil, opts)
+	if err != nil {
+		return
+	}
+
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
