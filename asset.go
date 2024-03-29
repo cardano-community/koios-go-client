@@ -113,15 +113,12 @@ type (
 		BurnCnt int `json:"burn_cnt,omitempty"`
 		// CreationTime of Asset
 		CreationTime Timestamp `json:"creation_time,omitempty"`
-
 		// MintingTxMetadata minting Tx JSON payload if it can be decoded as JSON
 		// MintingTxMetadata *TxInfoMetadata `json:"minting_tx_metadata"`
 		MintingTxMetadata *json.RawMessage `json:"minting_tx_metadata,omitempty"`
-
 		// Asset metadata registered on the Cardano Token Registry
 		TokenRegistryMetadata *TokenRegistryMetadata `json:"token_registry_metadata,omitempty"`
-
-		CIP68Metadata *json.RawMessage `json:"cip68_metadata,omitempty"`
+		CIP68Metadata         *json.RawMessage       `json:"cip68_metadata,omitempty"`
 	}
 
 	// AssetListResponse represents response from `/asset_list` endpoint.
@@ -361,7 +358,7 @@ func (c *Client) GetAssetTxs(
 }
 
 // GetAssetPolicyInfo returns information for all assets under the same policy.
-func (c *Client) GetAssetPolicyInfo(
+func (c *Client) GetPolicyAssetInfo(
 	ctx context.Context,
 	policy PolicyID,
 	opts *RequestOptions,
@@ -514,7 +511,7 @@ func (c *Client) GetAssetNftAddress(
 	return
 }
 
-func (c *Client) GetAssetPolicyAddresses(
+func (c *Client) GetPolicyAssetAddresses(
 	ctx context.Context,
 	policy PolicyID,
 	opts *RequestOptions,
