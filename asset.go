@@ -40,9 +40,9 @@ type (
 		// Input: asset balance on the selected input transaction.
 		// Output: sum of assets for output UTxO.
 		// Mint: sum of minted assets (negative on burn).
-		Quantity decimal.Decimal `json:"quantity"`
+		Quantity decimal.Decimal `json:"quantity,omitempty"`
 
-		Decimals uint8 `json:"decimals"`
+		Decimals uint8 `json:"decimals,omitempty"`
 	}
 
 	AssetListItem struct {
@@ -153,7 +153,7 @@ type (
 	// AssetSummaryResponse represents response from `/asset_summary` endpoint.
 	AssetSummaryResponse struct {
 		Response
-		Data []AssetSummary `json:"data"`
+		Data *AssetSummary `json:"data"`
 	}
 
 	// AssetTxsResponse represents response from `/asset_txs` endpoint.
@@ -318,7 +318,12 @@ func (c *Client) GetAssetSummary(
 		return
 	}
 
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	var assetSummary []AssetSummary
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &assetSummary)
+	if len(assetSummary) == 1 {
+		data := assetSummary[0]
+		res.Data = &data
+	}
 
 	return
 }
