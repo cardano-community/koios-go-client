@@ -15,7 +15,7 @@ import (
 
 type (
 	// EpochNo defines type for _epoch_no.
-	EpochNo int
+	EpochNo uint
 
 	// EpochInfo defines model for epoch_info.
 	EpochInfo struct {
@@ -190,15 +190,22 @@ type (
 // GetEpochInfo returns the epoch information, all epochs if no epoch specified.
 func (c *Client) GetEpochInfo(
 	ctx context.Context,
-	epoch *EpochNo,
+	epoch EpochNo,
+	includeNextEpoch bool,
 	opts *RequestOptions,
 ) (res *EpochInfoResponse, err error) {
 	res = &EpochInfoResponse{}
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
-	if epoch != nil {
+	if !opts.query.Has("order") {
+		opts.query.Set("order", "epoch_no.desc")
+	}
+	if epoch > 0 {
 		opts.QuerySet("_epoch_no", epoch.String())
+	}
+	if includeNextEpoch {
+		opts.QuerySet("_include_next_epoch", "true")
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/epoch_info", nil, opts)
