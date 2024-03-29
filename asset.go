@@ -333,7 +333,7 @@ func (c *Client) GetAssetTxs(
 	ctx context.Context,
 	policy PolicyID,
 	name AssetName,
-	afterBlockHeight int,
+	afterBlockHeight uint,
 	history bool,
 	opts *RequestOptions,
 ) (res *AssetTxsResponse, err error) {
