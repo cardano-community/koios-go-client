@@ -176,7 +176,7 @@ type (
 
 	// AssetHistory holds given asset mint/burn tx's.
 	AssetHistory struct {
-		Asset
+		AssetListItem
 		MintingTXs []AssetMintTX `json:"minting_txs"`
 	}
 
