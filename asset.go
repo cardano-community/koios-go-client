@@ -134,7 +134,7 @@ type (
 		Quantity       decimal.Decimal `json:"quantity"`
 	}
 
-	// AssetAddressListResponse represents response from `/asset_address_list` endpoint.
+	// AssetAddressListResponse represents response from `/policy_asset_addresses` endpoint.
 	AssetAddressListResponse struct {
 		Response
 		Data []AssetHolder `json:"data"`
@@ -245,7 +245,7 @@ func (c *Client) GetAssetAddresses(
 	opts.QuerySet("_asset_policy", policy.String())
 	opts.QuerySet("_asset_name", assetName.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_address_list", nil, opts)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_addresses", nil, opts)
 	if err != nil {
 		return
 	}
