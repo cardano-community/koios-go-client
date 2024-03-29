@@ -71,6 +71,7 @@ var (
 	ErrUnexpectedResponseField  = errors.New("unexpected response field")
 	ErrUTxOInputAlreadyUsed     = errors.New("UTxO already used")
 	ErrNoData                   = errors.New("no data")
+	ErrAsset                    = errors.New("asset error")
 
 	// ZeroLovelace is alias decimal.Zero.
 	ZeroLovelace = decimal.Zero.Copy() //nolint: gochecknoglobals
