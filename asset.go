@@ -141,6 +141,10 @@ type (
 		Response
 		Data []AssetHolder `json:"data"`
 	}
+	AssetNFTAddressResponse struct {
+		Response
+		Data *Address `json:"data"`
+	}
 
 	// AssetInfoResponse represents response from `/asset_info` endpoint.
 	AssetInfoResponse struct {
@@ -478,5 +482,33 @@ func (c *Client) GetAssetUTxOs(
 		return
 	}
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+func (c *Client) GetAssetNftAddress(
+	ctx context.Context,
+	policy PolicyID,
+	name AssetName,
+	opts *RequestOptions,
+) (res *AssetNFTAddressResponse, err error) {
+	res = &AssetNFTAddressResponse{}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+	opts.QuerySet("_asset_name", name.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_nft_address", nil, opts)
+	if err != nil {
+		return
+	}
+
+	var holders []AssetHolder
+
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &holders)
+	if len(holders) > 0 {
+		res.Data = &holders[0].PaymentAddress
+	}
 	return
 }
