@@ -375,7 +375,7 @@ func (c *Client) GetPolicyAssetInfo(
 	}
 	opts.QuerySet("_asset_policy", policy.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_policy_info", nil, opts)
+	rsp, err := c.request(ctx, &res.Response, "GET", "/policy_asset_info", nil, opts)
 	if err != nil {
 		return
 	}
