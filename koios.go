@@ -130,36 +130,6 @@ type (
 		Type string `json:"type"`
 	}
 
-	// Response wraps API responses.
-	Response struct {
-		// RequestURL is full request url.
-		RequestURL string `json:"request_url"`
-
-		// RequestMethod is HTTP method used for request.
-		RequestMethod string `json:"request_method"`
-
-		// StatusCode of the HTTP response.
-		StatusCode int `json:"status_code"`
-
-		// Status of the HTTP response header if present.
-		Status string `json:"status"`
-
-		// Date response header.
-		Date string `json:"date,omitempty"`
-
-		// ContentLocation response header if present.
-		ContentLocation string `json:"content_location,omitempty"`
-
-		// ContentRange response header if present.
-		ContentRange string `json:"content_range,omitempty"`
-
-		// Error response body if present.
-		Error *ResponseError `json:"error,omitempty"`
-
-		// Stats of the request if stats are enabled.
-		Stats *RequestStats `json:"stats,omitempty"`
-	}
-
 	// RequestStats represent collected request stats if collecting
 	// request stats is enabled.
 	RequestStats struct {
