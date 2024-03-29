@@ -132,6 +132,7 @@ type (
 
 	// AssetHolder payment addresses holding the given token (including balance).
 	AssetHolder struct {
+		AssetName      AssetName       `json:"asset_name,omitempty"`
 		PaymentAddress Address         `json:"payment_address"`
 		Quantity       decimal.Decimal `json:"quantity"`
 	}
@@ -510,5 +511,26 @@ func (c *Client) GetAssetNftAddress(
 	if len(holders) > 0 {
 		res.Data = &holders[0].PaymentAddress
 	}
+	return
+}
+
+func (c *Client) GetAssetPolicyAddresses(
+	ctx context.Context,
+	policy PolicyID,
+	opts *RequestOptions,
+) (res *AssetAddressListResponse, err error) {
+	res = &AssetAddressListResponse{}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/policy_asset_addresses", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+
 	return
 }
