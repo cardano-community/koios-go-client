@@ -25,8 +25,6 @@ type (
 		// RequestMethod is HTTP method used for request.
 		RequestMethod string `json:"request_method"`
 
-		RequestHeaders http.Header `json:"request_headers"`
-
 		// StatusCode of the HTTP response.
 		StatusCode int `json:"status_code"`
 
