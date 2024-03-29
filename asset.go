@@ -197,6 +197,11 @@ type (
 		Response
 		Data []TokenRegistryMetadata `json:"data"`
 	}
+
+	AssetUTxOsResponse struct {
+		Response
+		Data []UTxO `json:"data"`
+	}
 )
 
 // String returns AssetName as string.
@@ -433,6 +438,42 @@ func (c *Client) GetAssetTokenRegistry(
 	res = &AssetTokenRegistryResponse{}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_token_registry", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+func (c *Client) GetAssetUTxOs(
+	ctx context.Context,
+	assets []Asset,
+	opts *RequestOptions,
+) (res *AssetUTxOsResponse, err error) {
+	res = &AssetUTxOsResponse{}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+
+	var payload = struct {
+		Assets [][]string `json:"_asset_list"`
+	}{}
+
+	for _, asset := range assets {
+		if asset.PolicyID == "" || asset.AssetName == "" {
+			return nil, fmt.Errorf("%w: policy_id and asset_name must be provided", ErrAsset)
+		}
+		payload.Assets = append(payload.Assets, []string{asset.PolicyID.String(), asset.AssetName.String()})
+	}
+
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/asset_utxos", rpipe, opts)
 	if err != nil {
 		return
 	}
