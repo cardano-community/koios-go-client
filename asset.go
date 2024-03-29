@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"github.com/shopspring/decimal"
 )
@@ -94,14 +95,24 @@ type (
 
 	// AssetInfo info about the asset.
 	AssetInfo struct {
+		// Asset Policy ID (hex).
+		PolicyID PolicyID `json:"policy_id,omitempty"`
 		// Asset Name (hex).
 		AssetName AssetName `json:"asset_name"`
-
 		// Asset Name (ASCII)
 		AssetNameASCII string `json:"asset_name_ascii,omitempty"`
-
 		// The CIP14 fingerprint of the asset
 		Fingerprint AssetFingerprint `json:"fingerprint"`
+		// MintingTxHash mint tx
+		MintingTxHash TxHash `json:"minting_tx_hash,omitempty"`
+		// TotalSupply of Asset
+		TotalSupply decimal.Decimal `json:"total_supply"`
+		// MintCnt count of mint transactions
+		MintCnt int `json:"mint_cnt,omitempty"`
+		// BurnCnt count of burn transactions
+		BurnCnt int `json:"burn_cnt,omitempty"`
+		// CreationTime of Asset
+		CreationTime Timestamp `json:"creation_time,omitempty"`
 
 		// MintingTxMetadata minting Tx JSON payload if it can be decoded as JSON
 		// MintingTxMetadata *TxInfoMetadata `json:"minting_tx_metadata"`
@@ -110,23 +121,7 @@ type (
 		// Asset metadata registered on the Cardano Token Registry
 		TokenRegistryMetadata *TokenRegistryMetadata `json:"token_registry_metadata,omitempty"`
 
-		// Asset Policy ID (hex).
-		PolicyID PolicyID `json:"policy_id,omitempty"`
-
-		// TotalSupply of Asset
-		TotalSupply decimal.Decimal `json:"total_supply"`
-
-		// CreationTime of Asset
-		CreationTime Timestamp `json:"creation_time,omitempty"`
-
-		// MintCnt count of mint transactions
-		MintCnt int `json:"mint_cnt,omitempty"`
-
-		// BurnCnt count of burn transactions
-		BurnCnt int `json:"burn_cnt,omitempty"`
-
-		// MintingTxHash mint tx
-		MintingTxHash TxHash `json:"minting_tx_hash,omitempty"`
+		CIP68Metadata *json.RawMessage `json:"cip68_metadata,omitempty"`
 	}
 
 	// AssetListResponse represents response from `/asset_list` endpoint.
@@ -149,7 +144,7 @@ type (
 
 	// AssetInfoResponse represents response from `/asset_info` endpoint.
 	AssetInfoResponse struct {
-		Data *AssetInfo `json:"data"`
+		Data []AssetInfo `json:"data"`
 		Response
 	}
 
@@ -256,8 +251,7 @@ func (c *Client) GetAssetAddresses(
 // first minting & token registry metadata.
 func (c *Client) GetAssetInfo(
 	ctx context.Context,
-	policy PolicyID,
-	name AssetName,
+	assets []Asset,
 	opts *RequestOptions,
 ) (res *AssetInfoResponse, err error) {
 	res = &AssetInfoResponse{}
@@ -265,19 +259,33 @@ func (c *Client) GetAssetInfo(
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
-	opts.QuerySet("_asset_policy", policy.String())
-	opts.QuerySet("_asset_name", name.String())
 
-	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_info", nil, opts)
+	if len(assets) == 0 {
+		return nil, fmt.Errorf("%w: atleast one asset must be provided", ErrAsset)
+	}
+
+	var payload = struct {
+		Assets [][]string `json:"_asset_list"`
+	}{}
+
+	for _, asset := range assets {
+		if asset.PolicyID == "" || asset.AssetName == "" {
+			return nil, fmt.Errorf("%w: policy_id and asset_name must be provided", ErrAsset)
+		}
+		payload.Assets = append(payload.Assets, []string{asset.PolicyID.String(), asset.AssetName.String()})
+	}
+
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/asset_info", rpipe, opts)
 	if err != nil {
 		return
 	}
-	info := []AssetInfo{}
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &info)
-
-	if len(info) == 1 {
-		res.Data = &info[0]
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
