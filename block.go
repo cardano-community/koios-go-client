@@ -61,7 +61,7 @@ type (
 		// ProtoMajor is protocol major version
 		ProtoMajor int `json:"proto_major,omitempty"`
 		// ProtoMinor is protocol minor version
-		ProtoMinor int `json:"proto_minor,omitempty"`
+		ProtoMinor int `json:"proto_minor"`
 
 		// TotalOutput output of the block (in lovelace)
 		TotalOutput decimal.Decimal `json:"total_output,omitempty"`
@@ -70,7 +70,7 @@ type (
 		TotalFees decimal.Decimal `json:"total_fees,omitempty"`
 
 		// Confirmations is number of confirmations for the block
-		Confirmations int `json:"num_confirmations"`
+		Confirmations int `json:"num_confirmations,omitempty"`
 	}
 
 	// BlocksResponse represents response from `/blocks` endpoint.
