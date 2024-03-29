@@ -91,8 +91,11 @@ type (
 	// BlockTxsHashesResponse represents response from `/block_txs` endpoint.
 
 	BlockTxs struct {
-		BlockHash BlockHash `json:"block_hash"`
-		TxHashes  []TxHash  `json:"tx_hashes"`
+		BlockHash   BlockHash `json:"block_hash"`
+		TxHashes    TxHash    `json:"tx_hash"`
+		EpochNo     EpochNo   `json:"epoch_no"`
+		BlockHeight uint      `json:"block_height"`
+		BlockTime   Timestamp `json:"block_time"`
 	}
 
 	BlocksTxsResponse struct {
