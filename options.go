@@ -79,14 +79,19 @@ func Scheme(scheme string) Option {
 func HTTPClient(client *http.Client) Option {
 	return Option{
 		apply: func(c *Client) error {
-			if c.client != nil {
-				return ErrHTTPClientChange
+			if c.locked {
+				return ErrClientLocked
 			}
+			timeout := time.Second * 60
 			if client == nil {
-				client = &http.Client{
-					Timeout: time.Second * 60,
-				}
+				client = &http.Client{}
 			}
+
+			if client.Timeout == 0 && c.client != nil && c.client.Timeout > 0 {
+				timeout = c.client.Timeout
+			}
+			client.Timeout = timeout
+
 			if client.Timeout == 0 {
 				return ErrHTTPClientTimeoutSetting
 			}
@@ -155,6 +160,18 @@ func EnableRequestsStats(enable bool) Option {
 	return Option{
 		apply: func(c *Client) error {
 			c.reqStatsEnabled = enable
+			return nil
+		},
+	}
+}
+
+func Timeout(timeout time.Duration) Option {
+	return Option{
+		apply: func(c *Client) error {
+			if c.client == nil {
+				return ErrHTTPClientNotSet
+			}
+			c.client.Timeout = timeout
 			return nil
 		},
 	}
