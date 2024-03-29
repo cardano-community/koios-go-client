@@ -26,6 +26,7 @@ type (
 		url             *url.URL
 		client          *http.Client
 		commonHeaders   http.Header
+		locked          bool
 	}
 )
 
@@ -39,16 +40,17 @@ func (c *Client) WithOptions(opts ...Option) (*Client, error) {
 	u, uerr := url.Parse(c.url.String())
 	nc.url = u
 
+	if nc.client == nil {
+		nc.client = c.client
+	}
+
 	// Apply provided options
 	for _, opt := range opts {
 		if err := opt.apply(nc); err != nil {
 			return nil, err
 		}
 	}
-
-	if nc.client == nil {
-		nc.client = c.client
-	}
+	nc.locked = true
 
 	return nc, uerr
 }

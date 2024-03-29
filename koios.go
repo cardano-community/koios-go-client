@@ -72,6 +72,8 @@ var (
 	ErrUTxOInputAlreadyUsed     = errors.New("UTxO already used")
 	ErrNoData                   = errors.New("no data")
 	ErrAsset                    = errors.New("asset error")
+	ErrHTTPClientNotSet         = errors.New("http.Client not set")
+	ErrClientLocked             = errors.New("client is locked")
 
 	// ZeroLovelace is alias decimal.Zero.
 	ZeroLovelace = decimal.Zero.Copy() //nolint: gochecknoglobals
@@ -193,6 +195,13 @@ func New(opts ...Option) (*Client, error) {
 		),
 	)
 
+	// If HttpClient option was not provided
+	// use default http.Client
+	if c.client == nil {
+		// there is really no point to check that error
+		_ = HTTPClient(nil).apply(c)
+	}
+
 	// Apply provided options
 	for _, opt := range opts {
 		if err := opt.apply(c); err != nil {
@@ -209,14 +218,7 @@ func New(opts ...Option) (*Client, error) {
 		// Sets default origin if option was not provided.
 		_ = Origin(DefaultOrigin).apply(c)
 	}
-
-	// If HttpClient option was not provided
-	// use default http.Client
-	if c.client == nil {
-		// there is really no point to check that error
-		_ = HTTPClient(nil).apply(c)
-	}
-
+	c.locked = true
 	return c, nil
 }
 
