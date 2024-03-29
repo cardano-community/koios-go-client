@@ -67,14 +67,14 @@ type (
 
 	// TokenRegistryMetadata metadata registered on the Cardano Token Registry.
 	TokenRegistryMetadata struct {
-		Decimals    int    `json:"decimals"`
-		Description string `json:"description"`
-
-		// A PNG image file as a byte string
-		Logo   string `json:"logo"`
-		Name   string `json:"name"`
-		Ticker string `json:"ticker"`
-		URL    string `json:"url"`
+		PolicyID       PolicyID  `json:"policy_id"`
+		AssetName      AssetName `json:"asset_name"`
+		AccetNameASCII string    `json:"asset_name_ascii"`
+		Ticker         string    `json:"ticker"`
+		Description    string    `json:"description"`
+		URL            string    `json:"url"`
+		Decimals       int       `json:"decimals"`
+		Logo           string    `json:"logo"`
 	}
 
 	// AssetSummary aggregated asset summary.
@@ -195,6 +195,12 @@ type (
 	AssetPolicyAssetListResponse struct {
 		Response
 		Data []PolicyAssetListItem `json:"data"`
+	}
+
+	// AssetTokenRegistryResponse represents response from `/asset_token_registry` endpoint.
+	AssetTokenRegistryResponse struct {
+		Response
+		Data []TokenRegistryMetadata `json:"data"`
 	}
 )
 
@@ -408,6 +414,20 @@ func (c *Client) GetPolicyAssetList(
 		return
 	}
 
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+func (c *Client) GetAssetTokenRegistry(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *AssetTokenRegistryResponse, err error) {
+	res = &AssetTokenRegistryResponse{}
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_token_registry", nil, opts)
+	if err != nil {
+		return
+	}
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
