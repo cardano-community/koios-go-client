@@ -47,7 +47,7 @@ type (
 		RetiringEpoch *EpochNo `json:"retiring_epoch.omitempty"`
 	}
 
-	PoolRegistration struct {
+	PoolRegistrationOrRetirement struct {
 		PoolIDBech32  PoolID    `json:"pool_id_bech32"`
 		TxHash        TxHash    `json:"tx_hash"`
 		BlockHash     BlockHash `json:"block_hash"`
@@ -366,7 +366,12 @@ type (
 
 	PoolRegistrationsResponse struct {
 		Response
-		Data []PoolRegistration `json:"data"`
+		Data []PoolRegistrationOrRetirement `json:"data"`
+	}
+
+	PoolRetirementsResponse struct {
+		Response
+		Data []PoolRegistrationOrRetirement `json:"data"`
 	}
 )
 
@@ -621,6 +626,28 @@ func (c *Client) GetPoolRegistrations(
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_registrations", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+func (c *Client) GetPoolRetirements(
+	ctx context.Context,
+	epoch EpochNo,
+	opts *RequestOptions,
+) (res *PoolRetirementsResponse, err error) {
+	res = &PoolRetirementsResponse{}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+
+	if epoch > 0 {
+		opts.QuerySet("_epoch_no", epoch.String())
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_retirements", nil, opts)
 	if err != nil {
 		return
 	}
