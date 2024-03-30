@@ -224,28 +224,8 @@ func (c *Client) GetAccountInfoCached(
 // for a stake address, or certain epoch if specified.
 func (c *Client) GetAccountRewards(
 	ctx context.Context,
-	acc Address,
-	epoch *EpochNo,
-	opts *RequestOptions,
-) (res *AccountRewardsResponse, err error) {
-	res = &AccountRewardsResponse{}
-
-	res2, err := c.GetAccountsRewards(ctx, []Address{acc}, epoch, opts)
-	if err != nil {
-		return
-	}
-	if len(res2.Data) == 1 {
-		res.Data = &res2.Data[0]
-	} else {
-		return nil, fmt.Errorf("%w: no rewards found for account %s", ErrNoData, acc)
-	}
-	return
-}
-
-func (c *Client) GetAccountsRewards(
-	ctx context.Context,
 	accs []Address,
-	epoch *EpochNo,
+	epoch EpochNo,
 	opts *RequestOptions,
 ) (res *AccountsRewardsResponse, err error) {
 	res = &AccountsRewardsResponse{}
@@ -254,7 +234,11 @@ func (c *Client) GetAccountsRewards(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_rewards", stakeAddressesPL(accs, epoch, nil), opts)
+	var epochNo *EpochNo
+	if epoch > 0 {
+		epochNo = &epoch
+	}
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_rewards", stakeAddressesPL(accs, epochNo, nil), opts)
 	if err != nil {
 		return
 	}
