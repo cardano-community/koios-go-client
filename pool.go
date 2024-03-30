@@ -84,6 +84,8 @@ type (
 
 		// MetaJson pool meta json
 		MetaJSON *PoolMetaJSON `json:"meta_json,omitempty"`
+
+		PoolStatus string `json:"pool_status"`
 	}
 
 	// Relay defines model for pool relay.
