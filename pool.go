@@ -247,9 +247,9 @@ type (
 
 	// PoolRelays list item.
 	PoolRelays struct {
-		PoolID PoolID `json:"pool_id_bech32"`
-		// Relays of the pool.
-		Relays []Relay `json:"relays"`
+		PoolIDBech32 PoolID  `json:"pool_id_bech32"`
+		Relays       []Relay `json:"relays"`
+		PoolStatus   string  `json:"pool_status"`
 	}
 
 	// PoolBlockInfo block info.
