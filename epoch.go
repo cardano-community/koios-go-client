@@ -216,14 +216,14 @@ func (c *Client) GetEpochParams(
 // GetEpochBlockProtocols returns the information about block protocol distribution in epoch.
 func (c *Client) GetEpochBlockProtocols(
 	ctx context.Context,
-	epoch *EpochNo,
+	epoch EpochNo,
 	opts *RequestOptions,
 ) (res *EpochBlockProtocolsResponse, err error) {
 	res = &EpochBlockProtocolsResponse{}
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
-	if epoch != nil {
+	if epoch > 0 {
 		opts.QuerySet("_epoch_no", epoch.String())
 	}
 
