@@ -204,6 +204,23 @@ type (
 		Response
 		Data []UTxO `json:"data"`
 	}
+
+	PolicyAssetMintsResponse struct {
+		Response
+		Data []PolicyAssetMint `json:"data"`
+	}
+
+	PolicyAssetMint struct {
+		AssetName      AssetName        `json:"asset_name"`
+		AssetNameASCII string           `json:"asset_name_ascii"`
+		Fingerprint    AssetFingerprint `json:"fingerprint"`
+		MintingTxHash  TxHash           `json:"minting_tx_hash"`
+		TotalSupply    decimal.Decimal  `json:"total_supply"`
+		MintCNT        uint             `json:"mint_cnt"`
+		BurnCNT        uint             `json:"burn_cnt"`
+		CreationTime   Timestamp        `json:"creation_time"`
+		Decimals       uint8            `json:"decimals"`
+	}
 )
 
 // String returns AssetName as string.
@@ -534,5 +551,26 @@ func (c *Client) GetPolicyAssetAddresses(
 	}
 	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 
+	return
+}
+
+func (c *Client) GetPolicyAssetMints(
+	ctx context.Context,
+	policy PolicyID,
+	opts *RequestOptions,
+) (res *PolicyAssetMintsResponse, err error) {
+	res = &PolicyAssetMintsResponse{}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/policy_asset_mints", nil, opts)
+	if err != nil {
+		return
+	}
+
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
