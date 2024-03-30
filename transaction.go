@@ -304,25 +304,8 @@ func (c *Client) SubmitSignedTx(
 	return res, err
 }
 
-// GetTxStatus returns status of transaction.
+// GetTxStatus returns status of transaction(s).
 func (c *Client) GetTxStatus(
-	ctx context.Context,
-	hash TxHash,
-	opts *RequestOptions,
-) (res *TxStatusResponse, err error) {
-	res = &TxStatusResponse{}
-	rsp, err := c.GetTxsStatuses(ctx, []TxHash{hash}, opts)
-	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
-		res.Data = &rsp.Data[0]
-	} else {
-		err = fmt.Errorf("%w: %s", ErrNoData, hash)
-	}
-	return
-}
-
-// GetTxsStatuses returns status of transaction(s).
-func (c *Client) GetTxsStatuses(
 	ctx context.Context,
 	txs []TxHash,
 	opts *RequestOptions,
