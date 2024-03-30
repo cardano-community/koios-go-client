@@ -239,23 +239,6 @@ func (c *Client) GetTxInfo(
 // GetTxMetadata returns metadata information (if any) for given transaction.
 func (c *Client) GetTxMetadata(
 	ctx context.Context,
-	hash TxHash,
-	opts *RequestOptions,
-) (res *TxMetadataResponse, err error) {
-	res = &TxMetadataResponse{}
-	rsp, err := c.GetTxsMetadata(ctx, []TxHash{hash}, opts)
-	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
-		res.Data = &rsp.Data[0]
-	} else {
-		err = fmt.Errorf("%w: %s", ErrNoData, hash)
-	}
-	return
-}
-
-// GetTxsMetadata returns metadata for requested transaction(s).
-func (c *Client) GetTxsMetadata(
-	ctx context.Context,
 	txs []TxHash,
 	opts *RequestOptions,
 ) (*TxsMetadataResponse, error) {
