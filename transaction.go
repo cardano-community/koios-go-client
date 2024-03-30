@@ -236,43 +236,6 @@ func (c *Client) GetTxInfo(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
-// GetTxUTxOs returns UTxO set (inputs/outputs) of transaction.
-func (c *Client) GetTxUTxOs(
-	ctx context.Context,
-	hash TxHash,
-	opts *RequestOptions,
-) (res *TxUTxOsResponse, err error) {
-	res = &TxUTxOsResponse{}
-	rsp, err := c.GetTxsUTxOs(ctx, []TxHash{hash}, opts)
-	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
-		res.Data = &rsp.Data[0]
-	} else {
-		err = fmt.Errorf("%w: %s", ErrNoData, hash)
-	}
-	return
-}
-
-// GetTxsUTxOs returns UTxO set (inputs/outputs) of transactions.
-func (c *Client) GetTxsUTxOs(
-	ctx context.Context,
-	txs []TxHash,
-	opts *RequestOptions,
-) (*TxsUTxOsResponse, error) {
-	res := &TxsUTxOsResponse{}
-	if len(txs) == 0 || len(txs[0]) == 0 {
-		err := ErrNoTxHash
-		res.applyError(nil, err)
-		return res, err
-	}
-
-	rsp, err := c.request(ctx, &res.Response, "POST", "/tx_utxos", txHashesPL(txs), opts)
-	if err != nil {
-		return res, err
-	}
-	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
-}
-
 // GetTxMetadata returns metadata information (if any) for given transaction.
 func (c *Client) GetTxMetadata(
 	ctx context.Context,
