@@ -145,6 +145,11 @@ type (
 		Response
 		Data []AccountHistory `json:"data"`
 	}
+
+	AccountTXsResponse struct {
+		Response
+		Data []TxListItem `json:"data"`
+	}
 )
 
 // GetAccountList returns a list of all accounts.
@@ -432,6 +437,27 @@ func (c *Client) GetAccountUtxos(
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/account_utxos", stakeAddressesPL(accs, nil, &extended), opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+func (c *Client) GetAccountTxs(
+	ctx context.Context,
+	acc Address,
+	afterBlockHeight uint64,
+	opts *RequestOptions,
+) (res *AccountTXsResponse, err error) {
+	res = &AccountTXsResponse{}
+
+	opts.QueryAdd("_stake_address", acc.String())
+	if afterBlockHeight > 0 {
+		opts.QueryAdd("after_block_height", fmt.Sprint(afterBlockHeight))
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/account_txs", nil, opts)
 	if err != nil {
 		return
 	}
