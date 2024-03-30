@@ -448,7 +448,7 @@ func (c *Client) GetPoolDelegators(
 func (c *Client) GetPoolDelegatorsHistory(
 	ctx context.Context,
 	pid PoolID,
-	epoch *EpochNo,
+	epoch EpochNo,
 	opts *RequestOptions,
 ) (res *PoolDelegatorsHistoryResponse, err error) {
 	res = &PoolDelegatorsHistoryResponse{}
@@ -457,7 +457,7 @@ func (c *Client) GetPoolDelegatorsHistory(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_pool_bech32", pid.String())
-	if epoch != nil {
+	if epoch > 0 {
 		opts.QuerySet("_epoch_no", epoch.String())
 	}
 
