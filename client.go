@@ -27,6 +27,7 @@ type (
 		client          *http.Client
 		commonHeaders   http.Header
 		locked          bool
+		auth            *AuthInfo
 	}
 )
 
@@ -195,7 +196,9 @@ func (c *Client) applyReqHeaders(req *http.Request, headers http.Header) {
 }
 
 func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Response, error) {
-	res.Stats = &RequestStats{}
+	res.Stats = &RequestStats{
+		Auth: c.getAuth(),
+	}
 	var dns, tlshs, connect time.Time
 	req = req.WithContext(
 		httptrace.WithClientTrace(

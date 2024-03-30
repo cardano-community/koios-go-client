@@ -82,7 +82,7 @@ func HTTPClient(client *http.Client) Option {
 			if c.locked {
 				return ErrClientLocked
 			}
-			timeout := time.Second * 60
+			timeout := DefaultTimeout
 			if client == nil {
 				client = &http.Client{}
 			}

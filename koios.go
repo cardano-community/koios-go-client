@@ -48,7 +48,8 @@ const (
 	// DefaultOrigin is default origin header used by api client.
 	DefaultOrigin = "https://github.com/cardano-community/koios-go-client/v4"
 	// PageSize is default page size used by api client.
-	PageSize uint = 1000
+	PageSize       uint = 1000
+	DefaultTimeout      = 30 * time.Second
 )
 
 // Predefined errors used by the library.
@@ -76,6 +77,7 @@ var (
 	ErrClientLocked             = errors.New("client is locked")
 	ErrNoScriptHash             = errors.New("missing script hash(es)")
 	ErrNoUTxORef                = errors.New("missing UTxO reference(s)")
+	ErrAuth                     = errors.New("auth error")
 
 	// ZeroLovelace is alias decimal.Zero.
 	ZeroLovelace = decimal.Zero.Copy() //nolint: gochecknoglobals
@@ -158,6 +160,8 @@ type (
 
 		// ReqDurStr String representation of ReqDur.
 		ReqDurStr string `json:"req_dur_str,omitempty"`
+
+		Auth AuthInfo `json:"auth"`
 	}
 )
 
@@ -178,6 +182,7 @@ type (
 func New(opts ...Option) (*Client, error) {
 	c := &Client{
 		commonHeaders: make(http.Header),
+		auth:          &AuthInfo{},
 	}
 	// set default base url
 	_ = c.setBaseURL(DefaultScheme, MainnetHost, DefaultAPIVersion, DefaultPort)
