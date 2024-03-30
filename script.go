@@ -109,6 +109,12 @@ type (
 
 		// Hash of a script
 		ScriptHash string `json:"script_hash"`
+
+		// Type of the script
+		Type string `json:"type"`
+
+		// Size of the script
+		Size uint `json:"size"`
 	}
 
 	// PlutusScriptListResponse represents response from `/plutus_script_list` endpoint.
