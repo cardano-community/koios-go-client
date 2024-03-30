@@ -277,6 +277,7 @@ type (
 		FixedCost      decimal.Decimal `json:"fixed_cost"`
 		PoolFees       decimal.Decimal `json:"pool_fees"`
 		DelegRewards   decimal.Decimal `json:"deleg_rewards"`
+		MemberRewards  decimal.Decimal `json:"member_rewards"`
 		EpochROS       decimal.Decimal `json:"epoch_ros"`
 	}
 
@@ -558,7 +559,7 @@ func (c *Client) GetPoolMetadata(
 func (c *Client) GetPoolHistory(
 	ctx context.Context,
 	pid PoolID,
-	epoch *EpochNo,
+	epoch EpochNo,
 	opts *RequestOptions,
 ) (res *PoolHistoryResponse, err error) {
 	res = &PoolHistoryResponse{}
@@ -567,7 +568,7 @@ func (c *Client) GetPoolHistory(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_pool_bech32", pid.String())
-	if epoch != nil {
+	if epoch > 0 {
 		opts.QuerySet("_epoch_no", epoch.String())
 	}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_history", nil, opts)
