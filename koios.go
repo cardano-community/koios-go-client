@@ -74,6 +74,7 @@ var (
 	ErrAsset                    = errors.New("asset error")
 	ErrHTTPClientNotSet         = errors.New("http.Client not set")
 	ErrClientLocked             = errors.New("client is locked")
+	ErrNoScriptHash             = errors.New("missing script hash(es)")
 
 	// ZeroLovelace is alias decimal.Zero.
 	ZeroLovelace = decimal.Zero.Copy() //nolint: gochecknoglobals
