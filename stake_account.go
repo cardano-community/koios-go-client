@@ -248,28 +248,7 @@ func (c *Client) GetAccountRewards(
 
 // GetAccountUpdates (History) retruns the account updates
 // (registration, deregistration, delegation and withdrawals).
-
 func (c *Client) GetAccountUpdates(
-	ctx context.Context,
-	acc Address,
-	epoch *EpochNo,
-	opts *RequestOptions,
-) (res *AccountUpdatesResponse, err error) {
-	res = &AccountUpdatesResponse{}
-
-	res2, err := c.GetAccountsUpdates(ctx, []Address{acc}, opts)
-	if err != nil {
-		return
-	}
-	if len(res2.Data) == 1 {
-		res.Data = &res2.Data[0]
-	} else {
-		return nil, fmt.Errorf("%w: no updates found for account %s", ErrNoData, acc)
-	}
-	return
-}
-
-func (c *Client) GetAccountsUpdates(
 	ctx context.Context,
 	accs []Address,
 	opts *RequestOptions,
