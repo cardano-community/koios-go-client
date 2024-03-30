@@ -53,20 +53,16 @@ type (
 		// StakeAddress for transaction's output UTxO.
 		StakeAddress *Address `json:"stake_addr,omitempty"`
 		// where funds were sent or change to be returned.
-		PaymentAddr *PaymentAddr `json:"payment_addr,omitempty"`
-
-		EpochNo     EpochNo   `json:"epoch_no"`
-		BlockHeight uint64    `json:"block_height"`
-		BlockTime   Timestamp `json:"block_time"`
-
-		DatumHash       DatumHash `json:"datum_hash"`
-		InlineDatum     any       `json:"inline_datum"`
-		ReferenceScript any       `json:"reference_script"`
-
+		PaymentCred     *PaymentCredential `json:"payment_cred,omitempty"`
+		EpochNo         EpochNo            `json:"epoch_no"`
+		BlockHeight     uint64             `json:"block_height"`
+		BlockTime       Timestamp          `json:"block_time"`
+		DatumHash       DatumHash          `json:"datum_hash"`
+		InlineDatum     any                `json:"inline_datum"`
+		ReferenceScript any                `json:"reference_script"`
 		// An array of assets to be included in output UTxO.
 		AssetList []Asset `json:"asset_list,omitempty"`
-
-		IsSpent bool `json:"is_spent,omitempty"`
+		IsSpent   bool    `json:"is_spent,omitempty"`
 	}
 
 	// TxsWithdrawal withdrawal record in transaction.
