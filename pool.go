@@ -404,7 +404,7 @@ func (c *Client) GetPoolInfos(
 	return
 }
 
-func (c *Client) GetPoolSnapshot(
+func (c *Client) GetPoolStakeSnapshot(
 	ctx context.Context,
 	pid PoolID,
 	opts *RequestOptions,
