@@ -133,7 +133,7 @@ type (
 
 	AccountAssets struct {
 		StakeAddress Address `json:"stake_address"`
-		Assets       []Asset `json:"asset_list"`
+		Asset
 	}
 
 	// AccountHistoryResponse represents response from `/account_history` endpoint.
@@ -290,25 +290,6 @@ func (c *Client) GetAccountAddresses(
 
 // GetAccountAssets retruns all the native asset balance of an account.
 func (c *Client) GetAccountAssets(
-	ctx context.Context,
-	acc Address,
-	opts *RequestOptions,
-) (res *AccountAssetsResponse, err error) {
-	res = &AccountAssetsResponse{}
-
-	res2, err := c.GetAccountsAssets(ctx, []Address{acc}, opts)
-	if err != nil {
-		return
-	}
-	if len(res2.Data) == 1 {
-		res.Data = &res2.Data[0]
-	} else {
-		return nil, fmt.Errorf("%w: no assets found for account %s", ErrNoData, acc)
-	}
-	return
-}
-
-func (c *Client) GetAccountsAssets(
 	ctx context.Context,
 	accs []Address,
 	opts *RequestOptions,
