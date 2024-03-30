@@ -96,76 +96,54 @@ type (
 
 	// PoolInfo defines model for pool_info.
 	PoolInfo struct {
+		// ID (bech32 format)
+		PoolIDBech32 PoolID `json:"pool_id_bech32"`
+		// IDHex Pool ID (Hex format)
+		PoolIDHex string `json:"pool_id_hex"`
 		// ActiveEpochNo Block number on chain where transaction was included.
 		ActiveEpoch EpochNo `json:"active_epoch_no"`
-
-		// ActiveStake Pool active stake.
-		ActiveStake decimal.Decimal `json:"active_stake"`
-
-		// Total pool blocks on chain
-		BlockCount uint64 `json:"block_count"`
-
-		// FixedCost Pool fixed cost per epoch
-		FixedCost decimal.Decimal `json:"fixed_cost"`
-
-		// LiveDelegators Pool live delegator count
-		LiveDelegators uint64 `json:"live_delegators"`
-
-		// LiveSaturation Pool live saturation (decimal format)
-		LiveSaturation float32 `json:"live_saturation"`
-
-		// LiveStake Pool live stake
-		LiveStake decimal.Decimal `json:"live_stake"`
-
-		// LivePledge Pool live pledge
-		LivePledge decimal.Decimal `json:"live_pledge"`
-
-		// Margin (decimal format)
-		Margin float32 `json:"margin"`
-
-		// MetaHash Pool metadata hash
-		MetaHash string `json:"meta_hash"`
-
-		// MetaJson pool meta json
-		MetaJSON PoolMetaJSON `json:"meta_json"`
-
-		// MetaUrl Pool metadata URL
-		MetaURL string `json:"meta_url"`
-
-		// OpCert Pool latest operational certificate hash
-		OpCert string `json:"op_cert"`
-
-		// OpCertCounter Pool latest operational certificate counter value
-		OpCertCounter int `json:"op_cert_counter"`
-
-		// Owners of the pool
-		Owners []Address `json:"owners"`
-
-		// Pledge pledge in lovelace
-		Pledge decimal.Decimal `json:"pledge"`
-
-		// ID (bech32 format)
-		PoolID PoolID `json:"pool_id_bech32"`
-
-		// IDHex Pool ID (Hex format)
-		PoolIdHex string `json:"pool_id_hex"`
-
-		// Pool status (registered | retiring | retired)
-		PoolStatus string `json:"pool_status"`
-
-		// Announced retiring epoch (nullable)
-		RetiringEpoch *EpochNo `json:"retiring_epoch"`
-
-		// Pool reward address
-		RewardAddr Address `json:"reward_addr"`
-
 		// Pool VRF key hash
 		VrfKeyHash string `json:"vrf_key_hash"`
-
+		// Margin (decimal format)
+		Margin float32 `json:"margin"`
+		// FixedCost Pool fixed cost per epoch
+		FixedCost decimal.Decimal `json:"fixed_cost"`
+		// Pledge pledge in lovelace
+		Pledge decimal.Decimal `json:"pledge"`
+		// Pool reward address
+		RewardAddr Address `json:"reward_addr"`
+		// Owners of the pool
+		Owners []Address `json:"owners"`
 		// Relays of the pool
 		Relays []Relay `json:"relays"`
-
-		Sigma float64 `json:"sigma"`
+		// MetaUrl Pool metadata URL
+		MetaURL string `json:"meta_url"`
+		// MetaHash Pool metadata hash
+		MetaHash string `json:"meta_hash"`
+		// MetaJson pool meta json
+		MetaJSON PoolMetaJSON `json:"meta_json"`
+		// Pool status (registered | retiring | retired)
+		PoolStatus string `json:"pool_status"`
+		// Announced retiring epoch (nullable)
+		RetiringEpoch *EpochNo `json:"retiring_epoch"`
+		// OpCert Pool latest operational certificate hash
+		OpCert string `json:"op_cert"`
+		// OpCertCounter Pool latest operational certificate counter value
+		OpCertCounter int `json:"op_cert_counter"`
+		// ActiveStake Pool active stake.
+		ActiveStake decimal.Decimal `json:"active_stake"`
+		// Pool relative active stake share
+		Sigma decimal.Decimal `json:"sigma"`
+		// Total pool blocks on chain
+		BlockCount uint64 `json:"block_count"`
+		// LivePledge Pool live pledge
+		LivePledge decimal.Decimal `json:"live_pledge"`
+		// LiveStake Pool live stake
+		LiveStake decimal.Decimal `json:"live_stake"`
+		// LiveDelegators Pool live delegator count
+		LiveDelegators uint64 `json:"live_delegators"`
+		// LiveSaturation Pool live saturation (decimal format)
+		LiveSaturation float32 `json:"live_saturation"`
 	}
 
 	// PoolUpdateInfo response item from `/pool_updates`.
