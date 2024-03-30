@@ -147,6 +147,9 @@ func (c *Client) request(
 		return nil, err
 	}
 
+	if auth := c.getAuth(); auth.token != "" {
+		opts.HeaderAdd("Authorization", "Bearer "+auth.token)
+	}
 	c.applyReqHeaders(req, opts.headers)
 
 	var (
