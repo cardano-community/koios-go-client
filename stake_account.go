@@ -270,27 +270,8 @@ func (c *Client) GetAccountUpdates(
 // GetAccountAddresses retruns all addresses associated with an account.
 func (c *Client) GetAccountAddresses(
 	ctx context.Context,
-	acc Address,
-	epoch *EpochNo,
-	opts *RequestOptions,
-) (res *AccountAddressesResponse, err error) {
-	res = &AccountAddressesResponse{}
-
-	res2, err := c.GetAccountsAddresses(ctx, []Address{acc}, opts)
-	if err != nil {
-		return
-	}
-	if len(res2.Data) == 1 {
-		res.Data = &res2.Data[0]
-	} else {
-		return nil, fmt.Errorf("%w: no updates found for account %s", ErrNoData, acc)
-	}
-	return
-}
-
-func (c *Client) GetAccountsAddresses(
-	ctx context.Context,
 	accs []Address,
+	firstOnly, empty bool,
 	opts *RequestOptions,
 ) (res *AccountsAddressesResponse, err error) {
 	res = &AccountsAddressesResponse{}
@@ -299,7 +280,7 @@ func (c *Client) GetAccountsAddresses(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_addresses", stakeAddressesPL(accs, nil, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_addresses", stakeAddresses2PL(accs, firstOnly, empty), opts)
 	if err != nil {
 		return
 	}
@@ -434,6 +415,29 @@ func stakeAddressesPL(addrs []Address, epoch *EpochNo, extended *bool) io.Reader
 		Epoch    *EpochNo  `json:"_epoch_no,omitempty"`
 		Extended *bool     `json:"_extended,omitempty"`
 	}{addrs, epoch, extended}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+	return rpipe
+}
+
+func stakeAddresses2PL(addrs []Address, firstOnly, empty bool) io.Reader {
+	var (
+		firstOnlyVal, emptyVal *bool
+	)
+	if firstOnly {
+		firstOnlyVal = &firstOnly
+	}
+	if empty {
+		emptyVal = &empty
+	}
+	var payload = struct {
+		Adresses  []Address `json:"_stake_addresses"`
+		FirstOnly *bool     `json:"_first_only,omitempty"`
+		Empty     *bool     `json:"_empty,omitempty"`
+	}{addrs, firstOnlyVal, emptyVal}
 	rpipe, w := io.Pipe()
 	go func() {
 		_ = json.NewEncoder(w).Encode(payload)
