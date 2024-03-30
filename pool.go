@@ -47,6 +47,16 @@ type (
 		RetiringEpoch *EpochNo `json:"retiring_epoch.omitempty"`
 	}
 
+	PoolRegistration struct {
+		PoolIDBech32  PoolID    `json:"pool_id_bech32"`
+		TxHash        TxHash    `json:"tx_hash"`
+		BlockHash     BlockHash `json:"block_hash"`
+		BlockHeight   uint64    `json:"block_height"`
+		EpochNo       EpochNo   `json:"epoch_no"`
+		EpochSlot     Slot      `json:"epoch_slot"`
+		ActiveEpochNo EpochNo   `json:"active_epoch_no"`
+	}
+
 	// PoolMetaJSON pool meadata json.
 	PoolMetaJSON struct {
 		// Pool description
@@ -353,6 +363,11 @@ type (
 		Response
 		Data []PoolHistory `json:"data"`
 	}
+
+	PoolRegistrationsResponse struct {
+		Response
+		Data []PoolRegistration `json:"data"`
+	}
 )
 
 // GetPoolList returns the list of all currently registered/retiring (not retired) pools.
@@ -589,4 +604,26 @@ func poolIdsPL(pids []PoolID) io.Reader {
 		defer w.Close()
 	}()
 	return rpipe
+}
+
+func (c *Client) GetPoolRegistrations(
+	ctx context.Context,
+	epoch EpochNo,
+	opts *RequestOptions,
+) (res *PoolRegistrationsResponse, err error) {
+	res = &PoolRegistrationsResponse{}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+
+	if epoch > 0 {
+		opts.QuerySet("_epoch_no", epoch.String())
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_registrations", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
 }
