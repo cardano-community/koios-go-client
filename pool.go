@@ -19,10 +19,32 @@ type (
 	// PoolListItem defines model for pool list item.
 	PoolListItem struct {
 		// PoolID Bech32 representation of pool ID.
-		PoolID PoolID `json:"pool_id_bech32"`
-
+		PoolIDBech32 PoolID `json:"pool_id_bech32"`
+		PoolIDHEX    PoolID `json:"pool_id_hex"`
+		// ActiveEpochNo Block number on chain where transaction was included.
+		ActiveEpochNo EpochNo `json:"active_epoch_no"`
+		// Margin (decimal format)
+		Margin float32 `json:"margin"`
+		// FixedCost Pool fixed cost per epoch
+		FixedCost decimal.Decimal `json:"fixed_cost"`
+		// Pledge pledge in lovelace.
+		Pledge decimal.Decimal `json:"pledge"`
+		// Pool reward address.
+		RewardAddr Address `json:"reward_addr"`
+		// Owners of the pool
+		Owners []Address `json:"owners"`
+		// Relays of the pool
+		Relays []Relay `json:"relays"`
 		// Ticker of Pool.
 		Ticker string `json:"ticker,omitempty"`
+		// MetaUrl Pool metadata URL
+		MetaURL string `json:"meta_url"`
+		// MetaHash Pool metadata hash
+		MetaHash string `json:"meta_hash"`
+		// Pool status (registered | retiring | retired).
+		PoolStatus string `json:"pool_status"`
+		// Announced retiring epoch (nullable).
+		RetiringEpoch *EpochNo `json:"retiring_epoch.omitempty"`
 	}
 
 	// PoolMetaJSON pool meadata json.
@@ -355,7 +377,7 @@ type (
 )
 
 // GetPoolList returns the list of all currently registered/retiring (not retired) pools.
-func (c *Client) GetPools(
+func (c *Client) GetPoolList(
 	ctx context.Context,
 	opts *RequestOptions,
 ) (res *PoolListResponse, err error) {
