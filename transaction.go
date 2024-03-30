@@ -73,6 +73,13 @@ type (
 		StakeAddress Address `json:"stake_addr,omitempty"`
 	}
 
+	TxListItem struct {
+		TxHash      TxHash    `json:"tx_hash"`
+		BlockHeight uint64    `json:"block_height"`
+		BlockTime   Timestamp `json:"block_time"`
+		EpochNo     EpochNo   `json:"epoch_no"`
+	}
+
 	// TxInfo transaction info.
 	TxInfo struct {
 		// BlockHash is hash of the block in which transaction was included.
