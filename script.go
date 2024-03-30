@@ -81,7 +81,7 @@ type (
 		Address       Address    `json:"address"`
 		ScriptHash    ScriptHash `json:"script_hash"`
 		ByteCode      string     `json:"bytecode"`
-		Size          int        `json:"size"`
+		Size          uint       `json:"size"`
 		ValidContract bool       `json:"valid_contract"`
 	}
 
@@ -93,10 +93,7 @@ type (
 		// Hash of a script
 		ScriptHash string `json:"script_hash"`
 		Type       string `json:"type"`
-		Script     struct {
-			Type    string            `json:"type"`
-			Scripts []json.RawMessage `json:"scripts"`
-		} `json:"script"`
+		Size       uint   `json:"size"`
 	}
 
 	// NativeScriptListResponse represents response from `/native_script_list` endpoint.
