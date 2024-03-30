@@ -75,6 +75,7 @@ var (
 	ErrHTTPClientNotSet         = errors.New("http.Client not set")
 	ErrClientLocked             = errors.New("client is locked")
 	ErrNoScriptHash             = errors.New("missing script hash(es)")
+	ErrNoUTxORef                = errors.New("missing UTxO reference(s)")
 
 	// ZeroLovelace is alias decimal.Zero.
 	ZeroLovelace = decimal.Zero.Copy() //nolint: gochecknoglobals

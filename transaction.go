@@ -227,6 +227,13 @@ type (
 		Response
 		Data *TxStatus `json:"data"`
 	}
+
+	UTxORef string
+
+	UTxOInfoResponse struct {
+		Response
+		Data []UTxO `json:"data"`
+	}
 )
 
 // GetTxInfo returns detailed information about transaction.
@@ -425,10 +432,49 @@ func (c *Client) GetTxsStatuses(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
+func (c *Client) GetUTxOInfo(
+	ctx context.Context,
+	refs []UTxORef,
+	extended bool,
+	opts *RequestOptions,
+) (*UTxOInfoResponse, error) {
+	res := &UTxOInfoResponse{}
+	if len(refs) == 0 {
+		err := ErrNoUTxORef
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/utxo_info", utxoRefsPL(refs, extended), opts)
+	if err != nil {
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
 func txHashesPL(txs []TxHash) io.Reader {
 	var payload = struct {
 		TxHashes []TxHash `json:"_tx_hashes"`
 	}{txs}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+	return rpipe
+}
+
+func utxoRefsPL(refs []UTxORef, extended bool) io.Reader {
+	var payload = struct {
+		UtxORefs []UTxORef `json:"_utxo_refs"`
+		Extended bool      `json:"_extended"`
+	}{refs, extended}
 	rpipe, w := io.Pipe()
 	go func() {
 		_ = json.NewEncoder(w).Encode(payload)
