@@ -175,27 +175,7 @@ func (c *Client) GetAccountList(
 // GetAccountInfo returns the account info of any (payment or staking) address.
 func (c *Client) GetAccountInfo(
 	ctx context.Context,
-	acc Address,
-	cached bool,
-	opts *RequestOptions,
-) (res *AccountInfoResponse, err error) {
-	res = &AccountInfoResponse{}
-	res2, err := c.GetAccountsInfo(ctx, []Address{acc}, cached, opts)
-	if err != nil {
-		return
-	}
-	if len(res2.Data) == 1 {
-		res.Data = &res2.Data[0]
-	} else {
-		return nil, fmt.Errorf("%w: no account info found for address %s", ErrNoData, acc)
-	}
-	return
-}
-
-func (c *Client) GetAccountsInfo(
-	ctx context.Context,
 	accs []Address,
-	cached bool,
 	opts *RequestOptions,
 ) (res *AccountsInfoResponse, err error) {
 	res = &AccountsInfoResponse{}
@@ -205,9 +185,27 @@ func (c *Client) GetAccountsInfo(
 		return
 	}
 	endpoint := "/account_info"
-	if cached {
-		endpoint = "/account_info_cached"
+
+	rsp, err := c.request(ctx, &res.Response, "POST", endpoint, stakeAddressesPL(accs, nil), opts)
+	if err != nil {
+		return
 	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+func (c *Client) GetAccountInfoCached(
+	ctx context.Context,
+	accs []Address,
+	opts *RequestOptions,
+) (res *AccountsInfoResponse, err error) {
+	res = &AccountsInfoResponse{}
+	if len(accs) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+	endpoint := "/account_info_cached"
 
 	rsp, err := c.request(ctx, &res.Response, "POST", endpoint, stakeAddressesPL(accs, nil), opts)
 	if err != nil {
