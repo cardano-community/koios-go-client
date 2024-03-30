@@ -186,7 +186,7 @@ func (c *Client) GetAccountInfo(
 	}
 	endpoint := "/account_info"
 
-	rsp, err := c.request(ctx, &res.Response, "POST", endpoint, stakeAddressesPL(accs, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", endpoint, stakeAddressesPL(accs, nil, nil), opts)
 	if err != nil {
 		return
 	}
@@ -207,7 +207,7 @@ func (c *Client) GetAccountInfoCached(
 	}
 	endpoint := "/account_info_cached"
 
-	rsp, err := c.request(ctx, &res.Response, "POST", endpoint, stakeAddressesPL(accs, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", endpoint, stakeAddressesPL(accs, nil, nil), opts)
 	if err != nil {
 		return
 	}
@@ -249,7 +249,7 @@ func (c *Client) GetAccountsRewards(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_rewards", stakeAddressesPL(accs, epoch), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_rewards", stakeAddressesPL(accs, epoch, nil), opts)
 	if err != nil {
 		return
 	}
@@ -291,7 +291,7 @@ func (c *Client) GetAccountsUpdates(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_updates", stakeAddressesPL(accs, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_updates", stakeAddressesPL(accs, nil, nil), opts)
 	if err != nil {
 		return
 	}
@@ -331,7 +331,7 @@ func (c *Client) GetAccountsAddresses(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_addresses", stakeAddressesPL(accs, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_addresses", stakeAddressesPL(accs, nil, nil), opts)
 	if err != nil {
 		return
 	}
@@ -370,7 +370,7 @@ func (c *Client) GetAccountsAssets(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_assets", stakeAddressesPL(accs, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_assets", stakeAddressesPL(accs, nil, nil), opts)
 	if err != nil {
 		return
 	}
@@ -410,7 +410,7 @@ func (c *Client) GetAccountsHistory(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_history", stakeAddressesPL(accs, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_history", stakeAddressesPL(accs, nil, nil), opts)
 	if err != nil {
 		return
 	}
@@ -418,11 +418,33 @@ func (c *Client) GetAccountsHistory(
 	return
 }
 
-func stakeAddressesPL(addrs []Address, epoch *EpochNo) io.Reader {
+func (c *Client) GetAccountUtxos(
+	ctx context.Context,
+	accs []Address,
+	extended bool,
+	opts *RequestOptions,
+) (res *UTxOsResponse, err error) {
+	res = &UTxOsResponse{}
+	if len(accs) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_utxos", stakeAddressesPL(accs, nil, &extended), opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+func stakeAddressesPL(addrs []Address, epoch *EpochNo, extended *bool) io.Reader {
 	var payload = struct {
 		Adresses []Address `json:"_stake_addresses"`
 		Epoch    *EpochNo  `json:"_epoch_no,omitempty"`
-	}{addrs, epoch}
+		Extended *bool     `json:"_extended,omitempty"`
+	}{addrs, epoch, extended}
 	rpipe, w := io.Pipe()
 	go func() {
 		_ = json.NewEncoder(w).Encode(payload)
