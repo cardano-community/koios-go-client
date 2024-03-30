@@ -137,6 +137,11 @@ type (
 		Response
 		Data []ScriptInfo `json:"data"`
 	}
+
+	ScriptUTxOsResponse struct {
+		Response
+		Data []UTxO `json:"data"`
+	}
 )
 
 // String returns ScriptHash as string.
@@ -262,6 +267,33 @@ func (c *Client) GetScriptInfo(
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/script_info", scriptHashesPL(hashes), opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+func (c *Client) GetScriptUtxos(
+	ctx context.Context,
+	hash ScriptHash,
+	Extended bool,
+	opts *RequestOptions,
+) (*ScriptUTxOsResponse, error) {
+	res := &ScriptUTxOsResponse{}
+	if len(hash) == 0 {
+		err := ErrNoScriptHash
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+
+	opts.QuerySet("_extended", fmt.Sprintf("%t", Extended))
+	opts.QuerySet("_script_hash", hash.String())
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/script_utxos", nil, opts)
 	if err != nil {
 		return res, err
 	}
