@@ -28,6 +28,19 @@ type (
 		Redeemers []ScriptRedeemer `json:"redeemers"`
 	}
 
+	ScriptInfo struct {
+		// The Hash of the Plutus Data
+		ScriptHash string `json:"script_hash"`
+		// CreationTxHash is the hash of the transaction that created the script
+		CreationTxHash TxHash `json:"creation_tx_hash"`
+		// type
+		Type string `json:"type"`
+		//
+		Value *json.RawMessage `json:"value"`
+		Bytes string           `json:"bytes"`
+		Size  uint             `json:"size"`
+	}
+
 	// ScriptRedeemer model.
 	ScriptRedeemer struct {
 		// The Hash of the Plutus Data
@@ -121,6 +134,11 @@ type (
 	DatumInfoResponse struct {
 		Response
 		Data *DatumInfo `json:"data"`
+	}
+
+	ScriptInfosResponse struct {
+		Response
+		Data []ScriptInfo `json:"data"`
 	}
 )
 
@@ -234,9 +252,40 @@ func (c *Client) GetDatumInfos(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
+func (c *Client) GetScriptInfo(
+	ctx context.Context,
+	hashes []ScriptHash,
+	opts *RequestOptions,
+) (*ScriptInfosResponse, error) {
+	res := &ScriptInfosResponse{}
+	if len(hashes) == 0 {
+		err := ErrNoScriptHash
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/script_info", scriptHashesPL(hashes), opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
 func datumHashesPL(hashes []DatumHash) io.Reader {
 	var payload = struct {
 		DatumHashes []DatumHash `json:"_datum_hashes"`
+	}{hashes}
+	rpipe, w := io.Pipe()
+	go func() {
+		_ = json.NewEncoder(w).Encode(payload)
+		defer w.Close()
+	}()
+	return rpipe
+}
+
+func scriptHashesPL(hashes []ScriptHash) io.Reader {
+	var payload = struct {
+		DatumHashes []ScriptHash `json:"_script_hashes"`
 	}{hashes}
 	rpipe, w := io.Pipe()
 	go func() {
