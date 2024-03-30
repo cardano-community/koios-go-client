@@ -43,31 +43,25 @@ type (
 
 	// ScriptRedeemer model.
 	ScriptRedeemer struct {
-		// The Hash of the Plutus Data
-		DatumHash string `json:"datum_hash"`
-
-		// The actual data in json format
-		DatumValue map[string]any `json:"datum_value"`
-
+		// TxHash of Transaction containing the redeemer.
+		TxHash TxHash `json:"tx_hash"`
+		// TxIndex The index of the redeemer pointer in the transaction.
+		TxIndex uint32 `json:"tx_index"`
+		// The budget in Memory to run a script.
+		UnitMem int `json:"unit_mem"`
+		// The budget in Cpu steps to run a script.
+		UnitSteps int `json:"unit_steps"`
 		// The budget in fees to run a script - the fees depend on the
 		// ExUnits and the current prices.
 		Fee decimal.Decimal `json:"fee,omitempty"`
-
 		// What kind pf validation this redeemer is used for,
 		// it can be one of 'spend', 'mint', 'cert', 'reward'.
 		Purpose string `json:"purpose"`
 
-		// TxHash of Transaction containing the redeemer.
-		TxHash TxHash `json:"tx_hash"`
-
-		// TxIndex The index of the redeemer pointer in the transaction.
-		TxIndex uint32 `json:"tx_index"`
-
-		// The budget in Memory to run a script.
-		UnitMem int `json:"unit_mem"`
-
-		// The budget in Cpu steps to run a script.
-		UnitSteps int `json:"unit_steps"`
+		// The Hash of the Plutus Data
+		DatumHash string `json:"datum_hash"`
+		// The actual data in json format
+		DatumValue map[string]any `json:"datum_value"`
 	}
 
 	// DatumInfo datum information for given datum hash
