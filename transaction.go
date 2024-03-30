@@ -84,66 +84,46 @@ type (
 	TxInfo struct {
 		// BlockHash is hash of the block in which transaction was included.
 		BlockHash BlockHash `json:"block_hash"`
-
 		// BlockHeight is block number on chain where transaction was included.
 		BlockHeight int `json:"block_height"`
-
 		// Epoch number.
 		EpochNo EpochNo `json:"epoch_no"`
-
 		// EpochSlot is slot number within epoch.
 		EpochSlot Slot `json:"epoch_slot"`
-
 		// AbsoluteSlot is overall slot number (slots from genesis block of chain).
 		AbsoluteSlot Slot `json:"absolute_slot"`
-
 		// TxTimestamp is timestamp when block containing transaction was created.
 		TxTimestamp Timestamp `json:"tx_timestamp"`
-
 		// TxBlockIndex is index of transaction within block.
 		TxBlockIndex int `json:"tx_block_index"`
-
 		// TxSize is transaction size in bytes.
 		TxSize int `json:"tx_size"`
-
 		// TotalOutput is total sum of all transaction outputs (in lovelaces).
 		TotalOutput decimal.Decimal `json:"total_output"`
-
 		// Fee is total transaction fee (in lovelaces).
 		Fee decimal.Decimal `json:"fee" cbor:"2,keyasint"`
-
 		// Deposit is total deposits included in transaction (for example,
 		// if it is registering a pool/key).
 		Deposit decimal.Decimal `json:"deposit"`
-
 		// InvalidAfter is slot number after which transaction cannot be validated.
 		InvalidAfter Timestamp `json:"invalid_after,omitempty" cbor:"3,keyasint,omitempty"`
-
 		// InvalidBefore is slot number before which transaction cannot be validated.
 		// (if supplied, else 0)
 		InvalidBefore Timestamp `json:"invalid_before,omitempty" cbor:"8,keyasint,omitempty"`
-
 		// CollateralInputs An array of collateral inputs needed when dealing with smart contracts.
 		CollateralInputs []UTxO `json:"collateral_inputs,omitempty"`
-
 		// CollateralOutput
 		CollateralOutput *UTxO `json:"collateral_output,omitempty"`
-
 		// CollateralInputs An array of collateral inputs needed when dealing with smart contracts.
 		ReferenceInputs []UTxO `json:"reference_inputs,omitempty"`
-
-		// AssetsMinted An array of minted assets with-in a transaction (if any).
-		AssetsMinted []Asset `json:"assets_minted,omitempty"`
-
-		// Metadata present with-in a transaction (if any)
-		Metadata TxMetadata `json:"metadata,omitempty"`
-
 		// Array of withdrawals with-in a transaction (if any)
 		Withdrawals []TxsWithdrawal `json:"withdrawals,omitempty"`
-
+		// AssetsMinted An array of minted assets with-in a transaction (if any).
+		AssetsMinted []Asset `json:"assets_minted,omitempty"`
+		// Metadata present with-in a transaction (if any)
+		Metadata TxMetadata `json:"metadata,omitempty"`
 		// Certificates present with-in a transaction (if any)
-		Certificates []Certificate `json:"certificates,omitempty"`
-
+		Certificates    []Certificate    `json:"certificates,omitempty"`
 		NativeScripts   []NativeScript   `json:"native_scripts,omitempty"`
 		PlutusContracts []PlutusContract `json:"plutus_contracts,omitempty"`
 	}
@@ -238,23 +218,6 @@ type (
 
 // GetTxInfo returns detailed information about transaction.
 func (c *Client) GetTxInfo(
-	ctx context.Context,
-	hash TxHash,
-	opts *RequestOptions,
-) (res *TxInfoResponse, err error) {
-	res = &TxInfoResponse{}
-	rsp, err := c.GetTxsInfo(ctx, []TxHash{hash}, opts)
-	res.Response = rsp.Response
-	if len(rsp.Data) == 1 {
-		res.Data = rsp.Data[0]
-	} else {
-		err = fmt.Errorf("%w: %s", ErrNoData, hash)
-	}
-	return
-}
-
-// GetTxsInfo returns detailed information about transaction(s).
-func (c *Client) GetTxsInfo(
 	ctx context.Context,
 	txs []TxHash,
 	opts *RequestOptions,
