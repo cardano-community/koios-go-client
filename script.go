@@ -66,9 +66,10 @@ type (
 
 	// DatumInfo datum information for given datum hash
 	DatumInfo struct {
-		Hash  DatumHash        `json:"hash"`
-		Bytes string           `json:"bytes"`
-		Value *json.RawMessage `json:"value"`
+		DatumHash      DatumHash        `json:"datum_hash"`
+		CreationTxHash TxHash           `json:"creation_tx_hash"`
+		Bytes          string           `json:"bytes"`
+		Value          *json.RawMessage `json:"value"`
 	}
 
 	PlutusContract struct {
