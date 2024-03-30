@@ -259,6 +259,10 @@ func (v PoolID) String() string {
 	return string(v)
 }
 
+func (v PoolID) Valid() bool {
+	return len(v) == 56
+}
+
 // String returns PolicyID as string.
 func (v PolicyID) String() string {
 	return string(v)

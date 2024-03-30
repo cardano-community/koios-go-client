@@ -500,7 +500,7 @@ func (c *Client) GetPoolBlocks(
 // only updates for specific pool if specified.
 func (c *Client) GetPoolUpdates(
 	ctx context.Context,
-	pid *PoolID,
+	pid PoolID,
 	opts *RequestOptions,
 ) (res *PoolUpdatesResponse, err error) {
 	res = &PoolUpdatesResponse{}
@@ -508,7 +508,7 @@ func (c *Client) GetPoolUpdates(
 	if opts == nil {
 		opts = c.NewRequestOptions()
 	}
-	if pid != nil {
+	if pid.Valid() {
 		opts.QuerySet("_pool_bech32", pid.String())
 	}
 
