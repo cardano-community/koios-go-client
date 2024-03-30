@@ -311,27 +311,8 @@ func (c *Client) GetAccountAssets(
 // GetAccountHistory retruns the staking history of an account.
 func (c *Client) GetAccountHistory(
 	ctx context.Context,
-	acc Address,
-	epoch *EpochNo,
-	opts *RequestOptions,
-) (res *AccountHistoryResponse, err error) {
-	res = &AccountHistoryResponse{}
-
-	res2, err := c.GetAccountsHistory(ctx, []Address{acc}, opts)
-	if err != nil {
-		return
-	}
-	if len(res2.Data) == 1 {
-		res.Data = &res2.Data[0]
-	} else {
-		return nil, fmt.Errorf("%w: no history found for account %s", ErrNoData, acc)
-	}
-	return
-}
-
-func (c *Client) GetAccountsHistory(
-	ctx context.Context,
 	accs []Address,
+	epoch *EpochNo,
 	opts *RequestOptions,
 ) (res *AccountsHistoryResponse, err error) {
 	res = &AccountsHistoryResponse{}
@@ -340,7 +321,7 @@ func (c *Client) GetAccountsHistory(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_history", stakeAddressesPL(accs, nil, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_history", stakeAddressesPL(accs, epoch, nil), opts)
 	if err != nil {
 		return
 	}
