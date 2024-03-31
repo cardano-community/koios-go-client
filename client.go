@@ -157,7 +157,7 @@ func (c *Client) request(
 		rsp   *http.Response
 	)
 	if res != nil && c.reqStatsEnabled {
-		rsp, eqerr = c.requestWithStats(req, res)
+		rsp, eqerr = c.requestWithStats(req, res, opts.requestsToday)
 	} else {
 		rsp, eqerr = c.client.Do(req)
 	}
@@ -198,9 +198,10 @@ func (c *Client) applyReqHeaders(req *http.Request, headers http.Header) {
 	}
 }
 
-func (c *Client) requestWithStats(req *http.Request, res *Response) (*http.Response, error) {
+func (c *Client) requestWithStats(req *http.Request, res *Response, requestsToday uint) (*http.Response, error) {
 	res.Stats = &RequestStats{
-		Auth: c.getAuth(),
+		Auth:          c.getAuth(),
+		RequstesToday: requestsToday,
 	}
 	var dns, tlshs, connect time.Time
 	req = req.WithContext(

@@ -12,11 +12,12 @@ import (
 
 // RequestOptions for the request.
 type RequestOptions struct {
-	page     uint
-	pageSize uint
-	locked   bool
-	query    url.Values
-	headers  http.Header
+	page          uint
+	pageSize      uint
+	locked        bool
+	query         url.Values
+	headers       http.Header
+	requestsToday uint
 }
 
 // QuerySet sets the key to value in request query.
@@ -64,11 +65,12 @@ func (ro *RequestOptions) HeaderApply(h http.Header) {
 // Clone the request options for using it with other request.
 func (ro *RequestOptions) Clone() *RequestOptions {
 	opts := &RequestOptions{
-		headers:  ro.headers.Clone(),
-		page:     ro.page,
-		pageSize: ro.pageSize,
-		query:    ro.query,
-		locked:   false,
+		headers:       ro.headers.Clone(),
+		page:          ro.page,
+		pageSize:      ro.pageSize,
+		query:         ro.query,
+		requestsToday: ro.requestsToday,
+		locked:        false,
 	}
 	q := url.Values{}
 	for k, v := range ro.query {
@@ -85,6 +87,11 @@ func (ro *RequestOptions) SetPageSize(size uint) {
 // SetCurrentPage modifies range header of the request to satisfy current page requested.
 func (ro *RequestOptions) SetCurrentPage(page uint) {
 	ro.page = page
+}
+
+// SetRequestsToday sets the number of requests made today.
+func (ro *RequestOptions) SetRequestsToday(n uint) {
+	ro.requestsToday = n
 }
 
 // lock the request options.

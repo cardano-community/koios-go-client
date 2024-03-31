@@ -9,4 +9,4 @@ require (
 	golang.org/x/time v0.5.0
 )
 
-require golang.org/x/mod v0.15.0 // indirect
+require golang.org/x/mod v0.16.0 // indirect

@@ -162,6 +162,8 @@ type (
 		ReqDurStr string `json:"req_dur_str,omitempty"`
 
 		Auth AuthInfo `json:"auth"`
+
+		RequstesToday uint `json:"requests_today,omitempty"`
 	}
 )
 
