@@ -1,0 +1,9 @@
+[
+ {
+  "pool_id_bech32": "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc",
+  "pool_group": "IOG",
+  "ticker": "IOGP",
+  "adastat_group": "iohk.io",
+  "balanceanalytics_group": "IOG"
+ }
+]

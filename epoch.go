@@ -22,6 +22,9 @@ type (
 		// Epoch number
 		EpochNo EpochNo `json:"epoch_no"`
 
+		// Era is the Cardano era of the epoch.
+		Era string `json:"era"`
+
 		// OutSum total output value across all transactions in epoch.
 		OutSum decimal.Decimal `json:"out_sum"`
 
@@ -67,6 +70,8 @@ type (
 	EpochParams struct {
 		// Epoch number
 		EpochNo EpochNo `json:"epoch_no"`
+		// Era is the Cardano era of the epoch.
+		Era string `json:"era"`
 		// The 'a' parameter to calculate the minimum transaction fee
 		MinFeeA decimal.Decimal `json:"min_fee_a"`
 		// The 'b' parameter to calculate the minimum transaction fee
@@ -116,22 +121,66 @@ type (
 		// The cost of script execution step usage
 		PriceStep decimal.Decimal `json:"price_step"`
 		// The maximum number of execution memory allowed to be used in a single transaction
-		MaxTxExMem float32 `json:"max_tx_ex_mem"`
+		MaxTxExMem int64 `json:"max_tx_ex_mem"`
 		// The maximum number of execution steps allowed to be used in a single transaction
-		MaxTxExSteps float32 `json:"max_tx_ex_steps"`
+		MaxTxExSteps int64 `json:"max_tx_ex_steps"`
 		// The maximum number of execution memory allowed to be used in a single block
-		MaxBlockExMem float32 `json:"max_block_ex_mem"`
+		MaxBlockExMem int64 `json:"max_block_ex_mem"`
 		// The maximum number of execution steps allowed to be used in a single block
-		MaxBlockExSteps float32 `json:"max_block_ex_steps"`
+		MaxBlockExSteps int64 `json:"max_block_ex_steps"`
 		// The maximum Val size
-		MaxValSize float64 `json:"max_val_size"`
+		MaxValSize int64 `json:"max_val_size"`
 		// The percentage of the tx fee which must be provided as collateral
 		// when including non-native scripts
 		CollateralPercent int `json:"collateral_percent"`
 		// The maximum number of collateral inputs allowed in a transaction
 		MaxCollateralInputs int `json:"max_collateral_inputs"`
-		// The cost per UTxO word
+		// The cost per UTxO size
 		CoinsPerUtxoSize decimal.Decimal `json:"coins_per_utxo_size"`
+		// Pool voting threshold for motion of no-confidence.
+		PvtMotionNoConfidence float64 `json:"pvt_motion_no_confidence"`
+		// Pool voting threshold for new committee/threshold (normal state).
+		PvtCommitteeNormal float64 `json:"pvt_committee_normal"`
+		// Pool voting threshold for new committee/threshold (state of no-confidence).
+		PvtCommitteeNoConfidence float64 `json:"pvt_committee_no_confidence"`
+		// Pool voting threshold for hard-fork initiation.
+		PvtHardForkInitiation float64 `json:"pvt_hard_fork_initiation"`
+		// DRep vote threshold for motion of no-confidence.
+		DvtMotionNoConfidence float64 `json:"dvt_motion_no_confidence"`
+		// DRep vote threshold for new committee/threshold (normal state).
+		DvtCommitteeNormal float64 `json:"dvt_committee_normal"`
+		// DRep vote threshold for new committee/threshold (state of no-confidence).
+		DvtCommitteeNoConfidence float64 `json:"dvt_committee_no_confidence"`
+		// DRep vote threshold for update to the Constitution.
+		DvtUpdateToConstitution float64 `json:"dvt_update_to_constitution"`
+		// DRep vote threshold for hard-fork initiation.
+		DvtHardForkInitiation float64 `json:"dvt_hard_fork_initiation"`
+		// DRep vote threshold for protocol parameter changes, network group.
+		DvtPPNetworkGroup float64 `json:"dvt_p_p_network_group"`
+		// DRep vote threshold for protocol parameter changes, economic group.
+		DvtPPEconomicGroup float64 `json:"dvt_p_p_economic_group"`
+		// DRep vote threshold for protocol parameter changes, technical group.
+		DvtPPTechnicalGroup float64 `json:"dvt_p_p_technical_group"`
+		// DRep vote threshold for protocol parameter changes, governance group.
+		DvtPPGovGroup float64 `json:"dvt_p_p_gov_group"`
+		// DRep vote threshold for treasury withdrawal.
+		DvtTreasuryWithdrawal float64 `json:"dvt_treasury_withdrawal"`
+		// Minimal constitutional committee size.
+		CommitteeMinSize int `json:"committee_min_size"`
+		// Constitutional committee term limit in epochs.
+		CommitteeMaxTermLength int `json:"committee_max_term_length"`
+		// Governance action expiration in epochs.
+		GovActionLifetime int `json:"gov_action_lifetime"`
+		// Governance action deposit (in lovelace).
+		GovActionDeposit decimal.Decimal `json:"gov_action_deposit"`
+		// DRep deposit amount (in lovelace).
+		DrepDeposit decimal.Decimal `json:"drep_deposit"`
+		// DRep activity period in epochs.
+		DrepActivity int `json:"drep_activity"`
+		// Pool voting threshold for protocol parameter changes, security group.
+		PvtppSecurityGroup float64 `json:"pvtpp_security_group"`
+		// Minimum fee for reference script cost per byte.
+		MinFeeRefScriptCostPerByte float64 `json:"min_fee_ref_script_cost_per_byte"`
 	}
 
 	// EpochParamsResponse response of /epoch_params.
@@ -147,6 +196,10 @@ type (
 		// The protocol minor version
 		ProtoMinor int `json:"proto_minor"`
 
+		// Era is the Cardano era of the blocks.
+		Era string `json:"era"`
+
+		// Blocks is the number of blocks with the protocol version combination.
 		Blocks int `json:"blocks"`
 	}
 

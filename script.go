@@ -28,17 +28,31 @@ type (
 		Redeemers []ScriptRedeemer `json:"redeemers"`
 	}
 
+	// ScriptInfo is the information about a script as returned by `/script_info`.
 	ScriptInfo struct {
-		// The Hash of the Plutus Data
-		ScriptHash string `json:"script_hash"`
+		// ScriptHash is the hash of the script.
+		ScriptHash ScriptHash `json:"script_hash"`
 		// CreationTxHash is the hash of the transaction that created the script
 		CreationTxHash TxHash `json:"creation_tx_hash"`
-		// type
+		// Type of the script: plutusV1, plutusV2, timelock or multisig.
 		Type string `json:"type"`
-		//
+		// Value is the script in JSON format (nullable).
 		Value *json.RawMessage `json:"value"`
-		Bytes string           `json:"bytes"`
-		Size  uint             `json:"size"`
+		// Bytes is the script bytes in cborSeq (nullable).
+		Bytes string `json:"bytes"`
+		// Size is the size of the CBOR serialised script (in bytes).
+		Size uint `json:"size"`
+	}
+
+	// ReferenceScriptUTxO is an unspent output holding a reference script
+	// as returned by `/reference_script_utxos`.
+	ReferenceScriptUTxO struct {
+		// ScriptHash is the hash of the reference script.
+		ScriptHash ScriptHash `json:"script_hash"`
+		// TxHash is the hash of the transaction that created the output.
+		TxHash TxHash `json:"tx_hash"`
+		// TxIndex is the index of the output in the transaction.
+		TxIndex int `json:"tx_index"`
 	}
 
 	// ScriptRedeemer model.
@@ -48,9 +62,9 @@ type (
 		// TxIndex The index of the redeemer pointer in the transaction.
 		TxIndex uint32 `json:"tx_index"`
 		// The budget in Memory to run a script.
-		UnitMem int `json:"unit_mem"`
+		UnitMem decimal.Decimal `json:"unit_mem"`
 		// The budget in Cpu steps to run a script.
-		UnitSteps int `json:"unit_steps"`
+		UnitSteps decimal.Decimal `json:"unit_steps"`
 		// The budget in fees to run a script - the fees depend on the
 		// ExUnits and the current prices.
 		Fee decimal.Decimal `json:"fee,omitempty"`
@@ -61,7 +75,7 @@ type (
 		// The Hash of the Plutus Data
 		DatumHash string `json:"datum_hash"`
 		// The actual data in json format
-		DatumValue map[string]any `json:"datum_value"`
+		DatumValue json.RawMessage `json:"datum_value"`
 	}
 
 	// DatumInfo datum information for given datum hash
@@ -72,12 +86,62 @@ type (
 		Value          *json.RawMessage `json:"value"`
 	}
 
+	// PlutusContract is a Plutus contract present in a transaction.
 	PlutusContract struct {
-		Address       Address    `json:"address"`
-		ScriptHash    ScriptHash `json:"script_hash"`
-		ByteCode      string     `json:"bytecode"`
-		Size          uint       `json:"size"`
-		ValidContract bool       `json:"valid_contract"`
+		// Address is the Plutus script address.
+		Address Address `json:"address"`
+		// SpendsInput is the input UTxO this contract spends (nullable).
+		SpendsInput *PlutusSpendsInput `json:"spends_input"`
+		// ScriptHash is the hash of the script.
+		ScriptHash ScriptHash `json:"script_hash"`
+		// ByteCode is the script bytes (cborSeq).
+		ByteCode string `json:"bytecode"`
+		// Size is the size of the CBOR serialised script (in bytes).
+		Size uint `json:"size"`
+		// ValidContract is true if the contract is valid or there is no contract.
+		ValidContract bool `json:"valid_contract"`
+		// Input is the redeemer and datum the contract was executed with.
+		Input PlutusInput `json:"input"`
+	}
+
+	// PlutusSpendsInput references the UTxO spent by a Plutus contract.
+	PlutusSpendsInput struct {
+		TxHash  TxHash `json:"tx_hash"`
+		TxIndex int    `json:"tx_index"`
+	}
+
+	// PlutusInput is the input of a Plutus contract execution.
+	PlutusInput struct {
+		Redeemer PlutusRedeemer `json:"redeemer"`
+		Datum    PlutusDatum    `json:"datum"`
+	}
+
+	// PlutusRedeemer is the redeemer of a Plutus contract execution.
+	PlutusRedeemer struct {
+		// Purpose is one of spend, mint, cert or reward.
+		Purpose string `json:"purpose"`
+		// Fee is the budget in fees to run the script.
+		Fee decimal.Decimal `json:"fee"`
+		// Unit is the execution budget of the script.
+		Unit PlutusExUnits `json:"unit"`
+		// Datum is the redeemer data.
+		Datum PlutusDatum `json:"datum"`
+	}
+
+	// PlutusExUnits is the execution budget of a script.
+	PlutusExUnits struct {
+		// Steps is the budget in Cpu steps.
+		Steps decimal.Decimal `json:"steps"`
+		// Mem is the budget in Memory.
+		Mem decimal.Decimal `json:"mem"`
+	}
+
+	// PlutusDatum is Plutus data with its hash.
+	PlutusDatum struct {
+		// Hash of the Plutus data (nullable).
+		Hash DatumHash `json:"hash"`
+		// Value is the data in JSON format (nullable).
+		Value json.RawMessage `json:"value"`
 	}
 
 	// NativeScript item of native script list.
@@ -86,9 +150,9 @@ type (
 		CreationTxHash TxHash `json:"creation_tx_hash"`
 
 		// Hash of a script
-		ScriptHash string `json:"script_hash"`
-		Type       string `json:"type"`
-		Size       uint   `json:"size"`
+		ScriptHash ScriptHash `json:"script_hash"`
+		Type       string     `json:"type"`
+		Size       uint       `json:"size"`
 	}
 
 	// NativeScriptListResponse represents response from `/native_script_list` endpoint.
@@ -103,7 +167,7 @@ type (
 		CreationTxHash TxHash `json:"creation_tx_hash"`
 
 		// Hash of a script
-		ScriptHash string `json:"script_hash"`
+		ScriptHash ScriptHash `json:"script_hash"`
 
 		// Type of the script
 		Type string `json:"type"`
@@ -139,9 +203,16 @@ type (
 		Data []ScriptInfo `json:"data"`
 	}
 
+	// ScriptUTxOsResponse represents response from `/script_utxos` endpoint.
 	ScriptUTxOsResponse struct {
 		Response
 		Data []UTxO `json:"data"`
+	}
+
+	// ReferenceScriptUTxOsResponse represents response from `/reference_script_utxos` endpoint.
+	ReferenceScriptUTxOsResponse struct {
+		Response
+		Data []ReferenceScriptUTxO `json:"data"`
 	}
 )
 
@@ -274,6 +345,8 @@ func (c *Client) GetScriptInfo(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
+// GetScriptUtxos returns all UTxOs for a given script hash. The extended flag
+// populates optional fields supported by the endpoint.
 func (c *Client) GetScriptUtxos(
 	ctx context.Context,
 	hash ScriptHash,
@@ -301,15 +374,32 @@ func (c *Client) GetScriptUtxos(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
+// GetReferenceScriptUTxOs returns all unspent UTxOs holding a reference
+// script that matches the given script hashes.
+func (c *Client) GetReferenceScriptUTxOs(
+	ctx context.Context,
+	hashes []ScriptHash,
+	opts *RequestOptions,
+) (*ReferenceScriptUTxOsResponse, error) {
+	res := &ReferenceScriptUTxOsResponse{}
+	if len(hashes) == 0 {
+		err := ErrNoScriptHash
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/reference_script_utxos", scriptHashesPL(hashes), opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
 func datumHashesPL(hashes []DatumHash) io.Reader {
 	var payload = struct {
 		DatumHashes []DatumHash `json:"_datum_hashes"`
 	}{hashes}
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 	return rpipe
 }
 
@@ -317,10 +407,6 @@ func scriptHashesPL(hashes []ScriptHash) io.Reader {
 	var payload = struct {
 		DatumHashes []ScriptHash `json:"_script_hashes"`
 	}{hashes}
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 	return rpipe
 }

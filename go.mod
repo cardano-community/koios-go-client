@@ -1,4 +1,4 @@
-module github.com/cardano-community/koios-go-client/v4 // imports as package "koios"
+module github.com/cardano-community/koios-go-client/v5 // imports as package "koios"
 
 go 1.22
 

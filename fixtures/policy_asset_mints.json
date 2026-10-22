@@ -1,0 +1,23 @@
+[
+ {
+  "asset_name": "444f4e545350414d",
+  "asset_name_ascii": "DONTSPAM",
+  "fingerprint": "asset1ua6pz3yd5mdka946z8jw2fld3f8d0mmxt75gv9",
+  "minting_tx_hash": "cb07b7e51b77079776c4a78f2daf8f14f9945d2b047da7bfcb71d7fbb9f86712",
+  "total_supply": "35000",
+  "mint_cnt": 1,
+  "burn_cnt": 5,
+  "creation_time": 1506635091,
+  "minting_tx_metadata": {
+   "721": {
+    "version": 1,
+    "copyright": "...",
+    "publisher": [
+     "p...o"
+    ],
+    "4bf184e01e0f163296ab253edd60774e2d34367d0e7b6cbc689b567d": {}
+   }
+  },
+  "decimals": 0
+ }
+]

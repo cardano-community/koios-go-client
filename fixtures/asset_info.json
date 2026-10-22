@@ -1,0 +1,50 @@
+[
+ {
+  "policy_id": "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff",
+  "asset_name": "444f4e545350414d",
+  "asset_name_ascii": "DONTSPAM",
+  "fingerprint": "asset1ua6pz3yd5mdka946z8jw2fld3f8d0mmxt75gv9",
+  "minting_tx_hash": "cb07b7e51b77079776c4a78f2daf8f14f9945d2b047da7bfcb71d7fbb9f86712",
+  "total_supply": "35000",
+  "mint_cnt": 1,
+  "burn_cnt": 5,
+  "creation_time": 1506635091,
+  "minting_tx_metadata": {
+   "721": {
+    "version": 1,
+    "copyright": "...",
+    "publisher": [
+     "p...o"
+    ],
+    "4bf184e01e0f163296ab253edd60774e2d34367d0e7b6cbc689b567d": {}
+   }
+  },
+  "token_registry_metadata": {
+   "name": "Rackmob",
+   "description": "Metaverse Blockchain Cryptocurrency.",
+   "ticker": "MOB",
+   "url": "https://www.rackmob.com/",
+   "logo": "iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6CAYAAACI7Fo9AAAACXBIWXMAAA7EAAAOxAGVKw4bAAADnmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQnPz4KPHg6eG1wbWV0YSB4bWxuczp4PSdhZG9iZTpuczptZXRhLyc",
+   "decimals": 0
+  },
+  "cip68_metadata": {
+   "222": {
+    "fields": [
+     {
+      "map": [
+       {
+        "k": {
+         "bytes": "6e616d65"
+        },
+        "v": {
+         "bytes": "74657374"
+        }
+       }
+      ]
+     }
+    ],
+    "constructor": 0
+   }
+  }
+ }
+]

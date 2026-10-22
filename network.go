@@ -31,6 +31,9 @@ type (
 
 		// Block Hash in hex
 		Hash BlockHash `json:"hash"`
+
+		// Era is the Cardano era of the tip block.
+		Era string `json:"era"`
 	}
 
 	// TipResponse response of /tip.
@@ -66,8 +69,9 @@ type (
 		// (so mainnet, this would be: 432000 * 0.05 = 21600 estimated blocks).
 		ActiveSlotCoeff decimal.Decimal `json:"activeslotcoeff"`
 
-		// A JSON dump of Alonzo Genesis.
-		AlonzoGenesis json.RawMessage `json:"alonzogenesis"`
+		// AlonzoGenesis is the Alonzo genesis delivered by the API as a
+		// JSON document encoded in a string. See AlonzoGenesisMap.
+		AlonzoGenesis string `json:"alonzogenesis"`
 
 		// Number of slots in an epoch.
 		EpochLength decimal.Decimal `json:"epochlength"`
@@ -156,6 +160,30 @@ type (
 
 		// Funds in treasury for given epoch (in lovelaces).
 		Treasury decimal.Decimal `json:"treasury"`
+
+		// Fees is the amount (in lovelace) in the fee pot.
+		Fees decimal.Decimal `json:"fees"`
+
+		// DepositsStake is the amount (in lovelace) in the obligation pot
+		// coming from stake key and pool deposits.
+		DepositsStake decimal.Decimal `json:"deposits_stake"`
+
+		// DepositsDRep is the amount (in lovelace) in the obligation pot
+		// coming from DRep registration deposits.
+		DepositsDRep decimal.Decimal `json:"deposits_drep"`
+
+		// DepositsProposal is the amount (in lovelace) in the obligation pot
+		// coming from governance proposal deposits.
+		DepositsProposal decimal.Decimal `json:"deposits_proposal"`
+
+		// TreasuryDonation is the amount (in lovelace) donated to the treasury.
+		TreasuryDonation decimal.Decimal `json:"treasury_donation"`
+
+		// TreasuryWithdrawal is the amount (in lovelace) withdrawn from the treasury.
+		TreasuryWithdrawal decimal.Decimal `json:"treasury_withdrawal"`
+
+		// ReservesWithdrawal is the amount (in lovelace) withdrawn from reserves.
+		ReservesWithdrawal decimal.Decimal `json:"reserves_withdrawal"`
 	}
 
 	// TotalsResponse represents response from `/totals` endpoint.
@@ -230,6 +258,12 @@ type (
 		BlockHeight  BlockNo         `json:"block_height"`
 		Amount       decimal.Decimal `json:"amount"`
 		StakeAddress Address         `json:"stake_address"`
+
+		// EarnedEpoch is the epoch where the amount is earned.
+		EarnedEpoch EpochNo `json:"earned_epoch"`
+
+		// SpendableEpoch is the epoch where the earned amount can be spent.
+		SpendableEpoch EpochNo `json:"spendable_epoch"`
 	}
 
 	// ReserveWithdrawalsResponse represents response from `/reserve_withdrawals` endpoint.
@@ -239,6 +273,7 @@ type (
 	}
 )
 
+// GetReserveWithdrawals returns all withdrawals from reserves against stake accounts.
 func (c *Client) GetReserveWithdrawals(
 	ctx context.Context,
 	opts *RequestOptions,
@@ -255,9 +290,10 @@ func (c *Client) GetReserveWithdrawals(
 	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }
 
+// AlonzoGenesisMap decodes the JSON document held in AlonzoGenesis.
 func (g *Genesis) AlonzoGenesisMap() (map[string]any, error) {
 	var data map[string]any
-	if err := json.Unmarshal(g.AlonzoGenesis, &data); err != nil {
+	if err := json.Unmarshal([]byte(g.AlonzoGenesis), &data); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -273,6 +309,12 @@ type (
 		BlockHeight  BlockNo         `json:"block_height"`
 		Amount       decimal.Decimal `json:"amount"`
 		StakeAddress Address         `json:"stake_address"`
+
+		// EarnedEpoch is the epoch where the amount is earned.
+		EarnedEpoch EpochNo `json:"earned_epoch"`
+
+		// SpendableEpoch is the epoch where the earned amount can be spent.
+		SpendableEpoch EpochNo `json:"spendable_epoch"`
 	}
 	TreasuryWithdrawalsResponse struct {
 		Response
@@ -280,6 +322,7 @@ type (
 	}
 )
 
+// GetTreasuryWithdrawals returns all withdrawals from treasury against stake accounts.
 func (c *Client) GetTreasuryWithdrawals(
 	ctx context.Context,
 	opts *RequestOptions,
@@ -290,6 +333,85 @@ func (c *Client) GetTreasuryWithdrawals(
 
 	res := &TreasuryWithdrawalsResponse{}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/treasury_withdrawals", nil, opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+type (
+	// EraSummary defines model for era_summaries.
+	EraSummary struct {
+		// Era is the Cardano era name.
+		Era string `json:"era"`
+
+		// ProtocolMajor is the protocol major version (nullable).
+		ProtocolMajor *int `json:"protocol_major"`
+
+		// ProtocolMinor is the protocol minor version (nullable).
+		ProtocolMinor *int `json:"protocol_minor"`
+
+		// LedgerProtocol names the collection of features sitting between
+		// the consensus and ledger layers.
+		LedgerProtocol string `json:"ledger_protocol"`
+
+		// ConsensusMechanism names the collection of consensus features
+		// introduced at a hard fork.
+		ConsensusMechanism string `json:"consensus_mechanism"`
+
+		// Notes is additional information about when this protocol update
+		// was pushed, such as an associated fork name.
+		Notes string `json:"notes"`
+
+		// EpochNo is the epoch in which the era starts.
+		EpochNo EpochNo `json:"epoch_no"`
+
+		// FirstBlockTime is the time of the first block of the era.
+		FirstBlockTime Timestamp `json:"first_block_time"`
+
+		// FirstBlockHash is the hash of the first block of the era.
+		FirstBlockHash BlockHash `json:"first_block_hash"`
+	}
+
+	// EraSummariesResponse represents response from `/era_summaries` endpoint.
+	EraSummariesResponse struct {
+		Response
+		Data []EraSummary `json:"data"`
+	}
+
+	// CliProtocolParamsResponse represents response from `/cli_protocol_params` endpoint.
+	CliProtocolParamsResponse struct {
+		Response
+
+		// Data is the raw protocol parameters JSON as published by cardano-cli.
+		// Its schema varies with the cardano-node version and era.
+		Data json.RawMessage `json:"data"`
+	}
+)
+
+// GetEraSummaries returns information about each era on the network
+// along with its start epoch.
+func (c *Client) GetEraSummaries(
+	ctx context.Context,
+	opts *RequestOptions,
+) (*EraSummariesResponse, error) {
+	res := &EraSummariesResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/era_summaries", nil, opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+// GetCliProtocolParams returns the current protocol parameters as published
+// by cardano-cli. The output schema depends on the cardano-node version and
+// era, so it is returned as raw JSON.
+func (c *Client) GetCliProtocolParams(
+	ctx context.Context,
+	opts *RequestOptions,
+) (*CliProtocolParamsResponse, error) {
+	res := &CliProtocolParamsResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/cli_protocol_params", nil, opts)
 	if err != nil {
 		return res, err
 	}

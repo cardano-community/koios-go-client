@@ -1,0 +1,26 @@
+[
+ {
+  "policy_id": "d3501d9531fcc25e3ca4b6429318c2cc374dbdbcf5e99c1c1e5da1ff",
+  "asset_name": "444f4e545350414d",
+  "fingerprint": "asset1ua6pz3yd5mdka946z8jw2fld3f8d0mmxt75gv9",
+  "minting_txs": [
+   {
+    "tx_hash": "e1ecc517f95715bb87681cfde2c594dbc971739f84f8bfda16170b35d63d0ddf",
+    "block_time": 1704757130,
+    "quantity": "-10",
+    "metadata": [
+     {
+      "721": {
+       "version": 1,
+       "copyright": "...",
+       "publisher": [
+        "p...o"
+       ],
+       "4bf184e01e0f163296ab253edd60774e2d34367d0e7b6cbc689b567d": {}
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

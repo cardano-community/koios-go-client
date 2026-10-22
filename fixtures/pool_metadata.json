@@ -1,0 +1,13 @@
+[
+ {
+  "pool_id_bech32": "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc",
+  "meta_url": "https://pools.iohk.io/IOGP.json",
+  "meta_hash": "37eb004c0dd8a221ac3598ca1c6d6257fb5207ae9857b7c163ae0f39259d6cc0",
+  "meta_json": {
+   "name": "Input Output Global (IOHK) - Private",
+   "ticker": "IOGP",
+   "homepage": "https://iohk.io",
+   "description": "Our mission is to provide economic identity to the billions of people who lack it. IOHK will not use the IOHK ticker."
+  }
+ }
+]

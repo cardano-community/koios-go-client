@@ -6,7 +6,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 
@@ -14,18 +13,38 @@ import (
 )
 
 type (
-	// AccountInfo data returned by `/account_info`.
+	// AccountListItem is a stake address as returned by `/account_list`.
+	AccountListItem struct {
+		// StakeAddress is the Cardano staking address (bech32 encoded).
+		StakeAddress Address `json:"stake_address"`
+		// StakeAddressHex is the staking address in hex format.
+		StakeAddressHex string `json:"stake_address_hex"`
+		// ScriptHash is set when the stake address is locked by a script (nullable).
+		ScriptHash ScriptHash `json:"script_hash"`
+	}
+
+	// AccountInfo data returned by `/account_info` and `/account_info_cached`.
 	AccountInfo struct {
-		Status           string          `json:"status"`
-		DelegatedPool    *PoolID         `json:"delegated_pool"`
-		StakeAddress     Address         `json:"stake_address"`
+		// Status is "registered" or "not registered".
+		Status string `json:"status"`
+		// DelegatedDRep is the DRep ID in CIP-129 bech32 format the account
+		// delegates to (nullable).
+		DelegatedDRep *string `json:"delegated_drep"`
+		// DelegatedPool is the pool the account delegates to (nullable).
+		DelegatedPool *PoolID `json:"delegated_pool"`
+		StakeAddress  Address `json:"stake_address"`
+		// TotalBalance includes UTxO, rewards and MIRs (in lovelace).
 		TotalBalance     decimal.Decimal `json:"total_balance"`
 		UTxO             decimal.Decimal `json:"utxo"`
 		Rewards          decimal.Decimal `json:"rewards"`
 		Withdrawals      decimal.Decimal `json:"withdrawals"`
 		RewardsAvailable decimal.Decimal `json:"rewards_available"`
-		Reserves         decimal.Decimal `json:"reserves"`
-		Treasury         decimal.Decimal `json:"treasury"`
+		// Deposit is the total deposit available for withdrawal.
+		Deposit  decimal.Decimal `json:"deposit"`
+		Reserves decimal.Decimal `json:"reserves"`
+		Treasury decimal.Decimal `json:"treasury"`
+		// ProposalRefund is the total proposal refund for the account.
+		ProposalRefund decimal.Decimal `json:"proposal_refund"`
 	}
 
 	// AccountRewardsInfo data returned by `/account_rewards`.
@@ -34,12 +53,51 @@ type (
 		Rewards      []AccountRewards `json:"rewards"`
 	}
 
+	// AccountRewards is a reward of an account as nested in `/account_rewards`.
 	AccountRewards struct {
+		// PoolID is the pool that paid the reward (nullable).
 		PoolID         PoolID          `json:"pool_id"`
 		EarnedEpoch    EpochNo         `json:"earned_epoch"`
 		SpendableEpoch EpochNo         `json:"spendable_epoch"`
 		Amount         decimal.Decimal `json:"amount"`
-		Type           string          `json:"type"`
+		// Type is the source of the reward: member, leader, treasury,
+		// reserves or refund.
+		Type string `json:"type"`
+	}
+
+	// AccountRewardHistory is a single reward as returned by `/account_reward_history`.
+	AccountRewardHistory struct {
+		StakeAddress   Address         `json:"stake_address"`
+		EarnedEpoch    EpochNo         `json:"earned_epoch"`
+		SpendableEpoch EpochNo         `json:"spendable_epoch"`
+		Amount         decimal.Decimal `json:"amount"`
+		// Type is the source of the reward: member, leader, treasury,
+		// reserves or refund.
+		Type string `json:"type"`
+		// PoolIDBech32 is the pool that paid the reward (nullable).
+		PoolIDBech32 PoolID `json:"pool_id_bech32"`
+	}
+
+	// AccountUpdateHistory is a single account update as returned by `/account_update_history`.
+	AccountUpdateHistory struct {
+		StakeAddress Address `json:"stake_address"`
+		// ActionType is one of registration, delegation_pool, delegation_drep,
+		// withdrawal or deregistration.
+		ActionType   string    `json:"action_type"`
+		TxHash       TxHash    `json:"tx_hash"`
+		EpochNo      EpochNo   `json:"epoch_no"`
+		EpochSlot    Slot      `json:"epoch_slot"`
+		AbsoluteSlot Slot      `json:"absolute_slot"`
+		BlockTime    Timestamp `json:"block_time"`
+	}
+
+	// AccountStakeHistory is the active stake of an account in an epoch
+	// as returned by `/account_stake_history`.
+	AccountStakeHistory struct {
+		StakeAddress Address         `json:"stake_address"`
+		PoolIDBech32 PoolID          `json:"pool_id_bech32"`
+		EpochNo      EpochNo         `json:"epoch_no"`
+		ActiveStake  decimal.Decimal `json:"active_stake"`
 	}
 
 	// AccountHistoryEntry history entry list item.
@@ -56,7 +114,25 @@ type (
 	// AccountListResponse represents response from `/account_list` endpoint.
 	AccountListResponse struct {
 		Response
-		Data []Address `json:"data"`
+		Data []AccountListItem `json:"data"`
+	}
+
+	// AccountRewardHistoryResponse represents response from `/account_reward_history` endpoint.
+	AccountRewardHistoryResponse struct {
+		Response
+		Data []AccountRewardHistory `json:"data"`
+	}
+
+	// AccountUpdateHistoryResponse represents response from `/account_update_history` endpoint.
+	AccountUpdateHistoryResponse struct {
+		Response
+		Data []AccountUpdateHistory `json:"data"`
+	}
+
+	// AccountStakeHistoryResponse represents response from `/account_stake_history` endpoint.
+	AccountStakeHistoryResponse struct {
+		Response
+		Data []AccountStakeHistory `json:"data"`
 	}
 
 	// AccountInfoResponse represents response from `/account_info` endpoint.
@@ -152,7 +228,8 @@ type (
 	}
 )
 
-// GetAccountList returns a list of all accounts.
+// GetAccountList returns a list of all stake addresses that have at least
+// one transaction (paginated).
 func (c *Client) GetAccountList(
 	ctx context.Context,
 	opts *RequestOptions,
@@ -163,21 +240,11 @@ func (c *Client) GetAccountList(
 		return
 	}
 
-	accs := []struct {
-		ID Address `json:"id"`
-	}{}
-
-	err = ReadAndUnmarshalResponse(rsp, &res.Response, &accs)
-
-	if len(accs) > 0 {
-		for _, a := range accs {
-			res.Data = append(res.Data, a.ID)
-		}
-	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 	return
 }
 
-// GetAccountInfo returns the account info of any (payment or staking) address.
+// GetAccountInfo returns the account information for the given stake addresses.
 func (c *Client) GetAccountInfo(
 	ctx context.Context,
 	accs []Address,
@@ -199,6 +266,8 @@ func (c *Client) GetAccountInfo(
 	return
 }
 
+// GetAccountInfoCached returns the cached account information for the given
+// stake addresses, which performs better for registered accounts.
 func (c *Client) GetAccountInfoCached(
 	ctx context.Context,
 	accs []Address,
@@ -312,7 +381,6 @@ func (c *Client) GetAccountAssets(
 func (c *Client) GetAccountHistory(
 	ctx context.Context,
 	accs []Address,
-	epoch *EpochNo,
 	opts *RequestOptions,
 ) (res *AccountsHistoryResponse, err error) {
 	res = &AccountsHistoryResponse{}
@@ -321,7 +389,7 @@ func (c *Client) GetAccountHistory(
 		res.applyError(nil, err)
 		return
 	}
-	rsp, err := c.request(ctx, &res.Response, "POST", "/account_history", stakeAddressesPL(accs, epoch, nil), opts)
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_history", stakeAddressesPL(accs, nil, nil), opts)
 	if err != nil {
 		return
 	}
@@ -329,6 +397,8 @@ func (c *Client) GetAccountHistory(
 	return
 }
 
+// GetAccountUtxos returns all UTxOs of the given stake addresses. The extended
+// flag populates optional fields supported by the endpoint.
 func (c *Client) GetAccountUtxos(
 	ctx context.Context,
 	accs []Address,
@@ -350,6 +420,8 @@ func (c *Client) GetAccountUtxos(
 	return
 }
 
+// GetAccountTxs returns all transactions of a stake address, optionally only
+// those after the given block height (0 for no filter).
 func (c *Client) GetAccountTxs(
 	ctx context.Context,
 	acc Address,
@@ -358,12 +430,81 @@ func (c *Client) GetAccountTxs(
 ) (res *AccountTXsResponse, err error) {
 	res = &AccountTXsResponse{}
 
-	opts.QueryAdd("_stake_address", acc.String())
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_stake_address", acc.String())
 	if afterBlockHeight > 0 {
-		opts.QueryAdd("after_block_height", fmt.Sprint(afterBlockHeight))
+		opts.QuerySet("_after_block_height", fmt.Sprint(afterBlockHeight))
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/account_txs", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetAccountRewardHistory returns the full rewards history (including MIR) of
+// the given stake addresses as a flat list, or of a certain epoch if epoch is
+// not nil.
+func (c *Client) GetAccountRewardHistory(
+	ctx context.Context,
+	accs []Address,
+	epoch *EpochNo,
+	opts *RequestOptions,
+) (res *AccountRewardHistoryResponse, err error) {
+	res = &AccountRewardHistoryResponse{}
+	if len(accs) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_reward_history", stakeAddressesPL(accs, epoch, nil), opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetAccountUpdateHistory returns the account updates (registration,
+// deregistration, delegation and withdrawals) of the given stake addresses
+// as a flat list.
+func (c *Client) GetAccountUpdateHistory(
+	ctx context.Context,
+	accs []Address,
+	opts *RequestOptions,
+) (res *AccountUpdateHistoryResponse, err error) {
+	res = &AccountUpdateHistoryResponse{}
+	if len(accs) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_update_history", stakeAddressesPL(accs, nil, nil), opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetAccountStakeHistory returns the staking history of the given stake
+// addresses as a flat list of active stake per epoch.
+func (c *Client) GetAccountStakeHistory(
+	ctx context.Context,
+	accs []Address,
+	opts *RequestOptions,
+) (res *AccountStakeHistoryResponse, err error) {
+	res = &AccountStakeHistoryResponse{}
+	if len(accs) == 0 {
+		err = ErrNoAddress
+		res.applyError(nil, err)
+		return
+	}
+	rsp, err := c.request(ctx, &res.Response, "POST", "/account_stake_history", stakeAddressesPL(accs, nil, nil), opts)
 	if err != nil {
 		return
 	}
@@ -377,11 +518,7 @@ func stakeAddressesPL(addrs []Address, epoch *EpochNo, extended *bool) io.Reader
 		Epoch    *EpochNo  `json:"_epoch_no,omitempty"`
 		Extended *bool     `json:"_extended,omitempty"`
 	}{addrs, epoch, extended}
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 	return rpipe
 }
 
@@ -400,10 +537,6 @@ func stakeAddresses2PL(addrs []Address, firstOnly, empty bool) io.Reader {
 		FirstOnly *bool     `json:"_first_only,omitempty"`
 		Empty     *bool     `json:"_empty,omitempty"`
 	}{addrs, firstOnlyVal, emptyVal}
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 	return rpipe
 }

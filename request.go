@@ -5,7 +5,10 @@
 package koios
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -107,3 +110,27 @@ func (ro *RequestOptions) lock() error {
 	}
 	return nil
 }
+
+// jsonBody encodes v as a JSON request body.
+func jsonBody(v any) (io.Reader, error) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewReader(b), nil
+}
+
+// payloadReader encodes v as a JSON request body up front, so a request that
+// fails before sending leaves nothing running; an encoding failure is
+// returned when the body is read.
+func payloadReader(v any) io.Reader {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return &failedReader{err: err}
+	}
+	return bytes.NewReader(b)
+}
+
+type failedReader struct{ err error }
+
+func (r *failedReader) Read([]byte) (int, error) { return 0, r.err }

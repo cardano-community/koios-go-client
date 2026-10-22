@@ -5,6 +5,7 @@
 package koios
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"fmt"
@@ -178,8 +179,12 @@ func (c *Client) request(
 
 	if rsp.StatusCode > http.StatusAccepted {
 		rerr := fmt.Errorf("%w: %s", ErrResponse, rsp.Status)
+		// Drain and close the body so the connection is released, then hand
+		// the buffered bytes back for callers that read the error themselves.
+		body, _ := ReadResponseBody(rsp)
+		rsp.Body = io.NopCloser(bytes.NewReader(body))
 		if res != nil {
-			res.applyError(nil, rerr)
+			res.applyError(body, rerr)
 		}
 		return rsp, rerr
 	}

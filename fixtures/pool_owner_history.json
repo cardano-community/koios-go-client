@@ -1,0 +1,9 @@
+[
+ {
+  "pool_id_bech32": "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc",
+  "stake_address": "stake1uy6yzwsxxc28lfms0qmpxvyz9a7y770rtcqx9y96m42cttqwvp4m5",
+  "declared_pledge": "64000000000000",
+  "epoch": 312,
+  "active_stake": "64328627680963"
+ }
+]

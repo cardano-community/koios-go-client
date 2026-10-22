@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 
 	"github.com/shopspring/decimal"
 )
@@ -45,9 +44,13 @@ type (
 		Decimals uint8 `json:"decimals,omitempty"`
 	}
 
+	// AssetListItem is an asset as returned by `/asset_list`.
 	AssetListItem struct {
 		// Asset Name (hex).
 		AssetName AssetName `json:"asset_name"`
+
+		// AssetNameASCII is the asset name in ASCII (only reported by `/asset_list`).
+		AssetNameASCII string `json:"asset_name_ascii,omitempty"`
 
 		Fingerprint AssetFingerprint `json:"fingerprint"`
 
@@ -66,21 +69,41 @@ type (
 		Decimals uint8 `json:"decimals"`
 	}
 
-	// TokenRegistryMetadata metadata registered on the Cardano Token Registry.
+	// TokenRegistryMetadata is the asset metadata registered on the Cardano
+	// Token Registry, as nested in `/asset_info` and `/policy_asset_info`.
 	TokenRegistryMetadata struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Ticker      string `json:"ticker"`
+		URL         string `json:"url"`
+		// Logo is a PNG image file as a byte string.
+		Logo     string `json:"logo"`
+		Decimals int    `json:"decimals"`
+	}
+
+	// TokenRegistryAsset is an asset registered via the token registry on
+	// GitHub, as returned by `/asset_token_registry`.
+	TokenRegistryAsset struct {
 		PolicyID       PolicyID  `json:"policy_id"`
 		AssetName      AssetName `json:"asset_name"`
-		AccetNameASCII string    `json:"asset_name_ascii"`
+		AssetNameASCII string    `json:"asset_name_ascii"`
 		Ticker         string    `json:"ticker"`
 		Description    string    `json:"description"`
 		URL            string    `json:"url"`
 		Decimals       int       `json:"decimals"`
-		Logo           string    `json:"logo"`
+		// Logo is a PNG image file as a byte string.
+		Logo string `json:"logo"`
 	}
 
 	// AssetSummary aggregated asset summary.
 	AssetSummary struct {
-		Asset
+		// Asset Policy ID (hex).
+		PolicyID PolicyID `json:"policy_id"`
+
+		// Asset Name (hex).
+		AssetName AssetName `json:"asset_name"`
+
+		Fingerprint AssetFingerprint `json:"fingerprint"`
 
 		// Total number of registered wallets holding the given asset
 		StakedWallets uint64 `json:"staked_wallets"`
@@ -91,6 +114,9 @@ type (
 		// Total number of payment addresses (not belonging
 		// to registered wallets) holding the given asset
 		UnstakedAddresses uint64 `json:"unstaked_addresses"`
+
+		// Total number of unique addresses holding the given asset
+		Addresses uint64 `json:"addresses"`
 	}
 
 	// AssetInfo info about the asset.
@@ -113,8 +139,7 @@ type (
 		BurnCnt int `json:"burn_cnt,omitempty"`
 		// CreationTime of Asset
 		CreationTime Timestamp `json:"creation_time,omitempty"`
-		// MintingTxMetadata minting Tx JSON payload if it can be decoded as JSON
-		// MintingTxMetadata *TxInfoMetadata `json:"minting_tx_metadata"`
+		// MintingTxMetadata latest minting transaction metadata (aligns with CIP-25).
 		MintingTxMetadata *json.RawMessage `json:"minting_tx_metadata,omitempty"`
 		// Asset metadata registered on the Cardano Token Registry
 		TokenRegistryMetadata *TokenRegistryMetadata `json:"token_registry_metadata,omitempty"`
@@ -129,9 +154,13 @@ type (
 
 	// AssetHolder payment addresses holding the given token (including balance).
 	AssetHolder struct {
-		AssetName      AssetName       `json:"asset_name,omitempty"`
-		PaymentAddress Address         `json:"payment_address"`
-		Quantity       decimal.Decimal `json:"quantity"`
+		// AssetName is only reported by `/policy_asset_addresses`.
+		AssetName      AssetName `json:"asset_name,omitempty"`
+		PaymentAddress Address   `json:"payment_address"`
+		// StakeAddress is the staking address of the holder (nullable).
+		StakeAddress Address `json:"stake_address"`
+		// Quantity is only reported by `/asset_addresses` and `/policy_asset_addresses`.
+		Quantity decimal.Decimal `json:"quantity"`
 	}
 
 	// AssetAddressListResponse represents response from `/policy_asset_addresses` endpoint.
@@ -173,7 +202,8 @@ type (
 		TxHash    TxHash          `json:"tx_hash"`
 		Quantity  decimal.Decimal `json:"quantity"`
 		BlockTime Timestamp       `json:"block_time"`
-		Metadata  TxMetadata      `json:"metadata,omitempty"`
+		// Metadata is the array of transaction metadata (CIP-25) of the transaction.
+		Metadata []json.RawMessage `json:"metadata,omitempty"`
 	}
 
 	// AssetHistory holds given asset mint/burn tx's.
@@ -197,7 +227,7 @@ type (
 	// AssetTokenRegistryResponse represents response from `/asset_token_registry` endpoint.
 	AssetTokenRegistryResponse struct {
 		Response
-		Data []TokenRegistryMetadata `json:"data"`
+		Data []TokenRegistryAsset `json:"data"`
 	}
 
 	AssetUTxOsResponse struct {
@@ -219,7 +249,9 @@ type (
 		MintCNT        uint             `json:"mint_cnt"`
 		BurnCNT        uint             `json:"burn_cnt"`
 		CreationTime   Timestamp        `json:"creation_time"`
-		Decimals       uint8            `json:"decimals"`
+		// MintingTxMetadata is the latest minting transaction metadata (CIP-25).
+		MintingTxMetadata json.RawMessage `json:"minting_tx_metadata"`
+		Decimals          uint8           `json:"decimals"`
 	}
 )
 
@@ -233,12 +265,28 @@ func (v AssetFingerprint) String() string {
 	return string(v)
 }
 
-// GetAssetList returns the list of all native assets (paginated).
+// GetAssets returns the list of native assets (paginated). The policy
+// and optional asset name filters bypass the cost of filtering the output;
+// an empty name returns all assets of the policy.
 func (c *Client) GetAssets(
 	ctx context.Context,
+	policy PolicyID,
+	name AssetName,
 	opts *RequestOptions,
 ) (res *AssetListResponse, err error) {
 	res = &AssetListResponse{}
+	if len(policy) == 0 {
+		err = ErrNoPolicyID
+		res.applyError(nil, err)
+		return
+	}
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_asset_policy", policy.String())
+	if len(name) > 0 {
+		opts.QuerySet("_asset_name", name.String())
+	}
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_list", nil, opts)
 	if err != nil {
 		return
@@ -260,7 +308,9 @@ func (c *Client) GetAssetAddresses(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_asset_policy", policy.String())
-	opts.QuerySet("_asset_name", assetName.String())
+	if len(assetName) > 0 {
+		opts.QuerySet("_asset_name", assetName.String())
+	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_addresses", nil, opts)
 	if err != nil {
@@ -293,17 +343,13 @@ func (c *Client) GetAssetInfo(
 	}{}
 
 	for _, asset := range assets {
-		if asset.PolicyID == "" || asset.AssetName == "" {
-			return nil, fmt.Errorf("%w: policy_id and asset_name must be provided", ErrAsset)
+		if asset.PolicyID == "" {
+			return nil, fmt.Errorf("%w: policy_id must be provided", ErrAsset)
 		}
 		payload.Assets = append(payload.Assets, []string{asset.PolicyID.String(), asset.AssetName.String()})
 	}
 
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/asset_info", rpipe, opts)
 	if err != nil {
@@ -328,7 +374,9 @@ func (c *Client) GetAssetSummary(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_asset_policy", policy.String())
-	opts.QuerySet("_asset_name", name.String())
+	if len(name) > 0 {
+		opts.QuerySet("_asset_name", name.String())
+	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_summary", nil, opts)
 	if err != nil {
@@ -485,17 +533,13 @@ func (c *Client) GetAssetUTxOs(
 	}{}
 
 	for _, asset := range assets {
-		if asset.PolicyID == "" || asset.AssetName == "" {
-			return nil, fmt.Errorf("%w: policy_id and asset_name must be provided", ErrAsset)
+		if asset.PolicyID == "" {
+			return nil, fmt.Errorf("%w: policy_id must be provided", ErrAsset)
 		}
 		payload.Assets = append(payload.Assets, []string{asset.PolicyID.String(), asset.AssetName.String()})
 	}
 
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/asset_utxos", rpipe, opts)
 	if err != nil {
@@ -517,7 +561,9 @@ func (c *Client) GetAssetNftAddress(
 		opts = c.NewRequestOptions()
 	}
 	opts.QuerySet("_asset_policy", policy.String())
-	opts.QuerySet("_asset_name", name.String())
+	if len(name) > 0 {
+		opts.QuerySet("_asset_name", name.String())
+	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/asset_nft_address", nil, opts)
 	if err != nil {

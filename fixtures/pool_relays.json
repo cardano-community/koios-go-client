@@ -1,0 +1,14 @@
+[
+ {
+  "pool_id_bech32": "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc",
+  "relays": [
+   {
+    "dns": "relays-new.cardano-mainnet.iohk.io",
+    "srv": "biostakingpool3.hopto.org",
+    "ipv4": "54.220.20.40",
+    "ipv6": "2604:ed40:1000:1711:6082:78ff:fe0c:ebf",
+    "port": 6000
+   }
+  ]
+ }
+]

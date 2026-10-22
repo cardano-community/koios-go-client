@@ -6,7 +6,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 
@@ -21,6 +20,9 @@ type (
 
 		// EpochNo number.
 		EpochNo EpochNo `json:"epoch_no"`
+
+		// Era is the Cardano era of the block (only reported by `/block_info`).
+		Era string `json:"era,omitempty"`
 
 		// AbsSlot is overall slot number (slots from genesis block of chain).
 		AbsSlot Slot `json:"abs_slot"`
@@ -46,7 +48,7 @@ type (
 		// OpCert latest ool operational certificate hash
 		OpCert string `json:"op_cert,omitempty"`
 
-		// Pool ID.
+		// Pool ID in bech32 format (empty for pre-Shelley blocks).
 		Pool string `json:"pool"`
 
 		// OpCertCounter is pool latest operational certificate counter value.
@@ -90,6 +92,7 @@ type (
 	}
 	// BlockTxsHashesResponse represents response from `/block_txs` endpoint.
 
+	// BlockTxs is a transaction included in a block, as returned by `/block_txs`.
 	BlockTxs struct {
 		BlockHash   BlockHash `json:"block_hash"`
 		TxHashes    TxHash    `json:"tx_hash"`
@@ -98,13 +101,28 @@ type (
 		BlockTime   Timestamp `json:"block_time"`
 	}
 
+	// BlocksTxsResponse represents response from `/block_txs` endpoint.
 	BlocksTxsResponse struct {
 		Response
 		Data []BlockTxs `json:"data"`
 	}
+	// BlockTxsResponse represents response from `/block_txs` endpoint
+	// when requesting a single block.
 	BlockTxsResponse struct {
 		Response
 		Data BlockTxs `json:"data"`
+	}
+
+	// BlockTxCborResponse represents response from `/block_tx_cbor` endpoint.
+	BlockTxCborResponse struct {
+		Response
+		Data []TxCbor `json:"data"`
+	}
+
+	// BlockTxInfoResponse represents response from `/block_tx_info` endpoint.
+	BlockTxInfoResponse struct {
+		Response
+		Data []TxInfo `json:"data"`
 	}
 )
 
@@ -193,29 +211,59 @@ func blockHashesPL(bhash []BlockHash) io.Reader {
 	var payload = struct {
 		BlockHashes []BlockHash `json:"_block_hashes"`
 	}{bhash}
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 	return rpipe
 }
 
-// handle api json tags Block.epoch and Block.epoch_no.
-// SEE: https://github.com/cardano-community/koios-artifacts/issues/102
-func (block *Block) UnmarshalJSON(b []byte) error {
-	type B Block
-	if err := json.Unmarshal(b, (*B)(block)); err != nil {
-		return err
+// GetBlockTxCbor returns the raw CBOR of all transactions within the requested blocks.
+func (c *Client) GetBlockTxCbor(
+	ctx context.Context,
+	hashes []BlockHash,
+	opts *RequestOptions,
+) (*BlockTxCborResponse, error) {
+	res := &BlockTxCborResponse{}
+	if len(hashes) == 0 {
+		res.applyError(nil, ErrNoBlockHash)
+		return res, ErrNoBlockHash
 	}
-	if block.EpochNo == 0 {
-		var fix = struct {
-			EpochNo EpochNo `json:"epoch"`
-		}{}
-		if err := json.Unmarshal(b, &fix); err != nil {
-			return err
-		}
-		block.EpochNo = fix.EpochNo
+	rsp, err := c.request(ctx, &res.Response, "POST", "/block_tx_cbor", blockHashesPL(hashes), opts)
+	if err != nil {
+		return res, err
 	}
-	return nil
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+// GetBlockTxInfo returns detailed information about the transactions of the
+// requested blocks. The optional sections of the result are selected with flags;
+// a nil flags value requests none of them. The Governance flag is not
+// supported by this endpoint and is ignored.
+func (c *Client) GetBlockTxInfo(
+	ctx context.Context,
+	hashes []BlockHash,
+	flags *TxInfoFlags,
+	opts *RequestOptions,
+) (*BlockTxInfoResponse, error) {
+	res := &BlockTxInfoResponse{}
+	if len(hashes) == 0 {
+		res.applyError(nil, ErrNoBlockHash)
+		return res, ErrNoBlockHash
+	}
+	payload := struct {
+		BlockHashes []BlockHash `json:"_block_hashes"`
+		txInfoFlagsPayload
+	}{BlockHashes: hashes}
+	if flags != nil {
+		payload.txInfoFlagsPayload = flags.payload()
+		payload.Governance = false
+	}
+	body, err := jsonBody(payload)
+	if err != nil {
+		res.applyError(nil, err)
+		return res, err
+	}
+	rsp, err := c.request(ctx, &res.Response, "POST", "/block_tx_info", body, opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
 }

@@ -46,7 +46,7 @@ const (
 	// DefaultRateLimit is default rate limit used by api client.
 	DefaultRateLimit int = 10 // https://api.koios.rest/#overview--limits
 	// DefaultOrigin is default origin header used by api client.
-	DefaultOrigin = "https://github.com/cardano-community/koios-go-client/v4"
+	DefaultOrigin = "https://github.com/cardano-community/koios-go-client/v5"
 	// PageSize is default page size used by api client.
 	PageSize       uint = 1000
 	DefaultTimeout      = 30 * time.Second
@@ -60,12 +60,14 @@ var (
 	ErrOriginSet                = errors.New("origin can only be set as option to koios.New")
 	ErrRateLimitRange           = errors.New("rate limit must be between 1-255 requests per sec")
 	ErrResponseIsNotJSON        = errors.New("got non json response")
+	ErrNoBlockHash              = errors.New("missing block hash(es)")
 	ErrNoTxHash                 = errors.New("missing transaxtion hash(es)")
 	ErrNoDatumHash              = errors.New("missing datum hash(es)")
 	ErrNoAddress                = errors.New("missing address")
 	ErrNoAddressesProvided      = errors.New("atleast one address required")
 	ErrNoCredentialsProvided    = errors.New("atleast one payment credential required")
 	ErrNoPoolID                 = errors.New("missing pool id")
+	ErrNoPolicyID               = errors.New("missing policy id")
 	ErrResponse                 = errors.New("response error")
 	ErrSchema                   = errors.New("scheme must be http or https")
 	ErrReqOptsAlreadyUsed       = errors.New("request options can only be used once")
@@ -303,6 +305,21 @@ func (b BlockNo) String() string {
 
 func (s Slot) String() string {
 	return fmt.Sprintf("%d", s)
+}
+
+// UnmarshalJSON decodes a slot number delivered either as a JSON number
+// or as a quoted decimal string. JSON null leaves the slot unchanged.
+func (s *Slot) UnmarshalJSON(b []byte) error {
+	raw := strings.Trim(string(b), `"`)
+	if raw == "null" || raw == "" {
+		return nil
+	}
+	v, err := strconv.ParseUint(raw, 10, strconv.IntSize)
+	if err != nil {
+		return fmt.Errorf("slot: %w", err)
+	}
+	*s = Slot(v)
+	return nil
 }
 
 func (h BlockHash) MarshalJSON() ([]byte, error) {

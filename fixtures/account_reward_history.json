@@ -1,0 +1,10 @@
+[
+ {
+  "stake_address": "stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz",
+  "earned_epoch": 294,
+  "spendable_epoch": 294,
+  "amount": null,
+  "type": "member",
+  "pool_id_bech32": "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"
+ }
+]

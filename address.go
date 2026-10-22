@@ -6,7 +6,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 
@@ -32,6 +31,49 @@ type (
 		UTxOs []UTxO `json:"utxo_set"`
 	}
 
+	// AddressListItem is an address as returned by `/address_list`.
+	AddressListItem struct {
+		// Address is the Cardano payment/base address (bech32 encoded).
+		Address Address `json:"address"`
+		// AddressHex is the address in hex format.
+		AddressHex string `json:"address_hex"`
+		// HasScript is true if the payment credential is a script hash.
+		HasScript bool `json:"has_script"`
+		// PaymentCred is the payment credential (nullable).
+		PaymentCred PaymentCredential `json:"payment_cred"`
+		// StakeAddress is the staking address (nullable).
+		StakeAddress Address `json:"stake_address"`
+		// StakeAddressHex is the staking address in hex format (nullable).
+		StakeAddressHex string `json:"stake_address_hex"`
+	}
+
+	// AddressOutput is a basic transaction output as returned by `/address_outputs`.
+	AddressOutput struct {
+		Address      Address           `json:"address"`
+		TxHash       TxHash            `json:"tx_hash"`
+		TxIndex      int               `json:"tx_index"`
+		Value        decimal.Decimal   `json:"value"`
+		StakeAddress Address           `json:"stake_address"`
+		PaymentCred  PaymentCredential `json:"payment_cred"`
+		EpochNo      EpochNo           `json:"epoch_no"`
+		BlockHeight  uint64            `json:"block_height"`
+		BlockTime    Timestamp         `json:"block_time"`
+		IsSpent      bool              `json:"is_spent"`
+	}
+
+	// AddressListResponse represents response from `/address_list` endpoint.
+	AddressListResponse struct {
+		Response
+		Data []AddressListItem `json:"data"`
+	}
+
+	// AddressOutputsResponse represents response from `/address_outputs` endpoint.
+	AddressOutputsResponse struct {
+		Response
+		Data []AddressOutput `json:"data"`
+	}
+
+	// AddressTx is a transaction reference with its block position.
 	AddressTx struct {
 		TxHash      TxHash    `json:"tx_hash"`
 		EpochNo     EpochNo   `json:"epoch_no"`
@@ -117,6 +159,7 @@ func (c *Client) GetAddressInfo(
 ) (res *AddressInfoResponse, err error) {
 	res = &AddressInfoResponse{}
 	res2, err := c.GetAddressesInfo(ctx, []Address{addr}, opts)
+	res.Response = res2.Response
 	if err != nil {
 		return
 	}
@@ -126,6 +169,8 @@ func (c *Client) GetAddressInfo(
 	return
 }
 
+// GetAddressesInfo returns address info - balance, associated stake address
+// (if any) and UTxO set for the given addresses.
 func (c *Client) GetAddressesInfo(
 	ctx context.Context,
 	addr []Address,
@@ -168,11 +213,7 @@ func (c *Client) GetAddressTxs(
 		AfterBlockHeight: h,
 	}
 
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/address_txs", rpipe, opts)
 	if err != nil {
@@ -259,11 +300,7 @@ func (c *Client) GetCredentialTxs(
 		AfterBlockHeight: h,
 	}
 
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_txs", rpipe, opts)
 	res.applyError(nil, err)
@@ -292,11 +329,7 @@ func (c *Client) GetAddressUTxOs(
 		Extended: extended,
 	}
 
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/address_utxos", rpipe, opts)
 	res.applyError(nil, err)
@@ -323,11 +356,7 @@ func (c *Client) GetCredentialUTxOs(
 		Creds:    creds,
 		Extended: extended,
 	}
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 
 	rsp, err := c.request(ctx, &res.Response, "POST", "/credential_utxos", rpipe, opts)
 	res.applyError(nil, err)
@@ -335,14 +364,55 @@ func (c *Client) GetCredentialUTxOs(
 	return res, err
 }
 
+// GetAddressList returns the list of all used addresses on the blockchain (paginated).
+func (c *Client) GetAddressList(
+	ctx context.Context,
+	opts *RequestOptions,
+) (*AddressListResponse, error) {
+	res := &AddressListResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/address_list", nil, opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
+// GetAddressOutputs returns basic transaction output info for the given
+// addresses, optionally only after the given block height (0 for no filter).
+func (c *Client) GetAddressOutputs(
+	ctx context.Context,
+	addrs []Address,
+	afterBlockHeight uint64,
+	opts *RequestOptions,
+) (*AddressOutputsResponse, error) {
+	res := &AddressOutputsResponse{}
+	if len(addrs) == 0 {
+		err := ErrNoAddress
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	payload := struct {
+		Addresses        []Address `json:"_addresses"`
+		AfterBlockHeight uint64    `json:"_after_block_height,omitempty"`
+	}{addrs, afterBlockHeight}
+	body, err := jsonBody(payload)
+	if err != nil {
+		res.applyError(nil, err)
+		return res, err
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/address_outputs", body, opts)
+	if err != nil {
+		return res, err
+	}
+	return res, ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+}
+
 func addressesPL(addrs []Address) io.Reader {
 	var payload = struct {
 		Adresses []Address `json:"_addresses"`
 	}{addrs}
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 	return rpipe
 }

@@ -1,0 +1,17 @@
+[
+ {
+  "epoch_no": 294,
+  "circulation": 32081169442642320,
+  "treasury": 637024173474141,
+  "reward": 506871250479840,
+  "supply": 33228495612391330,
+  "reserves": 11771504387608670,
+  "fees": 92010214941,
+  "deposits_stake": 3338702000000,
+  "deposits_drep": 0,
+  "deposits_proposal": 0,
+  "treasury_donation": 0,
+  "treasury_withdrawal": 0,
+  "reserves_withdrawal": 0
+ }
+]

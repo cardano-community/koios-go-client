@@ -1,0 +1,10 @@
+[
+ {
+  "address": "addr1qxkfe8s6m8qt5436lec3f0320hrmpppwqgs2gah4360krvyssntpwjcz303mx3h4avg7p29l3zd8u3jyglmewds9ezrqdc3cxp",
+  "address_hex": "60f879af535c02e37bf77fb3b5f51d017229fe47995c37b9aca9e0091c",
+  "has_script": false,
+  "payment_cred": "de3c1c527e8826b9cd2030f88f75fc44cd4ce519b9ded9eb794b3794",
+  "stake_address": "stake1u8yxtugdv63wxafy9d00nuz6hjyyp4qnggvc9a3vxh8yl0ckml2uz",
+  "stake_address_hex": "e1c865f10d66a2e375242b5ef9f05abc8840d413421982f62c35ce4fbf"
+ }
+]

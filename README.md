@@ -10,16 +10,16 @@
 
 **[Koios API] Client Library for Go**
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client/v4)](https://pkg.go.dev/github.com/cardano-community/koios-go-client/v4)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client/v5)](https://pkg.go.dev/github.com/cardano-community/koios-go-client/v5)
 
 ```shell
-go get github.com/cardano-community/koios-go-client/v4
+go get github.com/cardano-community/koios-go-client/v5
 ```
 
 ```go
 ...
 import (
-  "github.com/cardano-community/koios-go-client/v4" // imports as package "koios"
+  "github.com/cardano-community/koios-go-client/v5" // imports as package "koios"
 )
 ...
 ```
@@ -47,13 +47,14 @@ import (
 [![codecov](https://codecov.io/gh/cardano-community/koios-go-client/branch/main/graph/badge.svg?token=FA1KGG6ZQ5)](https://codecov.io/gh/cardano-community/koios-go-client)
 [![codeql](https://github.com/cardano-community/koios-go-client/workflows/codeql/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/codeql.yml)
 [![misspell](https://github.com/cardano-community/koios-go-client/workflows/misspell/badge.svg)](https://github.com/cardano-community/koios-go-client/actions/workflows/misspell.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/cardano-community/koios-go-client/v4)](https://goreportcard.com/report/github.com/cardano-community/koios-go-client/v4)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cardano-community/koios-go-client/v5)](https://goreportcard.com/report/github.com/cardano-community/koios-go-client/v5)
 
 ---
 
 - [Usage](#usage)
   - [Basic usage](#basic-usage)
   - [Concurrency using goroutines](#concurrency-using-goroutines)
+- [Migrating from v4](#migrating-from-v4)
 - [Math on ada, assets and tokens).](#math-on-ada-assets-and-tokens)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
@@ -81,7 +82,7 @@ import (
 
 ## Usage
 
-See Godoc [![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client/v4)](https://pkg.go.dev/github.com/cardano-community/koios-go-client/v4)
+See Godoc [![PkgGoDev](https://pkg.go.dev/badge/github.com/cardano-community/koios-go-client/v5)](https://pkg.go.dev/github.com/cardano-community/koios-go-client/v5)
 
 Additionally you can find all usecases by looking source of `koio-cli` Command-line application [koios-cli] which utilizes entire API of this library.
 
@@ -100,7 +101,7 @@ import (
 	"fmt"
 	"log"
 
-	koios "github.com/cardano-community/koios-go-client/v4"
+	koios "github.com/cardano-community/koios-go-client/v5"
 )
 
 func main() {
@@ -128,7 +129,7 @@ func main() {
   fmt.Println("abs_slot: ", res.Data.AbsSlot)
   fmt.Println("block_no: ", res.Data.BlockNo)
   fmt.Println("block_time: ", res.Data.BlockTime)
-  fmt.Println("epoch: ", res.Data.Epoch)
+  fmt.Println("epoch_no: ", res.Data.EpochNo)
   fmt.Println("epoch_slot: ", res.Data.EpochSlot)
   fmt.Println("hash: ", res.Data.Hash)
 }
@@ -179,6 +180,71 @@ func main() {
   wg.Wait()
 }
 ```
+
+## Migrating from v4
+
+v5 follows the Koios API v1.4.2 specification. Update the import path to
+`github.com/cardano-community/koios-go-client/v5` and review the following
+breaking changes.
+
+**Removed**
+
+- `CollectRequestsStats` option; use `EnableRequestsStats`.
+- `TX` and the `EUTxO` embedding in transaction info; `GetTxInfo` now returns `[]TxInfo`
+  with `Inputs` and `Outputs` as `[]TxUTxO`.
+- `Block.UnmarshalJSON` workaround for the legacy `epoch` field; only `epoch_no` is read.
+- `PoolStatus` from `PoolRelays`, `PoolMetadata` and `PoolUpdateInfo`, which the API does not return.
+- The `epoch` argument of `GetAccountHistory`; `/account_history` takes no epoch.
+- `TxUTxOsResponse` and the misspelled `AccetNameASCII` field.
+
+**Signatures**
+
+- `GetTxInfo(ctx, txs, flags *TxInfoFlags, opts)` selects the optional sections of the
+  result (`_inputs`, `_metadata`, `_assets`, `_withdrawals`, `_certs`, `_scripts`,
+  `_bytecode`, `_governance`). A nil `flags` requests none of them.
+- The optional epoch of `GetAccountRewardHistory` and `GetPoolInvalidDelegators` is a `*EpochNo`;
+  nil omits it.
+- `GetAssets(ctx, policy, name, opts)` takes the `_asset_policy` and `_asset_name` filters.
+- `GetAssetInfo` and `GetAssetUTxOs` accept assets with an empty name; `GetAssetAddresses`,
+  `GetAssetSummary` and `GetAssetNftAddress` omit `_asset_name` when the name is empty.
+- An empty `_asset_policy` (`GetAssets`) or pool id (`GetPoolInvalidDelegators`) returns
+  `ErrNoPolicyID` or `ErrNoPoolID` instead of sending the request.
+- Request errors keep the Koios error body in `Response.Error` and release the connection.
+- `GetAccountTxs` sends `_after_block_height` (previously `after_block_height`) and accepts nil options.
+
+**Types**
+
+- `UTxO` follows `/utxo_info`: `Address` and `StakeAddress` are plain `Address` values,
+  the JSON key of `StakeAddress` is `stake_address`, `PaymentCred` is not a pointer,
+  and `InlineDatum` and `ReferenceScript` are typed (`*InlineDatum`, `*ReferenceScript`).
+- Transaction inputs, outputs and collateral use the new `TxUTxO` (`payment_addr`, `stake_addr`).
+  `TxInfo.CollateralOutput` is a `*TxCollateralOutput`: the API sends a single object whose
+  `asset_list` is not a JSON array, so it is kept as raw JSON.
+- `TxInfo.InvalidBefore` and `InvalidAfter` are `*Slot`; `Slot` decodes quoted numbers.
+- `TxInfo.NativeScripts` is `[]TxNativeScript`; `PlutusContract` carries the spent input,
+  redeemer and datum. `TxStatus.Confirmations` is `*uint64`.
+- `Genesis.AlonzoGenesis` is a `string` holding a JSON document.
+- `EpochParams`: `MaxTxExMem`, `MaxTxExSteps`, `MaxBlockExMem`, `MaxBlockExSteps` and
+  `MaxValSize` are `int64`; governance parameters were added.
+- `AccountListResponse.Data` is `[]AccountListItem`; `AccountInfo` gained `DelegatedDRep`,
+  `Deposit` and `ProposalRefund` (read from `proposal_refund`).
+- `TokenRegistryMetadata` (nested in `/asset_info`) lost `policy_id` and `asset_name` and gained `name`;
+  `/asset_token_registry` returns `TokenRegistryAsset`. `AssetSummary` no longer embeds `Asset`.
+  `AssetMintTX.Metadata` is `[]json.RawMessage`.
+- `PoolInfo.MetaJSON` and `PoolUpdateInfo.MetaJSON` are pointers; `Margin` and `LiveSaturation`
+  are `float64`; `PoolListItem.Margin` and `PoolHistory.EpochROS` are `float64`.
+- `ScriptRedeemer.UnitMem` and `UnitSteps` are `decimal.Decimal` and `DatumValue` is `json.RawMessage`.
+  `ScriptInfo`, `NativeScript` and `PlutusScriptListItem` use `ScriptHash`.
+
+**Added**
+
+New endpoints: the governance endpoints (`/drep_*`, `/committee_*`, `/proposal_*`,
+`/voter_proposal_list`, `/vote_list`, `/pool_votes`, `/pool_voting_power_history`),
+`/era_summaries`, `/cli_protocol_params`, `/block_tx_cbor`, `/block_tx_info`,
+`/tx_cbor`, `/tx_by_metalabel`, `/tx_outs_epoch`, `/tx_utxos`, `/address_list`, `/address_outputs`,
+`/account_reward_history`, `/account_update_history`, `/account_stake_history`,
+`/pool_invalid_delegators`, `/pool_owner_history`, `/pool_groups`, `/pool_calidus_keys`,
+`/reference_script_utxos` and `/ogmios`.
 
 ## Math on ada, assets and tokens).
 

@@ -1,0 +1,36 @@
+[
+ {
+  "tx_hash": "f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e",
+  "block_time": 1704757130,
+  "pool_id_bech32": "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc",
+  "pool_id_hex": "a532904ca60e13e88437b58e7c6ff66b8d5e7ec8d3f4b9e4be7820ec",
+  "active_epoch_no": 324,
+  "vrf_key_hash": "25efdad1bc12944d38e4e3c26c43565bec84973a812737b163b289e87d0d5ed3",
+  "margin": 0.1,
+  "fixed_cost": "500000000",
+  "pledge": "64000000000000",
+  "reward_addr": "stake1uy6yzwsxxc28lfms0qmpxvyz9a7y770rtcqx9y96m42cttqwvp4m5",
+  "owners": [
+   "stake1u8088wvudd7dp3rxl0v9xgng8r3j50s65ge3l3jvgd94keqfm3nv3"
+  ],
+  "relays": [
+   {
+    "dns": "relays-new.cardano-mainnet.iohk.io",
+    "srv": "biostakingpool3.hopto.org",
+    "ipv4": "54.220.20.40",
+    "ipv6": "2604:ed40:1000:1711:6082:78ff:fe0c:ebf",
+    "port": 6000
+   }
+  ],
+  "meta_url": "https://pools.iohk.io/IOGP.json",
+  "meta_hash": "37eb004c0dd8a221ac3598ca1c6d6257fb5207ae9857b7c163ae0f39259d6cc0",
+  "meta_json": {
+   "name": "Input Output Global (IOHK) - Private",
+   "ticker": "IOGP",
+   "homepage": "https://iohk.io",
+   "description": "Our mission is to provide economic identity to the billions of people who lack it. IOHK will not use the IOHK ticker."
+  },
+  "update_type": "registration",
+  "retiring_epoch": null
+ }
+]

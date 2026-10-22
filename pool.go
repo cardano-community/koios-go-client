@@ -6,7 +6,6 @@ package koios
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 
 	"github.com/shopspring/decimal"
@@ -24,11 +23,13 @@ type (
 		// ActiveEpochNo Block number on chain where transaction was included.
 		ActiveEpochNo EpochNo `json:"active_epoch_no"`
 		// Margin (decimal format)
-		Margin float32 `json:"margin"`
+		Margin float64 `json:"margin"`
 		// FixedCost Pool fixed cost per epoch
 		FixedCost decimal.Decimal `json:"fixed_cost"`
 		// Pledge pledge in lovelace.
 		Pledge decimal.Decimal `json:"pledge"`
+		// Deposit is the pool's registration deposit (in lovelace).
+		Deposit decimal.Decimal `json:"deposit"`
 		// Pool reward address.
 		RewardAddr Address `json:"reward_addr"`
 		// Owners of the pool
@@ -37,14 +38,19 @@ type (
 		Relays []Relay `json:"relays"`
 		// Ticker of Pool.
 		Ticker string `json:"ticker,omitempty"`
+		// PoolGroup is a group that the pool was identified to be associated with.
+		PoolGroup string `json:"pool_group,omitempty"`
 		// MetaUrl Pool metadata URL
 		MetaURL string `json:"meta_url"`
 		// MetaHash Pool metadata hash
 		MetaHash string `json:"meta_hash"`
 		// Pool status (registered | retiring | retired).
 		PoolStatus string `json:"pool_status"`
+		// ActiveStake is the amount of stake delegated to this pool at the
+		// time of the epoch snapshot.
+		ActiveStake decimal.Decimal `json:"active_stake"`
 		// Announced retiring epoch (nullable).
-		RetiringEpoch *EpochNo `json:"retiring_epoch.omitempty"`
+		RetiringEpoch *EpochNo `json:"retiring_epoch,omitempty"`
 	}
 
 	PoolRegistrationOrRetirement struct {
@@ -84,8 +90,6 @@ type (
 
 		// MetaJson pool meta json
 		MetaJSON *PoolMetaJSON `json:"meta_json,omitempty"`
-
-		PoolStatus string `json:"pool_status"`
 	}
 
 	// Relay defines model for pool relay.
@@ -94,10 +98,10 @@ type (
 		DNS string `json:"dns"`
 
 		// IPv4 address of the relay (nullable)
-		Ipv4 string `json:"ipv4,"`
+		Ipv4 string `json:"ipv4"`
 
 		// IPv6 address of the relay (nullable)
-		Ipv6 string `json:"ipv6,"`
+		Ipv6 string `json:"ipv6"`
 
 		// Port number of the relay (nullable)
 		Port uint16 `json:"port"`
@@ -117,13 +121,18 @@ type (
 		// Pool VRF key hash
 		VrfKeyHash string `json:"vrf_key_hash"`
 		// Margin (decimal format)
-		Margin float32 `json:"margin"`
+		Margin float64 `json:"margin"`
 		// FixedCost Pool fixed cost per epoch
 		FixedCost decimal.Decimal `json:"fixed_cost"`
 		// Pledge pledge in lovelace
 		Pledge decimal.Decimal `json:"pledge"`
+		// Deposit is the pool's registration deposit (in lovelace).
+		Deposit decimal.Decimal `json:"deposit"`
 		// Pool reward address
 		RewardAddr Address `json:"reward_addr"`
+		// RewardAddrDelegatedDRep is the DRep ID (CIP-129 bech32) the reward
+		// address currently delegates to (nullable).
+		RewardAddrDelegatedDRep *string `json:"reward_addr_delegated_drep"`
 		// Owners of the pool
 		Owners []Address `json:"owners"`
 		// Relays of the pool
@@ -132,8 +141,8 @@ type (
 		MetaURL string `json:"meta_url"`
 		// MetaHash Pool metadata hash
 		MetaHash string `json:"meta_hash"`
-		// MetaJson pool meta json
-		MetaJSON PoolMetaJSON `json:"meta_json"`
+		// MetaJson pool meta json (nullable)
+		MetaJSON *PoolMetaJSON `json:"meta_json"`
 		// Pool status (registered | retiring | retired)
 		PoolStatus string `json:"pool_status"`
 		// Announced retiring epoch (nullable)
@@ -155,7 +164,9 @@ type (
 		// LiveDelegators Pool live delegator count
 		LiveDelegators uint64 `json:"live_delegators"`
 		// LiveSaturation Pool live saturation (decimal format)
-		LiveSaturation float32 `json:"live_saturation"`
+		LiveSaturation float64 `json:"live_saturation"`
+		// VotingPower is the current voting power (in lovelace) of the pool (nullable).
+		VotingPower decimal.Decimal `json:"voting_power"`
 	}
 
 	// PoolUpdateInfo response item from `/pool_updates`.
@@ -172,44 +183,23 @@ type (
 		// IDHex Pool ID (Hex format)
 		PoolIDHex string `json:"pool_id_hex"`
 
-		// ActiveEpochNo Block number on chain where transaction was included.
+		// ActiveEpochNo is the epoch in which the update becomes active.
 		ActiveEpoch EpochNo `json:"active_epoch_no"`
-
-		// // ActiveStake Pool active stake.
-		// ActiveStake Lovelace `json:"active_stake"`
-
-		// // Total pool blocks on chain
-		// BlockCount uint64 `json:"block_count"`
 
 		// FixedCost Pool fixed cost per epoch
 		FixedCost decimal.Decimal `json:"fixed_cost"`
 
-		// // LiveDelegators Pool live delegator count
-		// LiveDelegators uint64 `json:"live_delegators"`
-
-		// // LiveSaturation Pool live saturation (decimal format)
-		// LiveSaturation float32 `json:"live_saturation"`
-
-		// // LiveStake Pool live stake
-		// LiveStake Lovelace `json:"live_stake"`
-
 		// Margin (decimal format)
-		Margin float32 `json:"margin"`
+		Margin float64 `json:"margin"`
 
 		// MetaHash Pool metadata hash
 		MetaHash string `json:"meta_hash"`
 
-		// // MetaJson pool meta json
-		// MetaJSON PoolMeta `json:"meta_json"`
+		// MetaJSON is the pool metadata (nullable).
+		MetaJSON *PoolMetaJSON `json:"meta_json"`
 
 		// MetaUrl Pool metadata URL
 		MetaURL string `json:"meta_url"`
-
-		// // OpCert Pool latest operational certificate hash
-		// OpCert string `json:"op_cert"`
-
-		// // OpCertCounter Pool latest operational certificate counter value
-		// OpCertCounter int `json:"op_cert_counter"`
 
 		// Owners of the pool.
 		Owners []Address `json:"owners"`
@@ -217,11 +207,11 @@ type (
 		// Pledge pledge in lovelace.
 		Pledge decimal.Decimal `json:"pledge"`
 
-		// Pool status (registered | retiring | retired).
-		PoolStatus string `json:"pool_status"`
+		// UpdateType is the type of the update: registration or deregistration.
+		UpdateType string `json:"update_type"`
 
 		// Announced retiring epoch (nullable).
-		RetiringEpoch *EpochNo `json:"retiring_epoch.omitempty"`
+		RetiringEpoch *EpochNo `json:"retiring_epoch"`
 
 		// Pool reward address.
 		RewardAddr Address `json:"reward_addr"`
@@ -247,11 +237,67 @@ type (
 		EpochNo      EpochNo         `json:"epoch_no"`
 	}
 
+	// PoolInvalidDelegator is a delegator that is invalid for an epoch as
+	// returned by `/pool_invalid_delegators`.
+	PoolInvalidDelegator struct {
+		StakeAddress Address `json:"stake_address"`
+		EpochNo      EpochNo `json:"epoch_no"`
+	}
+
+	// PoolOwnerHistory is the historical stake and declared pledge of a pool
+	// owner as returned by `/pool_owner_history`.
+	PoolOwnerHistory struct {
+		PoolIDBech32 PoolID `json:"pool_id_bech32"`
+		// StakeAddress is the stake account registered as one of the pool owners.
+		StakeAddress Address `json:"stake_address"`
+		// DeclaredPledge is the pool pledge (in lovelace, nullable).
+		DeclaredPledge decimal.Decimal `json:"declared_pledge"`
+		// Epoch for which the history data is shown.
+		Epoch EpochNo `json:"epoch"`
+		// ActiveStake is the stake delegated to the pool at the epoch snapshot
+		// (in lovelace, nullable).
+		ActiveStake decimal.Decimal `json:"active_stake"`
+	}
+
+	// PoolGroup is a pool and its group identification as returned by `/pool_groups`.
+	PoolGroup struct {
+		PoolIDBech32 PoolID `json:"pool_id_bech32"`
+		// PoolGroup is a group the pool was identified to be associated with (nullable).
+		PoolGroup string `json:"pool_group"`
+		Ticker    string `json:"ticker"`
+		// AdastatGroup is the pool's group identification per adastat.net (nullable).
+		AdastatGroup string `json:"adastat_group"`
+		// BalanceanalyticsGroup is the pool's group identification per
+		// balanceanalytics.io (nullable).
+		BalanceanalyticsGroup string `json:"balanceanalytics_group"`
+	}
+
+	// PoolCalidusKey is a pool Calidus key registration (CIP-88) as returned
+	// by `/pool_calidus_keys`.
+	PoolCalidusKey struct {
+		PoolIDBech32 PoolID `json:"pool_id_bech32"`
+		// PoolStatus is registered, retiring or retired.
+		PoolStatus string `json:"pool_status"`
+		// CalidusNonce is the unique nonce of the pool's key registration.
+		CalidusNonce uint64 `json:"calidus_nonce"`
+		// CalidusPubKey is the Calidus public key.
+		CalidusPubKey string `json:"calidus_pub_key"`
+		// CalidusIDBech32 is the Calidus key in bech32 format.
+		CalidusIDBech32 string    `json:"calidus_id_bech32"`
+		TxHash          TxHash    `json:"tx_hash"`
+		EpochNo         EpochNo   `json:"epoch_no"`
+		BlockHeight     uint64    `json:"block_height"`
+		BlockTime       Timestamp `json:"block_time"`
+		// Registered is true if the pool has an active registered Calidus key.
+		Registered bool `json:"registered"`
+		// Bytes is the raw transaction metadata in hex.
+		Bytes string `json:"bytes"`
+	}
+
 	// PoolRelays list item.
 	PoolRelays struct {
 		PoolIDBech32 PoolID  `json:"pool_id_bech32"`
 		Relays       []Relay `json:"relays"`
-		PoolStatus   string  `json:"pool_status"`
 	}
 
 	// PoolBlockInfo block info.
@@ -290,7 +336,7 @@ type (
 		PoolFees       decimal.Decimal `json:"pool_fees"`
 		DelegRewards   decimal.Decimal `json:"deleg_rewards"`
 		MemberRewards  decimal.Decimal `json:"member_rewards"`
-		EpochROS       decimal.Decimal `json:"epoch_ros"`
+		EpochROS       float64         `json:"epoch_ros"`
 	}
 
 	PoolSnapshot struct {
@@ -366,11 +412,37 @@ type (
 		Data []PoolHistory `json:"data"`
 	}
 
+	// PoolInvalidDelegatorsResponse represents response from `/pool_invalid_delegators` endpoint.
+	PoolInvalidDelegatorsResponse struct {
+		Response
+		Data []PoolInvalidDelegator `json:"data"`
+	}
+
+	// PoolOwnerHistoryResponse represents response from `/pool_owner_history` endpoint.
+	PoolOwnerHistoryResponse struct {
+		Response
+		Data []PoolOwnerHistory `json:"data"`
+	}
+
+	// PoolGroupsResponse represents response from `/pool_groups` endpoint.
+	PoolGroupsResponse struct {
+		Response
+		Data []PoolGroup `json:"data"`
+	}
+
+	// PoolCalidusKeysResponse represents response from `/pool_calidus_keys` endpoint.
+	PoolCalidusKeysResponse struct {
+		Response
+		Data []PoolCalidusKey `json:"data"`
+	}
+
+	// PoolRegistrationsResponse represents response from `/pool_registrations` endpoint.
 	PoolRegistrationsResponse struct {
 		Response
 		Data []PoolRegistrationOrRetirement `json:"data"`
 	}
 
+	// PoolRetirementsResponse represents response from `/pool_retirements` endpoint.
 	PoolRetirementsResponse struct {
 		Response
 		Data []PoolRegistrationOrRetirement `json:"data"`
@@ -427,6 +499,8 @@ func (c *Client) GetPoolInfos(
 	return
 }
 
+// GetPoolStakeSnapshot returns the Mark, Set and Go stake snapshots of the
+// selected pool.
 func (c *Client) GetPoolStakeSnapshot(
 	ctx context.Context,
 	pid PoolID,
@@ -446,8 +520,7 @@ func (c *Client) GetPoolStakeSnapshot(
 	return
 }
 
-// GetPoolDelegators returns information about delegators
-// by a given pool and optional epoch (current if omitted).
+// GetPoolDelegators returns information about live delegators of a given pool.
 func (c *Client) GetPoolDelegators(
 	ctx context.Context,
 	pid PoolID,
@@ -468,6 +541,9 @@ func (c *Client) GetPoolDelegators(
 
 	return
 }
+
+// GetPoolDelegatorsHistory returns information about active delegators
+// (including history) of a given pool and epoch (all epochs if omitted).
 func (c *Client) GetPoolDelegatorsHistory(
 	ctx context.Context,
 	pid PoolID,
@@ -494,7 +570,7 @@ func (c *Client) GetPoolDelegatorsHistory(
 }
 
 // GetPoolBlocks returns information about blocks minted by a given pool
-// in current epoch (or _epoch_no if provided).
+// for all epochs (or _epoch_no if provided).
 func (c *Client) GetPoolBlocks(
 	ctx context.Context,
 	pid PoolID,
@@ -558,8 +634,8 @@ func (c *Client) GetPoolRelays(
 	return
 }
 
-// GetPoolMetadata returns Metadata(on & off-chain)
-// for all currently registered/retiring (not retired) pools.
+// GetPoolMetadata returns metadata (on & off-chain) for the given pools,
+// or for all pools if none are given.
 func (c *Client) GetPoolMetadata(
 	ctx context.Context,
 	pids []PoolID,
@@ -603,16 +679,14 @@ func (c *Client) GetPoolHistory(
 
 func poolIdsPL(pids []PoolID) io.Reader {
 	var payload = struct {
-		PIDS []PoolID `json:"_pool_bech32_ids"`
+		PIDS []PoolID `json:"_pool_bech32_ids,omitempty"`
 	}{pids}
-	rpipe, w := io.Pipe()
-	go func() {
-		_ = json.NewEncoder(w).Encode(payload)
-		defer w.Close()
-	}()
+	rpipe := payloadReader(payload)
 	return rpipe
 }
 
+// GetPoolRegistrations returns all pool registrations initiated in the
+// requested epoch.
 func (c *Client) GetPoolRegistrations(
 	ctx context.Context,
 	epoch EpochNo,
@@ -635,6 +709,8 @@ func (c *Client) GetPoolRegistrations(
 	return
 }
 
+// GetPoolRetirements returns all pool retirements initiated in the
+// requested epoch.
 func (c *Client) GetPoolRetirements(
 	ctx context.Context,
 	epoch EpochNo,
@@ -650,6 +726,88 @@ func (c *Client) GetPoolRetirements(
 	}
 
 	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_retirements", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetPoolInvalidDelegators returns the delegators of a pool that are invalid
+// for the given epoch (current epoch if nil).
+func (c *Client) GetPoolInvalidDelegators(
+	ctx context.Context,
+	pid PoolID,
+	epoch *EpochNo,
+	opts *RequestOptions,
+) (res *PoolInvalidDelegatorsResponse, err error) {
+	res = &PoolInvalidDelegatorsResponse{}
+	if len(pid) == 0 {
+		err = ErrNoPoolID
+		res.applyError(nil, err)
+		return
+	}
+
+	if opts == nil {
+		opts = c.NewRequestOptions()
+	}
+	opts.QuerySet("_pool_bech32", pid.String())
+	if epoch != nil {
+		opts.QuerySet("_epoch_no", epoch.String())
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_invalid_delegators", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetPoolOwnerHistory returns the historical stake and declared pledge of the
+// owners of the given pools.
+func (c *Client) GetPoolOwnerHistory(
+	ctx context.Context,
+	pids []PoolID,
+	opts *RequestOptions,
+) (res *PoolOwnerHistoryResponse, err error) {
+	res = &PoolOwnerHistoryResponse{}
+	if len(pids) == 0 {
+		err = ErrNoPoolID
+		res.applyError(nil, err)
+		return
+	}
+
+	rsp, err := c.request(ctx, &res.Response, "POST", "/pool_owner_history", poolIdsPL(pids), opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetPoolGroups returns all registered pools and their groups as identified
+// by the pool_groups repository and third-party sources.
+func (c *Client) GetPoolGroups(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *PoolGroupsResponse, err error) {
+	res = &PoolGroupsResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_groups", nil, opts)
+	if err != nil {
+		return
+	}
+	err = ReadAndUnmarshalResponse(rsp, &res.Response, &res.Data)
+	return
+}
+
+// GetPoolCalidusKeys returns the valid Calidus keys (CIP-88) of all pools.
+func (c *Client) GetPoolCalidusKeys(
+	ctx context.Context,
+	opts *RequestOptions,
+) (res *PoolCalidusKeysResponse, err error) {
+	res = &PoolCalidusKeysResponse{}
+	rsp, err := c.request(ctx, &res.Response, "GET", "/pool_calidus_keys", nil, opts)
 	if err != nil {
 		return
 	}

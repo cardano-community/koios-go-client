@@ -1,0 +1,17 @@
+[
+ {
+  "epoch_no": 294,
+  "era": "Conway",
+  "out_sum": "15432725054364942",
+  "fees": "74325855210",
+  "tx_count": 357919,
+  "blk_count": 17321,
+  "start_time": 1506203091,
+  "end_time": 1506635091,
+  "first_block_time": 1506635091,
+  "last_block_time": 1506635091,
+  "active_stake": "23395112387185880",
+  "total_rewards": "252902897534230",
+  "avg_blk_reward": "660233450"
+ }
+]
